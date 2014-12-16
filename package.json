@@ -1,0 +1,22 @@
+{
+	"name": "ember-cli-6to5",
+	"version": "0.0.1",
+	"main": "index.js",
+	"keywords": [
+		"ember-addon"
+	],
+	"author": "Gordon Kristan",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/gordonkristan/ember-cli-6to5.git"
+	},
+	"bugs": {
+		"url": "https://github.com/gordonkristan/ember-cli-6to5/issues"
+	},
+	"homepage": "https://github.com/gordonkristan/ember-cli-6to5",
+	"dependencies": {
+		"6to5": "~1.15.0",
+		"broccoli-filter": "~0.1.10"
+	}
+}
