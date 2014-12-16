@@ -19,6 +19,8 @@ module.exports = {
 };
 
 function getOptions(options) {
+	options = options || {};
+
 	// Ensure modules aren't compiled unless explicitly set to compile
 	options.blacklist = options.blacklist || ['modules'];
 
