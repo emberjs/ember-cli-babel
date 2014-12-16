@@ -34,5 +34,8 @@ function getOptions(options) {
 		}
 	}
 
+	// Ember-CLI inserts its own 'use strict' directive
+	options.blacklist.push('useStrict');
+
 	return options;
 }
