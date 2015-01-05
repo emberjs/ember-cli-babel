@@ -1,16 +1,15 @@
-var Transpiler = require('./transpiler');
-
 module.exports = {
 	name: 'ember-cli-6to5',
 	included: function(app) {
 		this._super.included.apply(this, arguments);
 
 		var options = getOptions(app.options['6to5']);
+
 		var plugin = {
 			name: 'ember-cli-6to5',
 			ext: 'js',
 			toTree: function(tree) {
-				return new Transpiler(tree, options);
+				return require('broccoli-6to5-transpiler')(tree, options);
 			}
 		};
 
