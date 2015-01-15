@@ -22,12 +22,21 @@ found [here](https://babeljs.io/docs/usage/options/). Example:
 // Brocfile.js
 
 var app = new EmberApp({
-	'babel': {
-		// disable comments
-		comments: false
-	}
+  babel: {
+    // disable comments
+    comments: false
+  }
 });
 ```
+
+### Polyfill
+
+Babel comes with a polyfill that includes a custom [regenerator runtime](https://github.com/facebook/regenerator/blob/master/runtime.js)
+and [core.js](https://github.com/zloirock/core-js). Many transformations will work without it, but for full support you
+must include the polyfill in your app. The [Babel feature tour](https://babeljs.io/docs/tour/) includes a note for
+features that require the polyfill to work.
+
+To include it in your app, pass `includePolyfill: true` in your `babel` options.
 
 ### About Modules
 
