@@ -9,12 +9,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/gordonkristan/ember-cli-6to5.git"
+    "url": "git://github.com/6to5/ember-cli-6to5.git"
   },
   "bugs": {
-    "url": "https://github.com/gordonkristan/ember-cli-6to5/issues"
+    "url": "https://github.com/6to5/ember-cli-6to5/issues"
   },
-  "homepage": "https://github.com/gordonkristan/ember-cli-6to5",
+  "homepage": "https://github.com/6to5/ember-cli-6to5",
   "dependencies": {
     "broccoli-6to5-transpiler": "^2.0.4",
     "broccoli-filter": "^0.1.10"
