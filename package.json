@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-6to5",
-  "version": "0.2.2",
+  "version": "3.0.0",
   "main": "index.js",
   "keywords": [
     "ember-addon"
