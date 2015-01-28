@@ -21,15 +21,15 @@ function getOptions(options) {
   options = options || {};
 
   // Ensure modules aren't compiled unless explicitly set to compile
-  options.blacklist = options.blacklist || ['modules'];
+  options.blacklist = options.blacklist || ['es6.modules'];
 
   if (options.compileModules === true) {
-    if (options.blacklist.indexOf('modules') >= 0) {
-      options.blacklist.splice(options.indexOf('modules'), 1);
+    if (options.blacklist.indexOf('es6.modules') >= 0) {
+      options.blacklist.splice(options.indexOf('es6.modules'), 1);
     }
   } else {
-    if (options.blacklist.indexOf('modules') < 0) {
-      options.blacklist.push('modules');
+    if (options.blacklist.indexOf('es6.modules') < 0) {
+      options.blacklist.push('es6.modules');
     }
   }
 

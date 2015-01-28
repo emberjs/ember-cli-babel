@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/6to5/ember-cli-6to5",
   "dependencies": {
-    "broccoli-6to5-transpiler": "^2.0.4",
+    "broccoli-6to5-transpiler": "^3.0.0",
     "broccoli-filter": "^0.1.10"
   }
 }
