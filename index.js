@@ -1,15 +1,15 @@
 module.exports = {
-  name: 'ember-cli-6to5',
+  name: 'ember-cli-babel',
   included: function(app) {
     this._super.included.apply(this, arguments);
 
-    var options = getOptions(app.options['6to5']);
+    var options = getOptions(app.options['babel']);
 
     var plugin = {
-      name: 'ember-cli-6to5',
+      name: 'ember-cli-babel',
       ext: 'js',
       toTree: function(tree) {
-        return require('broccoli-6to5-transpiler')(tree, options);
+        return require('broccoli-babel-transpiler')(tree, options);
       }
     };
 

@@ -1,5 +1,5 @@
 {
-  "name": "ember-cli-6to5",
+  "name": "ember-cli-babel",
   "version": "3.0.0",
   "main": "index.js",
   "keywords": [
@@ -9,14 +9,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/6to5/ember-cli-6to5.git"
+    "url": "git://github.com/babel/ember-cli-babel.git"
   },
   "bugs": {
-    "url": "https://github.com/6to5/ember-cli-6to5/issues"
+    "url": "https://github.com/babel/ember-cli-babel/issues"
   },
-  "homepage": "https://github.com/6to5/ember-cli-6to5",
+  "homepage": "https://github.com/babel/ember-cli-babel",
   "dependencies": {
-    "broccoli-6to5-transpiler": "^3.0.0",
+    "broccoli-babel-transpiler": "^4.0.0",
     "broccoli-filter": "^0.1.10"
   }
 }
