@@ -1,9 +1,14 @@
+var checker   = require('ember-cli-version-checker');
+
 module.exports = {
   name: 'ember-cli-babel',
-  included: function(app) {
-    this._super.included.apply(this, arguments);
 
-    var options = getOptions(app.options['babel']);
+  shouldSetupRegistryInIncluded: function() {
+    return !checker.isAbove(this, '0.2.0');
+  },
+
+  setupPreprocessorRegistry: function(type, registry) {
+    var options = getOptions(this.parent && this.parent.options && this.parent.options['babel']);
 
     var plugin = {
       name: 'ember-cli-babel',
@@ -13,7 +18,15 @@ module.exports = {
       }
     };
 
-    app.registry.add('js', plugin);
+    registry.add('js', plugin);
+  },
+
+  included: function(app) {
+    this._super.included.apply(this, arguments);
+
+    if (this.shouldSetupRegistryInIncluded()) {
+      this.setupPreprocessorRegistry('parent', app.registry);
+    }
   }
 };
 

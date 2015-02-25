@@ -17,6 +17,7 @@
   "homepage": "https://github.com/babel/ember-cli-babel",
   "dependencies": {
     "broccoli-babel-transpiler": "^4.0.0",
-    "broccoli-filter": "^0.1.10"
+    "broccoli-filter": "^0.1.10",
+    "ember-cli-version-checker": "^1.0.2"
   }
 }
