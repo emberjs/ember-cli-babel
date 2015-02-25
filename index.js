@@ -38,8 +38,10 @@ function getOptions(options) {
 
   if (options.compileModules === true) {
     if (options.blacklist.indexOf('es6.modules') >= 0) {
-      options.blacklist.splice(options.indexOf('es6.modules'), 1);
+      options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
     }
+    
+    delete options.compileModules;
   } else {
     if (options.blacklist.indexOf('es6.modules') < 0) {
       options.blacklist.push('es6.modules');
