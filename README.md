@@ -1,4 +1,4 @@
-# ember-cli-babel
+# ember-cli-babel [![Build Status](https://travis-ci.org/babel/ember-cli-babel.svg?branch=master)](https://travis-ci.org/babel/ember-cli-babel)
 
 This Ember-CLI plugin uses [Babel](https://babeljs.io/) to allow you to use ES6 syntax with your
 Ember-CLI project.
