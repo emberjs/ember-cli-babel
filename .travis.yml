@@ -6,10 +6,13 @@ node_js:
 before_install:
     - npm install -g bower
     - npm install -g ember-cli
+    - npm install -g jshint@^2.5
 install:
     - bower install
     - npm install
-script: ember test
+script:
+  - jshint .
+  - ember test
 notifications:
     email: false
 matrix:
