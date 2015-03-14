@@ -31,7 +31,7 @@ module.exports = {
 
 function getOptions(addonContext) {
   var baseOptions = (addonContext.parent && addonContext.parent.options) || (addonContext.app && addonContext.app.options),
-      options = baseOptions && baseOptions['babel'] || {};      
+      options = baseOptions && baseOptions['babel'] || {};
   // Ensure modules aren't compiled unless explicitly set to compile
   options.blacklist = options.blacklist || ['es6.modules'];
 
@@ -39,7 +39,7 @@ function getOptions(addonContext) {
     if (options.blacklist.indexOf('es6.modules') >= 0) {
       options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
     }
-    
+
     delete options.compileModules;
   } else {
     if (options.blacklist.indexOf('es6.modules') < 0) {
