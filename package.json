@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-babel",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "main": "index.js",
   "keywords": [
     "ember-addon"
@@ -17,8 +17,7 @@
   "homepage": "https://github.com/babel/ember-cli-babel",
   "dependencies": {
     "broccoli-babel-transpiler": "^4.0.0",
-    "broccoli-filter": "^0.1.10",
-    "ember-cli-version-checker": "^1.0.2"
+    "broccoli-filter": "^0.1.10"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.0",
@@ -28,6 +27,7 @@
     "ember-cli-htmlbars": "^0.7.4",
     "ember-cli-qunit": "0.3.7",
     "ember-cli-uglify": "1.0.1",
+    "ember-cli-version-checker": "^1.0.2",
     "ember-export-application-global": "^1.0.2",
     "express": "^4.8.5",
     "glob": "^4.0.5"
