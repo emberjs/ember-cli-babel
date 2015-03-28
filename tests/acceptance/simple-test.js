@@ -21,3 +21,11 @@ test('value of input', function(assert) {
     assert.equal('Test Value', find('#test-input').val());
   });
 });
+
+test('value of input on other(es6) route', function(assert) {
+  visit('/other');
+
+  andThen(() => {
+    assert.equal('Other Value', find('#other-input').val());
+  });
+});

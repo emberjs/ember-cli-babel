@@ -18,6 +18,7 @@
   "dependencies": {
     "broccoli-babel-transpiler": "^4.0.0",
     "broccoli-filter": "^0.1.10",
+    "clone": "^0.2.0",
     "ember-cli-version-checker": "^1.0.2"
   },
   "devDependencies": {

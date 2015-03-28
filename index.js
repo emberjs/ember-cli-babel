@@ -1,5 +1,5 @@
 var checker   = require('ember-cli-version-checker');
-
+var clone     = require('clone');
 module.exports = {
   name: 'ember-cli-babel',
 
@@ -13,7 +13,15 @@ module.exports = {
       name: 'ember-cli-babel',
       ext: 'js',
       toTree: function(tree) {
-        return require('broccoli-babel-transpiler')(tree, getOptions(addon));
+        var options = getOptions(addon);
+        var transpiler = require('broccoli-babel-transpiler');
+        var validExtensions = options.validExtensions || ['js'];
+        if (options.validExtensions) {
+          transpiler.extensions = validExtensions;
+          delete options.validExtensions;
+        }
+
+        return transpiler(tree, options);
       }
     };
 
@@ -50,5 +58,5 @@ function getOptions(addonContext) {
   // Ember-CLI inserts its own 'use strict' directive
   options.blacklist.push('useStrict');
 
-  return options;
+  return clone(options);
 }
