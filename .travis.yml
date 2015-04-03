@@ -1,21 +1,17 @@
 language: node_js
 node_js:
-    - "0.10"
-    - "0.12"
-    - "iojs"
-before_install:
-    - npm install -g bower
-    - npm install -g ember-cli
-    - npm install -g jshint@^2.5
+  - "0.10"
+  - "0.12"
+  - "iojs"
 install:
-    - bower install
-    - npm install
+  - npm install
+  - npm run bower:install
 script:
-  - jshint .
-  - ember test
+  - npm run jshint .
+  - npm test
 notifications:
-    email: false
+  email: false
 matrix:
-    fast_finish: true
-    allow_failures:
-        - node_js: "iojs"
+  fast_finish: true
+  allow_failures:
+    - node_js: "iojs"

@@ -11,6 +11,11 @@
     "type": "git",
     "url": "git://github.com/babel/ember-cli-babel.git"
   },
+  "scripts": {
+    "test": "ember test",
+    "jshint": "jshint",
+    "bower": "bower install"
+  },
   "bugs": {
     "url": "https://github.com/babel/ember-cli-babel/issues"
   },
@@ -21,6 +26,7 @@
     "ember-cli-version-checker": "^1.0.2"
   },
   "devDependencies": {
+    "bower": "^1.4.1",
     "broccoli-asset-rev": "^2.0.0",
     "ember-cli": "^0.2.0",
     "ember-cli-app-version": "0.3.1",
@@ -30,7 +36,8 @@
     "ember-cli-uglify": "1.0.1",
     "ember-export-application-global": "^1.0.2",
     "express": "^4.8.5",
-    "glob": "^4.0.5"
+    "glob": "^4.0.5",
+    "jshint": "^2.6.3"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
