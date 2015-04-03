@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-babel",
-  "version": "4.3.3",
+  "version": "5.0.0",
   "main": "index.js",
   "keywords": [
     "ember-addon"
