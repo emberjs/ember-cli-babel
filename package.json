@@ -14,7 +14,7 @@
   "scripts": {
     "test": "ember test",
     "jshint": "jshint",
-    "bower": "bower install"
+    "bower:install": "bower install"
   },
   "bugs": {
     "url": "https://github.com/babel/ember-cli-babel/issues"
