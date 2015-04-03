@@ -9,20 +9,20 @@ module.exports = {
 
   setupPreprocessorRegistry: function(type, registry) {
     var addon = this;
-    var plugin = {
+
+    registry.add('js', {
       name: 'ember-cli-babel',
       ext: 'js',
       toTree: function(tree) {
         return require('broccoli-babel-transpiler')(tree, getOptions(addon));
       }
-    };
-
-    registry.add('js', plugin);
+    });
   },
 
   included: function(app) {
     this._super.included.apply(this, arguments);
     this.app = app;
+
     if (this.shouldSetupRegistryInIncluded()) {
       this.setupPreprocessorRegistry('parent', app.registry);
     }
@@ -34,7 +34,7 @@ function getOptions(addonContext) {
       options = baseOptions && baseOptions['babel'] || {};
   // Ensure modules aren't compiled unless explicitly set to compile
   options.blacklist = options.blacklist || ['es6.modules'];
-  
+
   // do not enable non-standard transforms
   if (!('nonStandard' in options)) {
     options.nonStandard = false;
