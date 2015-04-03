@@ -4,6 +4,7 @@ node_js:
   - "0.12"
   - "iojs"
 install:
+  - npm i -g npm@^2
   - npm install
   - npm run bower:install
 script:
