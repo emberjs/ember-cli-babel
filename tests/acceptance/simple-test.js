@@ -23,3 +23,10 @@ test('value of input', function(assert) {
     assert.equal('two', find('#last-value').text());
   });
 });
+
+test('babel-plugin is looked up from the registry', function(assert) {
+  // the string below is replaced by a babel transformation, which is
+  // registered as 'babel-plugin' within the 'answer-to-the-universe' in repo
+  // addon
+  assert.equal('THE-answer', 42);
+});

@@ -42,6 +42,9 @@
     "jshint": "^2.6.3"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "paths": [
+      "lib/answer-to-the-universe"
+    ]
   }
 }

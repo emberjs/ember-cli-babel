@@ -14,6 +14,10 @@ module.exports = {
   setupPreprocessorRegistry: function(type, registry) {
     var addon = this;
 
+    if (type === 'parent') {
+      this.parentRegistry = registry;
+    }
+
     registry.add('js', {
       name: 'ember-cli-babel',
       ext: 'js',
@@ -89,6 +93,15 @@ function getBabelOptions(addonContext) {
       options.blacklist.push('es6.modules');
     }
   }
+
+  // get all babel-plugins in the registry
+  var pluginWrappers = addonContext.parentRegistry.load('babel-plugin');
+  var babelPlugins = pluginWrappers.map(function(wrapper) {
+    return wrapper.plugin;
+  });
+
+  // add babel-plugins from the registry to the options.plugins
+  options.plugins = (options.plugins || []).concat(babelPlugins);
 
   // Ember-CLI inserts its own 'use strict' directive
   options.blacklist.push('useStrict');

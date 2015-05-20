@@ -38,6 +38,35 @@ features that require the polyfill to work.
 
 To include it in your app, pass `includePolyfill: true` in your `babel` options.
 
+### Adding custom babel plugins
+
+Custom [babel plugins](https://babeljs.io/docs/usage/plugins/) can be added to
+the transformation pipeline via Ember-CLI addons. The specific transformations
+needs to be added to the registry using `babel-plugin` as type:
+
+```js
+// my-babel-transformation-addon/index.js
+module.exports = {
+  name: 'my-babel-transformation-addon',
+
+  setupPreprocessorRegistry: function(type, registry) {
+    var MyBabelTransformation = require('./my-babel-transformation');
+
+    registry.add('babel-plugin', {
+      name: 'my-babel-transformation',
+      plugin: MyBabelTransformation
+    });
+  }
+}
+
+// my-babel-transformation-addon/my-babel-transformation.js
+module.exports = function(babel) {
+  return new babel.Transformer('my-babel-transformation', {
+    // see http://babeljs.io/docs/usage/plugins/manipulation/ for examples
+  });
+}
+```
+
 ### About Modules
 
 Ember-CLI uses its own ES6 module transpiler for the custom Ember resolver that it uses. Because of that,
