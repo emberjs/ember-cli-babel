@@ -96,7 +96,24 @@ function getBabelOptions(addonContext) {
 
   // get all babel-plugins in the registry
   var pluginWrappers = addonContext.parentRegistry.load('babel-plugin');
-  var babelPlugins = pluginWrappers.map(function(wrapper) {
+
+  // currently only a specific set of babel-plugin's is added to the pipeline:
+  // the reason is that if the ember-cli addon "ember-cli-my-addon" needs
+  // "babel-plugin-1" and an app uses the "ember-cli-my-addon" but doesn't
+  // list the "babel-plugin-1" in its package.json, the "ember-cli-my-addon" is
+  // not correctly pre-processed for the app, since "babel-plugin-1" is not
+  // available in the build pipeline
+  //
+  // as a current workaround for this, the allowed plugins are whitelisted
+  // here, until a general solution exists. see
+  // https://github.com/babel/ember-cli-babel/pull/42 for further context.
+  var allowedBabelPlugins = ['ember-cli-htmlbars-inline-precompile'];
+  var babelPlugins = pluginWrappers.filter(function(wrapper) {
+    // only allow whitelisted plugins
+    return allowedBabelPlugins.indexOf(wrapper.name) !== -1;
+  });
+
+  babelPlugins = babelPlugins.map(function(wrapper) {
     return wrapper.plugin;
   });
 

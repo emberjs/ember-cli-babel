@@ -44,7 +44,8 @@
   "ember-addon": {
     "configPath": "tests/dummy/config",
     "paths": [
-      "lib/answer-to-the-universe"
+      "lib/answer-to-the-universe",
+      "lib/ember-cli-htmlbars-inline-precompile-mock"
     ]
   }
 }
