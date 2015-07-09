@@ -19,5 +19,7 @@ test('value of input', function(assert) {
 
   andThen(() => {
     assert.equal('Test Value', find('#test-input').val());
+    assert.equal('one', find('#first-value').text());
+    assert.equal('two', find('#last-value').text());
   });
 });
