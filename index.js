@@ -34,6 +34,7 @@ module.exports = {
 
   treeFor: function(name) {
     if (name !== 'vendor') { return; }
+    if (!this.shouldIncludePolyfill()) { return; }
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
     var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
