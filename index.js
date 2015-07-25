@@ -2,6 +2,7 @@ var checker   = require('ember-cli-version-checker');
 var clone     = require('clone');
 var path      = require('path');
 var resolve   = require('resolve');
+var Funnel    = require('broccoli-funnel');
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -38,7 +39,9 @@ module.exports = {
     var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
     var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
 
-    return this.treeGenerator(polyfillDir);
+    return this.treeGenerator(new Funnel(polyfillDir, {
+      files: ['browser-polyfill.js']
+    }));
   },
 
   included: function(app) {
