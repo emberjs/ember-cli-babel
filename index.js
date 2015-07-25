@@ -39,9 +39,9 @@ module.exports = {
     var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
     var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
 
-    return this.treeGenerator(new Funnel(polyfillDir, {
+    return new Funnel(polyfillDir, {
       files: ['browser-polyfill.js']
-    }));
+    });
   },
 
   included: function(app) {
