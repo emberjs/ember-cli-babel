@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/babel/ember-cli-babel",
   "dependencies": {
-    "broccoli-babel-transpiler": "babel/broccoli-babel-transpiler#broccoli-peristent-filter",
+    "broccoli-babel-transpiler": "babel/broccoli-babel-transpiler#broccoli-persistent-filter",
     "broccoli-funnel": "^0.2.3",
     "clone": "^1.0.2",
     "ember-cli-version-checker": "^1.0.2",
