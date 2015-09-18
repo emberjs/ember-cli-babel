@@ -15,7 +15,7 @@ This plugin should work without any configuration after installing. By default i
 in your project and run it through the Babel transpiler to convert the ES6 code to ES5. Running existing ES5 code
 through the transpiler shouldn't change the code at all (likely just a format change if it does).
 
-If you need to customize the way that Babel transfoms your code, you can do it by passing in any of the options
+If you need to customize the way that Babel transforms your code, you can do it by passing in any of the options
 found [here](https://babeljs.io/docs/usage/options/). Example:
 
 ```js
