@@ -25,7 +25,7 @@ module.exports = {
 
   shouldIncludePolyfill: function() {
     var options = getAddonOptions(this);
-    return options.includePolyfill === true;
+    return options.browserPolyfill === true;
   },
 
   importPolyfill: function(app) {
@@ -75,8 +75,8 @@ function getBabelOptions(addonContext) {
     options.nonStandard = false;
   }
 
-  // Don't include the `includePolyfill` flag, since Babel doesn't care
-  delete options.includePolyfill;
+  // Don't include the `browserPolyfill` flag, since Babel doesn't care
+  delete options.browserPolyfill;
 
   if (options.compileModules === true) {
     if (options.blacklist.indexOf('es6.modules') >= 0) {
