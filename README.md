@@ -36,7 +36,7 @@ and [core.js](https://github.com/zloirock/core-js). Many transformations will wo
 must include the polyfill in your app. The [Babel feature tour](https://babeljs.io/docs/tour/) includes a note for
 features that require the polyfill to work.
 
-To include it in your app, pass `includePolyfill: true` in your `babel` options.
+To include it in your app, pass `browserPolyfill: true` in your `babel` options.
 
 ### About Modules
 
