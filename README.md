@@ -16,7 +16,7 @@ in your project and run it through the Babel transpiler to convert the ES6 code 
 through the transpiler shouldn't change the code at all (likely just a format change if it does).
 
 If you need to customize the way that Babel transforms your code, you can do it by passing in any of the options
-found [here](https://babeljs.io/docs/usage/options/). Example:
+found [here](https://github.com/babel/babel.github.io/blob/5.0.0/docs/usage/options.md). Example:
 
 ```js
 // Brocfile.js
