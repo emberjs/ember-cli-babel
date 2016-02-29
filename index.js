@@ -60,7 +60,10 @@ module.exports = {
 };
 
 function getAddonOptions(addonContext) {
-  var baseOptions = (addonContext.parent && addonContext.parent.options) || (addonContext.app && addonContext.app.options);
+  var parentOptions = addonContext.parent && addonContext.parent.options;
+  var appOptions = addonContext.app && addonContext.app.options;
+  var emberAppOptions = addonContext.app && addonContext.app.app && addonContext.app.app.options;
+  var baseOptions = parentOptions || appOptions || emberAppOptions;
   return baseOptions && baseOptions.babel || {};
 }
 
