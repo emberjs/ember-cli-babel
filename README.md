@@ -38,6 +38,37 @@ features that require the polyfill to work.
 
 To include it in your app, pass `includePolyfill: true` in your `babel` options.
 
+### Features
+
+Out of the box without a polyfill the following ES6 features are enabled:
+
+| Feature  | Supported |
+| ------------- | ------------- |
+| Arrows and Lexical This | YES |
+| Classes | YES |
+| Enhanced Object Literals | YES |
+| Template Strings | YES |
+| Destructuring | YES |
+| Default + Rest + Spread | YES |
+| Let + Const | YES |
+| Iterators + For..Of | NO |
+| Generators | NO |
+| Comprehensions | YES |
+| Unicode | YES |
+| Modules | YES |
+| Module Loaders | NO |
+| Map + Set + WeakMap + WeakSet | NO |
+| Proxies | NO |
+| Symbols | NO |
+| Subclassable Built-ins | PARTIAL |
+| Math + Number + String + Object APIs | NO |
+| Binary and Octal Literals | PARTIAL |
+| Promises | NO |
+| Reflect API | NO |
+| Tail Calls | PARTIAL |
+
+See the [Babel docs](babeljs.io/docs/learn-es2015) for more details
+
 ### About Modules
 
 Ember-CLI uses its own ES6 module transpiler for the custom Ember resolver that it uses. Because of that,
