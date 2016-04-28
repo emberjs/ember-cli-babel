@@ -67,7 +67,7 @@ Out of the box without a polyfill the following ES6 features are enabled:
 | Reflect API | NO |
 | Tail Calls | PARTIAL |
 
-See the [Babel docs](babeljs.io/docs/learn-es2015) for more details
+See the [Babel docs](https://babeljs.io/docs/learn-es2015) for more details
 
 ### About Modules
 
