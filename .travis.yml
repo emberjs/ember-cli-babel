@@ -1,18 +1,31 @@
+---
 language: node_js
 node_js:
   - "0.10"
   - "0.12"
   - "iojs"
-install:
-  - npm i -g npm@^2
-  - npm install
-  - npm run bower:install
-script:
-  - npm run jshint .
-  - npm test
-notifications:
-  email: false
+
 matrix:
   fast_finish: true
   allow_failures:
     - node_js: "iojs"
+
+sudo: false
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
+  - "npm config set spin false"
+  - "npm install -g npm@^2"
+
+install:
+  - npm install -g bower
+  - npm install
+  - bower install
+
+script:
+  - npm run jshint .
+  - npm test

@@ -1,3 +1,6 @@
+/* jshint node: true */
+'use strict';
+
 var checker   = require('ember-cli-version-checker');
 var clone     = require('clone');
 var path      = require('path');
