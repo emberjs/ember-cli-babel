@@ -5,5 +5,5 @@ export default Ember.Controller.extend({
   value: ((test = 'Test') => `${test} ${'Value'}`)(), // jshint ignore:line
 
   // Test a generator (needs the regenerator runtime) and some ES6 constructs (requires the corejs polyfill)
-  values: Array.from({ *[Symbol.iterator]() { yield 'one'; yield 'two'; } }) // jshint ignore:line
+  values: Ember.A(Array.from({ *[Symbol.iterator]() { yield 'one'; yield 'two'; } })) // jshint ignore:line
 });
