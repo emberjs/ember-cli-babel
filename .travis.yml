@@ -27,5 +27,4 @@ install:
   - bower install
 
 script:
-  - npm run jshint .
   - npm test
