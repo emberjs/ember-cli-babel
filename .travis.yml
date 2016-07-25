@@ -1,25 +1,19 @@
 ---
+sudo: false
+
 language: node_js
 node_js:
   - "0.10"
   - "0.12"
-  - "iojs"
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - node_js: "iojs"
-
-sudo: false
-
-cache:
-  directories:
-    - node_modules
+  - "4"
+  - "5"
+  - node
 
 before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
+  # prevent the npm loading indicator
+  - npm config --global set spin false
+  # if npm version is less 3.0.0 (lets say 1.x or 2.x) we should attempt to upgrade to 3
+  - if [[ $(npm -v | cut -d '.' -f 1) -lt 3 ]]; then npm i -g npm@^3; fi
 
 install:
   - npm install -g bower
@@ -27,5 +21,4 @@ install:
   - bower install
 
 script:
-  - npm run jshint .
   - npm test
