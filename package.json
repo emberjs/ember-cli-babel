@@ -11,6 +11,9 @@
     "start": "ember server",
     "test": "ember test"
   },
+  "files": [
+    "index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/babel/ember-cli-babel.git"
