@@ -69,6 +69,21 @@ function getAddonOptions(addonContext) {
 function getBabelOptions(addonContext) {
   var options = clone(getAddonOptions(addonContext));
 
+  // pass a console object that wraps the addon's `UI` object
+  options.console = {
+    log: function(message) {
+      addonContext.ui.writeInfoLine(message);
+    },
+
+    warn: function(message) {
+      addonContext.ui.writeWarnLine(message);
+    },
+
+    error: function(message) {
+      addonContext.ui.writeError(message, 'ERROR');
+    }
+  };
+
   // Ensure modules aren't compiled unless explicitly set to compile
   options.blacklist = options.blacklist || ['es6.modules'];
 
