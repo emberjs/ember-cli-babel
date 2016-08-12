@@ -68,19 +68,35 @@ function getAddonOptions(addonContext) {
 
 function getBabelOptions(addonContext) {
   var options = clone(getAddonOptions(addonContext));
+  var ui = addonContext.ui;
 
   // pass a console object that wraps the addon's `UI` object
   options.console = {
     log: function(message) {
-      addonContext.ui.writeInfoLine(message);
+      // fallback needed for support of ember-cli < 2.2.0
+      if (ui.writeInfoLine) {
+        ui.writeInfoLine(message);
+      } else {
+        ui.writeLine(message, 'INFO');
+      }
     },
 
     warn: function(message) {
-      addonContext.ui.writeWarnLine(message);
+      // fallback needed for support of ember-cli < 2.2.0
+      if (ui.writeWarnLine) {
+        ui.writeWarnLine(message);
+      } else {
+        ui.writeLine(message, 'WARN');
+      }
     },
 
     error: function(message) {
-      addonContext.ui.writeError(message, 'ERROR');
+      // fallback needed for support of ember-cli < 2.2.0
+      if (ui.writeError) {
+        ui.writeError(message);
+      } else {
+        ui.writeLine(message, 'ERROR');
+      }
     }
   };
 
