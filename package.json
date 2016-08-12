@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-babel",
-  "version": "5.1.8",
+  "version": "5.1.9",
   "directories": {
     "doc": "doc",
     "test": "tests"
