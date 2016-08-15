@@ -31,7 +31,9 @@ module.exports = {
   },
 
   importPolyfill: function(app) {
-    app.import('vendor/browser-polyfill.js', { prepend: true });
+    if (app.import) {
+      app.import('vendor/browser-polyfill.js', { prepend: true });
+    }
   },
 
   treeFor: function(name) {
