@@ -24,7 +24,12 @@ found [here](https://github.com/babel/babel.github.io/blob/5.0.0/docs/usage/opti
 var app = new EmberApp({
   babel: {
     // disable comments
-    comments: false
+    comments: false,
+    // don't transpile arrow and generator functions
+    blacklist: [
+      'es6.arrowFunctions',
+      'regenerator'
+    ]
   }
 });
 ```
