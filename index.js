@@ -17,6 +17,7 @@ module.exports = {
     var dep = checker.for('ember-cli', 'npm');
 
     this._shouldSetupRegistryInIncluded = !dep.satisfies('>=0.2.0');
+    this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.1');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
@@ -39,6 +40,12 @@ module.exports = {
     if (customOptions && 'includePolyfill' in customOptions) {
       return customOptions.includePolyfill === true;
     } else if (babelOptions && 'includePolyfill' in babelOptions) {
+      if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted) {
+        this._polyfillDeprecationPrinted = true;
+        this.ui.writeDeprecateLine(
+          'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+      }
+
       return babelOptions.includePolyfill === true;
     } else {
       return false;
@@ -94,6 +101,12 @@ module.exports = {
     if (customOptions && 'compileModules' in customOptions) {
       compileModules = customOptions.compileModules === true;
     } else if ('compileModules' in options) {
+      if (this._shouldShowBabelDeprecations && !this._modulesDeprecationPrinted) {
+        this._modulesDeprecationPrinted = true;
+        this.ui.writeDeprecateLine(
+          'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+      }
+
       compileModules = options.compileModules === true;
     } else {
       compileModules = false;
