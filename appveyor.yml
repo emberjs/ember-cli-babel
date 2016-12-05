@@ -6,8 +6,14 @@ init:
 
 # Test against these versions of Node.js.
 environment:
+  MOCHA_REPORTER: "mocha-appveyor-reporter"
   matrix:
     - nodejs_version: "0.12"
+    - nodejs_version: "4"
+    - nodejs_version: "6"
+
+cache:
+  - '%APPDATA%\npm-cache'
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -18,6 +24,7 @@ install:
   - md C:\nc
   - npm config set cache C:\nc
   - npm version
+  - npm install mocha-appveyor-reporter
   - npm install --no-optional
 
 # Post-install test scripts.
