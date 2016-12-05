@@ -19,7 +19,7 @@
     "url": "git://github.com/babel/ember-cli-babel.git"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 0.12"
   },
   "author": "Gordon Kristan",
   "license": "MIT",
