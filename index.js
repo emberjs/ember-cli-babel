@@ -80,6 +80,8 @@ function getBabelOptions(addonContext) {
   var addonOptions = getAddonOptions(addonContext);
   var options = clone(addonOptions.babel || {});
 
+  var compileModules = options.compileModules === true;
+
   var ui = addonContext.ui;
 
   // pass a console object that wraps the addon's `UI` object
@@ -120,15 +122,14 @@ function getBabelOptions(addonContext) {
     options.nonStandard = false;
   }
 
-  // Don't include the `includePolyfill` flag, since Babel doesn't care
+  // Remove custom options from `options` hash that is passed to Babel
   delete options.includePolyfill;
+  delete options.compileModules;
 
-  if (options.compileModules === true) {
+  if (compileModules) {
     if (options.blacklist.indexOf('es6.modules') >= 0) {
       options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
     }
-
-    delete options.compileModules;
   } else {
     if (options.blacklist.indexOf('es6.modules') < 0) {
       options.blacklist.push('es6.modules');
