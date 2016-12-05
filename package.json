@@ -29,7 +29,7 @@
   "homepage": "https://github.com/babel/ember-cli-babel",
   "devDependencies": {
     "ember-cli": "^2.6.2",
-    "ember-cli-app-version": "^1.0.0",
+    "ember-cli-app-version": "^2.0.1",
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-htmlbars": "^1.0.8",
     "ember-cli-htmlbars-inline-precompile": "^0.3.2",
