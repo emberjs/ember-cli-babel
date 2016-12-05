@@ -1,7 +1,7 @@
 /* jshint node: true */
 'use strict';
 
-var checker   = require('ember-cli-version-checker');
+var VersionChecker = require('ember-cli-version-checker');
 var clone     = require('clone');
 var path      = require('path');
 var resolve   = require('resolve');
@@ -9,8 +9,13 @@ var resolve   = require('resolve');
 module.exports = {
   name: 'ember-cli-babel',
 
-  shouldSetupRegistryInIncluded: function() {
-    return !checker.isAbove(this, '0.2.0');
+  init: function() {
+    this._super.init && this._super.init.apply(this, arguments);
+
+    var checker = new VersionChecker(this);
+    var dep = checker.for('ember-cli', 'npm');
+
+    this._shouldSetupRegistryInIncluded = !dep.satisfies('>=0.2.0');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
@@ -57,7 +62,7 @@ module.exports = {
     this._super.included.apply(this, arguments);
     this.app = app;
 
-    if (this.shouldSetupRegistryInIncluded()) {
+    if (this._shouldSetupRegistryInIncluded) {
       this.setupPreprocessorRegistry('parent', app.registry);
     }
 
