@@ -108,6 +108,11 @@ function getBabelOptions(addonContext) {
 
   // Ensure modules aren't compiled unless explicitly set to compile
   options.blacklist = options.blacklist || ['es6.modules'];
+  
+  // do not enable non-standard transforms
+  if (!('nonStandard' in options)) {
+    options.nonStandard = false;
+  }
 
   // do not enable non-standard transforms
   if (!('nonStandard' in options)) {
