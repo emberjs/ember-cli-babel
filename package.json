@@ -1,9 +1,24 @@
 {
   "name": "ember-cli-babel",
   "version": "5.1.10",
+  "keywords": [
+    "ember-addon"
+  ],
+  "bugs": {
+    "url": "https://github.com/babel/ember-cli-babel/issues"
+  },
+  "license": "MIT",
+  "author": "Gordon Kristan",
+  "files": [
+    "index.js"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/babel/ember-cli-babel.git"
   },
   "scripts": {
     "build": "ember build",
@@ -11,22 +26,13 @@
     "start": "ember server",
     "test": "ember test"
   },
-  "files": [
-    "index.js"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/babel/ember-cli-babel.git"
+  "dependencies": {
+    "broccoli-babel-transpiler": "^5.6.0",
+    "broccoli-funnel": "^1.0.0",
+    "clone": "^2.0.0",
+    "ember-cli-version-checker": "^1.0.2",
+    "resolve": "^1.1.2"
   },
-  "engines": {
-    "node": ">= 0.12"
-  },
-  "author": "Gordon Kristan",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/babel/ember-cli-babel/issues"
-  },
-  "homepage": "https://github.com/babel/ember-cli-babel",
   "devDependencies": {
     "ember-cli": "^2.6.2",
     "ember-cli-dependency-checker": "^1.2.0",
@@ -39,15 +45,8 @@
     "ember-resolver": "2.0.3",
     "loader.js": "4.0.11"
   },
-  "keywords": [
-    "ember-addon"
-  ],
-  "dependencies": {
-    "broccoli-babel-transpiler": "^5.6.0",
-    "broccoli-funnel": "^1.0.0",
-    "clone": "^2.0.0",
-    "ember-cli-version-checker": "^1.0.2",
-    "resolve": "^1.1.2"
+  "engines": {
+    "node": ">= 0.12"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
