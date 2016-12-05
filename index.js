@@ -33,7 +33,16 @@ module.exports = {
 
   shouldIncludePolyfill: function() {
     var addonOptions = getAddonOptions(this);
-    return addonOptions.babel && addonOptions.babel.includePolyfill === true;
+    var babelOptions = addonOptions.babel;
+    var customOptions = addonOptions['ember-cli-babel'];
+
+    if (customOptions && 'includePolyfill' in customOptions) {
+      return customOptions.includePolyfill === true;
+    } else if (babelOptions && 'includePolyfill' in babelOptions) {
+      return babelOptions.includePolyfill === true;
+    } else {
+      return false;
+    }
   },
 
   importPolyfill: function(app) {
@@ -80,8 +89,16 @@ function getAddonOptions(addonContext) {
 function getBabelOptions(addonContext) {
   var addonOptions = getAddonOptions(addonContext);
   var options = clone(addonOptions.babel || {});
+  var customOptions = addonOptions['ember-cli-babel'];
 
-  var compileModules = options.compileModules === true;
+  var compileModules;
+  if (customOptions && 'compileModules' in customOptions) {
+    compileModules = customOptions.compileModules === true;
+  } else if ('compileModules' in options) {
+    compileModules = options.compileModules === true;
+  } else {
+    compileModules = false;
+  }
 
   var ui = addonContext.ui;
 
