@@ -8,6 +8,7 @@ var resolve   = require('resolve');
 
 module.exports = {
   name: 'ember-cli-babel',
+  configKey: 'ember-cli-babel',
 
   init: function() {
     this._super.init && this._super.init.apply(this, arguments);
