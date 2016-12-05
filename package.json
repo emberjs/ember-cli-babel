@@ -1,9 +1,30 @@
 {
   "name": "ember-cli-babel",
   "version": "5.1.10",
+  "description": "Ember CLI addon for Babel",
+  "keywords": [
+    "ember-addon",
+    "babel",
+    "ember",
+    "ember-cli",
+    "transpile",
+    "transpiler"
+  ],
+  "bugs": {
+    "url": "https://github.com/babel/ember-cli-babel/issues"
+  },
+  "license": "MIT",
+  "author": "Gordon Kristan",
+  "files": [
+    "index.js"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/babel/ember-cli-babel.git"
   },
   "scripts": {
     "build": "ember build",
@@ -11,45 +32,27 @@
     "start": "ember server",
     "test": "ember test"
   },
-  "files": [
-    "index.js"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/babel/ember-cli-babel.git"
-  },
-  "engines": {
-    "node": ">= 0.12"
-  },
-  "author": "Gordon Kristan",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/babel/ember-cli-babel/issues"
-  },
-  "homepage": "https://github.com/babel/ember-cli-babel",
-  "devDependencies": {
-    "ember-cli": "^2.6.2",
-    "ember-cli-app-version": "^1.0.0",
-    "ember-cli-dependency-checker": "^1.2.0",
-    "ember-cli-htmlbars": "^1.0.8",
-    "ember-cli-htmlbars-inline-precompile": "^0.3.2",
-    "ember-cli-inject-live-reload": "^1.3.1",
-    "ember-cli-qunit": "^3.0.2",
-    "ember-cli-release": "0.2.9",
-    "ember-export-application-global": "^1.0.3",
-    "ember-load-initializers": "0.5.1",
-    "ember-resolver": "2.0.3",
-    "loader.js": "4.0.11"
-  },
-  "keywords": [
-    "ember-addon"
-  ],
   "dependencies": {
     "broccoli-babel-transpiler": "^5.6.0",
     "broccoli-funnel": "^1.0.0",
     "clone": "^2.0.0",
     "ember-cli-version-checker": "^1.0.2",
     "resolve": "^1.1.2"
+  },
+  "devDependencies": {
+    "ember-cli": "^2.6.2",
+    "ember-cli-dependency-checker": "^1.2.0",
+    "ember-cli-htmlbars": "^1.0.8",
+    "ember-cli-htmlbars-inline-precompile": "^0.3.2",
+    "ember-cli-inject-live-reload": "^1.3.1",
+    "ember-cli-qunit": "^3.0.2",
+    "ember-export-application-global": "^1.0.3",
+    "ember-load-initializers": "0.5.1",
+    "ember-resolver": "2.0.3",
+    "loader.js": "4.0.11"
+  },
+  "engines": {
+    "node": ">= 0.12"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
