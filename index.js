@@ -26,13 +26,13 @@ module.exports = {
       name: 'ember-cli-babel',
       ext: 'js',
       toTree: function(tree) {
-        return require('broccoli-babel-transpiler')(tree, getBabelOptions(addon));
+        return require('broccoli-babel-transpiler')(tree, addon._getBabelOptions());
       }
     });
   },
 
   shouldIncludePolyfill: function() {
-    var addonOptions = getAddonOptions(this);
+    var addonOptions = this._getAddonOptions();
     var babelOptions = addonOptions.babel;
     var customOptions = addonOptions['ember-cli-babel'];
 
@@ -79,84 +79,84 @@ module.exports = {
     if (this.shouldIncludePolyfill()) {
       this.importPolyfill(app);
     }
-  }
+  },
+
+  _getAddonOptions: function() {
+    return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
+  },
+
+  _getBabelOptions: function() {
+    var addonOptions = this._getAddonOptions();
+    var options = clone(addonOptions.babel || {});
+    var customOptions = addonOptions['ember-cli-babel'];
+
+    var compileModules;
+    if (customOptions && 'compileModules' in customOptions) {
+      compileModules = customOptions.compileModules === true;
+    } else if ('compileModules' in options) {
+      compileModules = options.compileModules === true;
+    } else {
+      compileModules = false;
+    }
+
+    var ui = this.ui;
+
+    // pass a console object that wraps the addon's `UI` object
+    options.console = {
+      log: function(message) {
+        // fallback needed for support of ember-cli < 2.2.0
+        if (ui.writeInfoLine) {
+          ui.writeInfoLine(message);
+        } else {
+          ui.writeLine(message, 'INFO');
+        }
+      },
+
+      warn: function(message) {
+        // fallback needed for support of ember-cli < 2.2.0
+        if (ui.writeWarnLine) {
+          ui.writeWarnLine(message);
+        } else {
+          ui.writeLine(message, 'WARN');
+        }
+      },
+
+      error: function(message) {
+        // fallback needed for support of ember-cli < 2.2.0
+        if (ui.writeError) {
+          ui.writeError(message);
+        } else {
+          ui.writeLine(message, 'ERROR');
+        }
+      }
+    };
+
+    // Ensure modules aren't compiled unless explicitly set to compile
+    options.blacklist = options.blacklist || ['es6.modules'];
+
+    // do not enable non-standard transforms
+    if (!('nonStandard' in options)) {
+      options.nonStandard = false;
+    }
+
+    // Remove custom options from `options` hash that is passed to Babel
+    delete options.includePolyfill;
+    delete options.compileModules;
+
+    if (compileModules) {
+      if (options.blacklist.indexOf('es6.modules') >= 0) {
+        options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
+      }
+    } else {
+      if (options.blacklist.indexOf('es6.modules') < 0) {
+        options.blacklist.push('es6.modules');
+      }
+    }
+
+    // Ember-CLI inserts its own 'use strict' directive
+    options.blacklist.push('useStrict');
+    options.highlightCode = false;
+
+    return options;
+  },
 };
-
-function getAddonOptions(addonContext) {
-  return (addonContext.parent && addonContext.parent.options) || (addonContext.app && addonContext.app.options) || {};
-}
-
-function getBabelOptions(addonContext) {
-  var addonOptions = getAddonOptions(addonContext);
-  var options = clone(addonOptions.babel || {});
-  var customOptions = addonOptions['ember-cli-babel'];
-
-  var compileModules;
-  if (customOptions && 'compileModules' in customOptions) {
-    compileModules = customOptions.compileModules === true;
-  } else if ('compileModules' in options) {
-    compileModules = options.compileModules === true;
-  } else {
-    compileModules = false;
-  }
-
-  var ui = addonContext.ui;
-
-  // pass a console object that wraps the addon's `UI` object
-  options.console = {
-    log: function(message) {
-      // fallback needed for support of ember-cli < 2.2.0
-      if (ui.writeInfoLine) {
-        ui.writeInfoLine(message);
-      } else {
-        ui.writeLine(message, 'INFO');
-      }
-    },
-
-    warn: function(message) {
-      // fallback needed for support of ember-cli < 2.2.0
-      if (ui.writeWarnLine) {
-        ui.writeWarnLine(message);
-      } else {
-        ui.writeLine(message, 'WARN');
-      }
-    },
-
-    error: function(message) {
-      // fallback needed for support of ember-cli < 2.2.0
-      if (ui.writeError) {
-        ui.writeError(message);
-      } else {
-        ui.writeLine(message, 'ERROR');
-      }
-    }
-  };
-
-  // Ensure modules aren't compiled unless explicitly set to compile
-  options.blacklist = options.blacklist || ['es6.modules'];
-
-  // do not enable non-standard transforms
-  if (!('nonStandard' in options)) {
-    options.nonStandard = false;
-  }
-
-  // Remove custom options from `options` hash that is passed to Babel
-  delete options.includePolyfill;
-  delete options.compileModules;
-
-  if (compileModules) {
-    if (options.blacklist.indexOf('es6.modules') >= 0) {
-      options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
-    }
-  } else {
-    if (options.blacklist.indexOf('es6.modules') < 0) {
-      options.blacklist.push('es6.modules');
-    }
-  }
-
-  // Ember-CLI inserts its own 'use strict' directive
-  options.blacklist.push('useStrict');
-  options.highlightCode = false;
-
-  return options;
-}
