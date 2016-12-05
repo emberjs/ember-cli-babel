@@ -31,8 +31,8 @@ module.exports = {
   },
 
   shouldIncludePolyfill: function() {
-    var options = getAddonOptions(this);
-    return options.includePolyfill === true;
+    var addonOptions = getAddonOptions(this);
+    return addonOptions.babel && addonOptions.babel.includePolyfill === true;
   },
 
   importPolyfill: function(app) {
@@ -73,12 +73,13 @@ module.exports = {
 };
 
 function getAddonOptions(addonContext) {
-  var baseOptions = (addonContext.parent && addonContext.parent.options) || (addonContext.app && addonContext.app.options);
-  return baseOptions && baseOptions.babel || {};
+  return (addonContext.parent && addonContext.parent.options) || (addonContext.app && addonContext.app.options) || {};
 }
 
 function getBabelOptions(addonContext) {
-  var options = clone(getAddonOptions(addonContext));
+  var addonOptions = getAddonOptions(addonContext);
+  var options = clone(addonOptions.babel || {});
+
   var ui = addonContext.ui;
 
   // pass a console object that wraps the addon's `UI` object
