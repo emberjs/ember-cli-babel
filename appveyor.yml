@@ -26,6 +26,8 @@ install:
   - npm version
   - npm install mocha-appveyor-reporter
   - npm install --no-optional
+  - npm install -g bower
+  - bower install
 
 # Post-install test scripts.
 test_script:
