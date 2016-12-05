@@ -32,7 +32,8 @@ module.exports = {
 
   shouldIncludePolyfill: function() {
     var options = getAddonOptions(this);
-    return options.includePolyfill === true;
+    var isNotFastboot = !process.env.EMBER_CLI_FASTBOOT;
+    return options.includePolyfill === true && isNotFastboot;
   },
 
   importPolyfill: function(app) {
