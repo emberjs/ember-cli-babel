@@ -1,7 +1,7 @@
 /* jshint node: true */
 'use strict';
 
-var checker   = require('ember-cli-version-checker');
+var VersionChecker = require('ember-cli-version-checker');
 var clone     = require('clone');
 var path      = require('path');
 var resolve   = require('resolve');
@@ -10,7 +10,7 @@ module.exports = {
   name: 'ember-cli-babel',
 
   shouldSetupRegistryInIncluded: function() {
-    return !checker.isAbove(this, '0.2.0');
+    return !VersionChecker.isAbove(this, '0.2.0');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
