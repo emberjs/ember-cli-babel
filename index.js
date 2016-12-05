@@ -39,6 +39,7 @@ module.exports = {
 
     if (customOptions && 'includePolyfill' in customOptions) {
       return customOptions.includePolyfill === true;
+
     } else if (babelOptions && 'includePolyfill' in babelOptions) {
       if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted) {
         this._polyfillDeprecationPrinted = true;
@@ -92,25 +93,31 @@ module.exports = {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _getBabelOptions: function() {
-    var addonOptions = this._getAddonOptions();
-    var options = clone(addonOptions.babel || {});
+  _shouldCompileModules: function(addonOptions) {
+    var babelOptions = addonOptions.babel;
     var customOptions = addonOptions['ember-cli-babel'];
 
-    var compileModules;
     if (customOptions && 'compileModules' in customOptions) {
-      compileModules = customOptions.compileModules === true;
-    } else if ('compileModules' in options) {
+      return customOptions.compileModules === true;
+
+    } else if (babelOptions && 'compileModules' in babelOptions) {
       if (this._shouldShowBabelDeprecations && !this._modulesDeprecationPrinted) {
         this._modulesDeprecationPrinted = true;
         this.ui.writeDeprecateLine(
           'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
       }
 
-      compileModules = options.compileModules === true;
+      return babelOptions.compileModules === true;
     } else {
-      compileModules = false;
+      return false;
     }
+  },
+
+  _getBabelOptions: function() {
+    var addonOptions = this._getAddonOptions();
+    var options = clone(addonOptions.babel || {});
+
+    var compileModules = this._shouldCompileModules(addonOptions);
 
     var ui = this.ui;
 
