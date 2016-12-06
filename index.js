@@ -17,7 +17,7 @@ module.exports = {
     var dep = checker.for('ember-cli', 'npm');
 
     this._shouldSetupRegistryInIncluded = !dep.satisfies('>=0.2.0');
-    this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.1');
+    this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
