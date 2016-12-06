@@ -37,16 +37,17 @@ module.exports = {
     var babelOptions = addonOptions.babel;
     var customOptions = addonOptions['ember-cli-babel'];
 
+    if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted &&
+      babelOptions && 'includePolyfill' in babelOptions) {
+
+      this._polyfillDeprecationPrinted = true;
+      this.ui.writeDeprecateLine(
+        'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+    }
+
     if (customOptions && 'includePolyfill' in customOptions) {
       return customOptions.includePolyfill === true;
-
     } else if (babelOptions && 'includePolyfill' in babelOptions) {
-      if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted) {
-        this._polyfillDeprecationPrinted = true;
-        this.ui.writeDeprecateLine(
-          'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-      }
-
       return babelOptions.includePolyfill === true;
     } else {
       return false;
@@ -97,16 +98,17 @@ module.exports = {
     var babelOptions = addonOptions.babel;
     var customOptions = addonOptions['ember-cli-babel'];
 
+    if (this._shouldShowBabelDeprecations && !this._modulesDeprecationPrinted &&
+      babelOptions && 'compileModules' in babelOptions) {
+
+      this._modulesDeprecationPrinted = true;
+      this.ui.writeDeprecateLine(
+        'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+    }
+
     if (customOptions && 'compileModules' in customOptions) {
       return customOptions.compileModules === true;
-
     } else if (babelOptions && 'compileModules' in babelOptions) {
-      if (this._shouldShowBabelDeprecations && !this._modulesDeprecationPrinted) {
-        this._modulesDeprecationPrinted = true;
-        this.ui.writeDeprecateLine(
-          'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-      }
-
       return babelOptions.compileModules === true;
     } else {
       return false;

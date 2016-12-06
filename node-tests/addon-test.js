@@ -117,6 +117,31 @@ describe('ember-cli-babel', function() {
         expect(deprecationMessages).to.have.lengthOf(0);
       });
     });
+
+    describe('with ember-cli-babel.includePolyfill = true and babel.includePolyfill = false', function() {
+      beforeEach(function() {
+        this.addon.parent.options = {
+          'babel': { includePolyfill: false },
+          'ember-cli-babel': { includePolyfill: true },
+        };
+      });
+
+      it('should prefer the "ember-cli-babel" setting', function() {
+        expect(this.addon.shouldIncludePolyfill()).to.be.true;
+      });
+
+      it('should print deprecation message exactly once', function() {
+        this.addon.shouldIncludePolyfill();
+        this.addon.shouldIncludePolyfill();
+        this.addon.shouldIncludePolyfill();
+
+        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
+        });
+
+        expect(deprecationMessages).to.have.lengthOf(1);
+      });
+    });
   });
 
   describe('_shouldCompileModules()', function() {
@@ -221,6 +246,31 @@ describe('ember-cli-babel', function() {
         });
 
         expect(deprecationMessages).to.have.lengthOf(0);
+      });
+    });
+
+    describe('with ember-cli-babel.compileModules = true and babel.compileModules = false', function() {
+      beforeEach(function() {
+        this.addonOptions = {
+          'babel': { compileModules: false },
+          'ember-cli-babel': { compileModules: true },
+        };
+      });
+
+      it('should prefer the "ember-cli-babel" setting', function() {
+        expect(this.addon._shouldCompileModules(this.addonOptions)).to.be.true;
+      });
+
+      it('should print deprecation message exactly once', function() {
+        this.addon._shouldCompileModules(this.addonOptions);
+        this.addon._shouldCompileModules(this.addonOptions);
+        this.addon._shouldCompileModules(this.addonOptions);
+
+        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+          return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
+        });
+
+        expect(deprecationMessages).to.have.lengthOf(1);
       });
     });
   });
