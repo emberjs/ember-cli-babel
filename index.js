@@ -41,6 +41,8 @@ module.exports = {
       babelOptions && 'includePolyfill' in babelOptions) {
 
       this._polyfillDeprecationPrinted = true;
+
+      // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
       this.ui.writeDeprecateLine(
         'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
     }
@@ -102,6 +104,8 @@ module.exports = {
       babelOptions && 'compileModules' in babelOptions) {
 
       this._modulesDeprecationPrinted = true;
+
+      // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
       this.ui.writeDeprecateLine(
         'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
     }
