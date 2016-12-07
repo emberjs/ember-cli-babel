@@ -169,12 +169,13 @@ module.exports = {
     delete options.includePolyfill;
     delete options.compileModules;
 
+    var blacklistModulesIndex = options.blacklist.indexOf('es6.modules');
     if (compileModules) {
-      if (options.blacklist.indexOf('es6.modules') >= 0) {
-        options.blacklist.splice(options.blacklist.indexOf('es6.modules'), 1);
+      if (blacklistModulesIndex >= 0) {
+        options.blacklist.splice(blacklistModulesIndex, 1);
       }
     } else {
-      if (options.blacklist.indexOf('es6.modules') < 0) {
+      if (blacklistModulesIndex < 0) {
         options.blacklist.push('es6.modules');
       }
     }
