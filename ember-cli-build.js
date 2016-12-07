@@ -15,7 +15,7 @@ module.exports = function(defaults) {
   /* end hack */
 
   var app = new EmberApp(defaults, {
-    babel: {
+    'ember-cli-babel': {
       includePolyfill: true
     }
   });

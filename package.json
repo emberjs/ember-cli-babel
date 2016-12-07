@@ -30,7 +30,7 @@
     "build": "ember build",
     "jshint": "jshint",
     "start": "ember server",
-    "test": "ember test"
+    "test": "mocha node-tests && ember test"
   },
   "dependencies": {
     "broccoli-babel-transpiler": "^5.6.0",
@@ -40,6 +40,9 @@
     "resolve": "^1.1.2"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "console-ui": "^1.0.2",
+    "core-object": "^2.0.6",
     "ember-cli": "^2.6.2",
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-htmlbars": "^1.0.8",
@@ -49,7 +52,8 @@
     "ember-export-application-global": "^1.0.3",
     "ember-load-initializers": "0.5.1",
     "ember-resolver": "^2.1.0",
-    "loader.js": "4.0.11"
+    "loader.js": "4.0.11",
+    "mocha": "^3.2.0"
   },
   "engines": {
     "node": ">= 0.12"
