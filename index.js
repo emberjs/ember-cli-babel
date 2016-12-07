@@ -16,7 +16,7 @@ module.exports = {
     var checker = new VersionChecker(this);
     var dep = checker.for('ember-cli', 'npm');
 
-    this._shouldSetupRegistryInIncluded = !dep.satisfies('>=0.2.0');
+    this._shouldSetupRegistryInIncluded = dep.lt('0.2.0-alpha.1');
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
@@ -70,7 +70,7 @@ module.exports = {
     if (name !== 'vendor') { return; }
     if (!this.shouldIncludePolyfill()) { return; }
 
-    // Find babel-core's browser polyfill and use its directory as our vendor tree
+    // Find babel-core's browser polyfill and use its directory asI'm our vendor tree
     var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
     var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
     var Funnel = require('broccoli-funnel');
