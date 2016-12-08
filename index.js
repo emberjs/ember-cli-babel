@@ -4,7 +4,6 @@
 var VersionChecker = require('ember-cli-version-checker');
 var clone     = require('clone');
 var path      = require('path');
-var resolve   = require('resolve');
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -56,10 +55,12 @@ module.exports = {
   },
 
   importPolyfill: function(app) {
+    var polyfillPath = 'vendor/babel-polyfill/polyfill.js';
+
     if (this.import) {  // support for ember-cli >= 2.7
-      this.import('vendor/browser-polyfill.js', { prepend: true });
+      this.import(polyfillPath, { prepend: true });
     } else if (app.import) { // support ember-cli < 2.7
-      app.import('vendor/browser-polyfill.js', { prepend: true });
+      app.import(polyfillPath, { prepend: true });
     } else {
       console.warn('Please run: ember install ember-cli-import-polyfill');
     }
@@ -72,11 +73,10 @@ module.exports = {
     var UnwatchedDir = require('broccoli-source').UnwatchedDir;
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
-    var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
+    var polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
 
     return new Funnel(new UnwatchedDir(polyfillDir), {
-      files: ['browser-polyfill.js']
+      destDir: 'babel-polyfill'
     });
   },
 
