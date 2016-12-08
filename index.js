@@ -61,11 +61,11 @@ module.exports = {
     } else if (app.import) { // support ember-cli < 2.7
       app.import('vendor/browser-polyfill.js', { prepend: true });
     } else {
-      console.warn('Please run: ember install ember-cli-import-polyfill')
+      console.warn('Please run: ember install ember-cli-import-polyfill');
     }
   },
 
-  treeForVendor: function(name) {
+  treeForVendor: function() {
     if (!this.shouldIncludePolyfill()) { return; }
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
