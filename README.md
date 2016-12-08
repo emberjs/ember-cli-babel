@@ -23,7 +23,7 @@ If you need to customize the way that Babel transforms your code, you can do it 
 found [here](https://github.com/babel/babel.github.io/blob/5.0.0/docs/usage/options.md). Example:
 
 ```js
-// Brocfile.js
+// ember-cli-build.js
 
 var app = new EmberApp({
   babel: {
