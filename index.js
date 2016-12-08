@@ -65,8 +65,7 @@ module.exports = {
     }
   },
 
-  treeFor: function(name) {
-    if (name !== 'vendor') { return; }
+  treeForVendor: function(name) {
     if (!this.shouldIncludePolyfill()) { return; }
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
