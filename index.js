@@ -16,7 +16,6 @@ module.exports = {
     var checker = new VersionChecker(this);
     var dep = checker.for('ember-cli', 'npm');
 
-    this._shouldSetupRegistryInIncluded = dep.lt('0.2.0-alpha.1');
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
@@ -82,10 +81,6 @@ module.exports = {
   included: function(app) {
     this._super.included.apply(this, arguments);
     this.app = app;
-
-    if (this._shouldSetupRegistryInIncluded) {
-      this.setupPreprocessorRegistry('parent', app.registry);
-    }
 
     if (this.shouldIncludePolyfill()) {
       this.importPolyfill(app);
