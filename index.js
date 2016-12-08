@@ -68,11 +68,14 @@ module.exports = {
   treeForVendor: function() {
     if (!this.shouldIncludePolyfill()) { return; }
 
+    var Funnel = require('broccoli-funnel');
+    var UnwatchedDir = require('broccoli-source').UnwatchedDir;
+
     // Find babel-core's browser polyfill and use its directory as our vendor tree
     var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
     var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
-    var Funnel = require('broccoli-funnel');
-    return new Funnel(polyfillDir, {
+
+    return new Funnel(new UnwatchedDir(polyfillDir), {
       files: ['browser-polyfill.js']
     });
   },
