@@ -120,13 +120,15 @@ module.exports = {
   },
 
   _getBabelOptions: function() {
+    var parentName = typeof this.parent.name === "function" ? this.parent.name() : this.parent.name;
     var addonOptions = this._getAddonOptions();
     var options = clone(addonOptions.babel || {});
 
     var compileModules = this._shouldCompileModules(addonOptions);
 
     var ui = this.ui;
-
+    
+    options.annotation = 'Babel: ' + parentName;
     // pass a console object that wraps the addon's `UI` object
     options.console = {
       log: function(message) {
