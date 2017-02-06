@@ -33,7 +33,7 @@
     "test": "mocha node-tests && ember test"
   },
   "dependencies": {
-    "broccoli-babel-transpiler": "^5.6.0",
+    "broccoli-babel-transpiler": "^5.6.2",
     "broccoli-funnel": "^1.0.0",
     "clone": "^2.0.0",
     "ember-cli-version-checker": "^1.0.2",
