@@ -120,7 +120,7 @@ module.exports = {
   },
 
   _getBabelOptions: function() {
-    var parentName = typeof this.parent.name === "function" ? this.parent.name() : this.parent.name;
+    var parentName = typeof this.parent !== 'undefined' ? (typeof this.parent.name === 'function' ? this.parent.name() : this.parent.name) : 'unknown';
     var addonOptions = this._getAddonOptions();
     var options = clone(addonOptions.babel || {});
 
