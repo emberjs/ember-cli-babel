@@ -120,14 +120,23 @@ module.exports = {
   },
 
   _getBabelOptions: function() {
-    var parentName = typeof this.parent !== 'undefined' ? (typeof this.parent.name === 'function' ? this.parent.name() : this.parent.name) : 'unknown';
+    var parentName;
+
+    if (this.parent) {
+      if (typeof this.parent.name === 'function') {
+        parentName = this.parent.name();
+      } else {
+        parentName = this.parent.name;
+      }
+    }
+
     var addonOptions = this._getAddonOptions();
     var options = clone(addonOptions.babel || {});
 
     var compileModules = this._shouldCompileModules(addonOptions);
 
     var ui = this.ui;
-    
+
     options.annotation = 'Babel: ' + parentName;
     // pass a console object that wraps the addon's `UI` object
     options.console = {
