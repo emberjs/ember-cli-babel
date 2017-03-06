@@ -1,9 +1,9 @@
 /* jshint node: true */
 'use strict';
 
-var VersionChecker = require('ember-cli-version-checker');
-var clone     = require('clone');
-var path      = require('path');
+const VersionChecker = require('ember-cli-version-checker');
+const clone = require('clone');
+const path = require('path');
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -12,14 +12,14 @@ module.exports = {
   init: function() {
     this._super.init && this._super.init.apply(this, arguments);
 
-    var checker = new VersionChecker(this);
-    var dep = checker.for('ember-cli', 'npm');
+    let checker = new VersionChecker(this);
+    let dep = checker.for('ember-cli', 'npm');
 
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
-    var addon = this;
+    let addon = this;
 
     registry.add('js', {
       name: 'ember-cli-babel',
@@ -31,9 +31,9 @@ module.exports = {
   },
 
   shouldIncludePolyfill: function() {
-    var addonOptions = this._getAddonOptions();
-    var babelOptions = addonOptions.babel;
-    var customOptions = addonOptions['ember-cli-babel'];
+    let addonOptions = this._getAddonOptions();
+    let babelOptions = addonOptions.babel;
+    let customOptions = addonOptions['ember-cli-babel'];
 
     if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted &&
       babelOptions && 'includePolyfill' in babelOptions) {
@@ -55,7 +55,7 @@ module.exports = {
   },
 
   importPolyfill: function(app) {
-    var polyfillPath = 'vendor/babel-polyfill/polyfill.js';
+    let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
 
     if (this.import) {  // support for ember-cli >= 2.7
       this.import(polyfillPath, { prepend: true });
@@ -69,11 +69,11 @@ module.exports = {
   treeForVendor: function() {
     if (!this.shouldIncludePolyfill()) { return; }
 
-    var Funnel = require('broccoli-funnel');
-    var UnwatchedDir = require('broccoli-source').UnwatchedDir;
+    const Funnel = require('broccoli-funnel');
+    const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    var polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
+    let polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
 
     return new Funnel(new UnwatchedDir(polyfillDir), {
       destDir: 'babel-polyfill'
@@ -94,7 +94,7 @@ module.exports = {
   },
 
   _getBabelOptions: function() {
-    var parentName;
+    let parentName;
 
     if (this.parent) {
       if (typeof this.parent.name === 'function') {
@@ -104,12 +104,12 @@ module.exports = {
       }
     }
 
-    var addonOptions = this._getAddonOptions();
-    var options = clone(addonOptions.babel || {});
+    let addonOptions = this._getAddonOptions();
+    let options = clone(addonOptions.babel || {});
 
     let targets = this.project && this.project.targets;
     if (targets) {
-      var presetEnv = require('babel-preset-env').default;
+      const presetEnv = require('babel-preset-env').default;
       options.plugins = presetEnv(null, {
         browsers: targets.browsers,
         modules: 'amd',
