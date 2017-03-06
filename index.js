@@ -107,20 +107,12 @@ module.exports = {
     let addonOptions = this._getAddonOptions();
     let options = clone(addonOptions.babel || {});
 
-    let targets = this.project && this.project.targets;
-    if (targets) {
-      const presetEnv = require('babel-preset-env').default;
-      options.plugins = presetEnv(null, {
-        browsers: targets.browsers,
-        modules: 'amd',
-      }).plugins;
-    } else {
-      options.presets = require('babel-preset-latest').default(null, {
-        es2015: {
-          modules: 'amd',
-        }
-      });
-    }
+    let browsers = this.project && this.project.targets && this.project.targets.browsers;
+    const presetEnv = require('babel-preset-env').default;
+    options.plugins = presetEnv(null, {
+      browsers,
+      modules: 'amd',
+    }).plugins;
 
     options.moduleIds = true;
     options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
