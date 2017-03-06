@@ -107,6 +107,13 @@ module.exports = {
     let addonOptions = this._getAddonOptions();
     let options = clone(addonOptions.babel || {});
 
+    if (options.modules) {
+      // using babel@5 configuration with babel@6
+      // without overriding here we would trigger
+      // an error
+      options = {};
+    }
+
     let browsers = this.project && this.project.targets && this.project.targets.browsers;
     const presetEnv = require('babel-preset-env').default;
     options.plugins = presetEnv(null, {
