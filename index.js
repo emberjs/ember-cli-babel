@@ -114,13 +114,13 @@ module.exports = {
       options = {};
     }
 
-    let browsers = this.project && this.project.targets && this.project.targets.browsers;
-    const presetEnv = require('babel-preset-env').default;
-    options.plugins = presetEnv(null, {
-      browsers,
-      modules: 'amd',
-    }).plugins;
+    let userPlugins = options.plugins || [];
 
+    options.plugins = [].concat(
+      userPlugins,
+      this._getModulesPlugin(),
+      this._getPresetEnvPlugins()
+    );
     options.moduleIds = true;
     options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
 
@@ -128,4 +128,22 @@ module.exports = {
 
     return options;
   },
+
+  _getPresetEnvPlugins() {
+    const presetEnv = require('babel-preset-env').default;
+    let browsers = this.project && this.project.targets && this.project.targets.browsers;
+    let presetEnvPlugins = presetEnv(null, {
+      browsers,
+      modules: false,
+    }).plugins;
+
+    return presetEnvPlugins;
+  },
+
+  _getModulesPlugin() {
+    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
+    return [
+      [ModulesTransform, { noInterop: true }],
+    ];
+  }
 };
