@@ -142,6 +142,13 @@ module.exports = {
       modules: false,
     }).plugins;
 
+    presetEnvPlugins.forEach(function(pluginArray) {
+      let Plugin = pluginArray[0];
+      if (!Plugin.baseDir) {
+        Plugin.baseDir = () => __dirname;
+      }
+    });
+
     return presetEnvPlugins;
   },
 
@@ -154,6 +161,8 @@ module.exports = {
     // const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
 
     const ModulesTransform = require('rwjblue-custom-babel-6-amd-modules-no-interop');
+    ModulesTransform.baseDir = () => __dirname;
+
     return [
       [ModulesTransform, { noInterop: true }],
     ];
