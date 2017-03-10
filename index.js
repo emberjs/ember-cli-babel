@@ -114,15 +114,20 @@ module.exports = {
       options = {};
     }
 
+    let shouldCompileModules = this._shouldCompileModules();
+
     let userPlugins = options.plugins || [];
 
     options.plugins = [].concat(
       userPlugins,
-      this._getModulesPlugin(),
+      shouldCompileModules && this._getModulesPlugin(),
       this._getPresetEnvPlugins()
-    );
+    ).filter(Boolean);
     options.moduleIds = true;
-    options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
+
+    if (shouldCompileModules) {
+      options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
+    }
 
     options.highlightCode = false;
 
@@ -152,5 +157,12 @@ module.exports = {
     return [
       [ModulesTransform, { noInterop: true }],
     ];
+  },
+
+  _shouldCompileModules() {
+    const VersionChecker = require('ember-cli-version-checker');
+    let checker = new VersionChecker(this);
+
+    return checker.for('ember-cli', 'npm').gt('2.12.0-alpha.1');
   }
 };
