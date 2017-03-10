@@ -141,7 +141,14 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
+    // using custom built modules package until version of
+    // babel@6 is released that includes changes from
+    // https://github.com/babel/babel/pull/5422
+    // replace with the following once that is released:
+    //
+    // const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
+
+    const ModulesTransform = require('rwjblue-custom-babel-6-amd-modules-no-interop');
     return [
       [ModulesTransform, { noInterop: true }],
     ];
