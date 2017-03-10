@@ -169,9 +169,22 @@ module.exports = {
   },
 
   _shouldCompileModules() {
-    const VersionChecker = require('ember-cli-version-checker');
-    let checker = new VersionChecker(this);
+    let addonOptions = this._getAddonOptions();
 
-    return checker.for('ember-cli', 'npm').gt('2.12.0-alpha.1');
+    if (addonOptions.babel && 'compileModules' in addonOptions.babel) {
+      if (this._shouldShowBabelDeprecations) {
+        // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
+        this.ui.writeDeprecateLine('Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+      }
+
+      return addonOptions.babel.compileModules;
+    } else if (addonOptions['ember-cli-babel'] && 'compileModules' in addonOptions['ember-cli-babel']) {
+      return addonOptions['ember-cli-babel'].compileModules;
+    } else {
+      const VersionChecker = require('ember-cli-version-checker');
+      let checker = new VersionChecker(this);
+
+      return checker.for('ember-cli', 'npm').gt('2.12.0-alpha.1');
+    }
   }
 };
