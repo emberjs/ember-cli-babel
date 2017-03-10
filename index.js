@@ -89,6 +89,13 @@ module.exports = {
     }
   },
 
+  isPluginRequired(plugin) {
+    const isPluginRequired = require('babel-preset-env').isPluginRequired;
+    let targets = this._getTargets();
+
+    return isPluginRequired(targets, plugin);
+  },
+
   _getAddonOptions: function() {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
@@ -136,7 +143,8 @@ module.exports = {
 
   _getPresetEnvPlugins() {
     const presetEnv = require('babel-preset-env').default;
-    let browsers = this.project && this.project.targets && this.project.targets.browsers;
+    let targets = this._getTargets();
+    let browsers = targets && targets.browsers;
     let presetEnvPlugins = presetEnv(null, {
       browsers,
       modules: false,
@@ -150,6 +158,10 @@ module.exports = {
     });
 
     return presetEnvPlugins;
+  },
+
+  _getTargets() {
+    return this.project && this.project.targets && this.project.targets.browsers;
   },
 
   _getModulesPlugin() {
