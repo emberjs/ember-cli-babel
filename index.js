@@ -30,7 +30,7 @@ module.exports = {
     });
   },
 
-  shouldIncludePolyfill: function() {
+  _shouldIncludePolyfill: function() {
     let addonOptions = this._getAddonOptions();
     let babelOptions = addonOptions.babel;
     let customOptions = addonOptions['ember-cli-babel'];
@@ -54,7 +54,7 @@ module.exports = {
     }
   },
 
-  importPolyfill: function(app) {
+  _importPolyfill: function(app) {
     let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
 
     if (this.import) {  // support for ember-cli >= 2.7
@@ -67,7 +67,7 @@ module.exports = {
   },
 
   treeForVendor: function() {
-    if (!this.shouldIncludePolyfill()) { return; }
+    if (!this._shouldIncludePolyfill()) { return; }
 
     const Funnel = require('broccoli-funnel');
     const UnwatchedDir = require('broccoli-source').UnwatchedDir;
@@ -84,8 +84,8 @@ module.exports = {
     this._super.included.apply(this, arguments);
     this.app = app;
 
-    if (this.shouldIncludePolyfill()) {
-      this.importPolyfill(app);
+    if (this._shouldIncludePolyfill()) {
+      this._importPolyfill(app);
     }
   },
 
