@@ -5,6 +5,16 @@ const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
 
+function addBaseDir(Plugin) {
+  let type = typeof Plugin;
+
+  if (type === 'function' && !Plugin.baseDir) {
+    Plugin.baseDir = () => __dirname;
+  } else if (type === 'object' && Plugin !== null && Plugin.default) {
+    addBaseDir(Plugin.default);
+  }
+}
+
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
@@ -152,9 +162,7 @@ module.exports = {
 
     presetEnvPlugins.forEach(function(pluginArray) {
       let Plugin = pluginArray[0];
-      if (!Plugin.baseDir) {
-        Plugin.baseDir = () => __dirname;
-      }
+      addBaseDir(Plugin);
     });
 
     return presetEnvPlugins;
@@ -173,7 +181,7 @@ module.exports = {
     // const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
 
     const ModulesTransform = require('rwjblue-custom-babel-6-amd-modules-no-interop');
-    ModulesTransform.baseDir = () => __dirname;
+    addBaseDir(ModulesTransform);
 
     return [
       [ModulesTransform, { noInterop: true }],
