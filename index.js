@@ -128,7 +128,7 @@ module.exports = {
       // using babel@5 configuration with babel@6
       // without overriding here we would trigger
       // an error
-      options = {};
+      options = { plugins: options.plugins };
     }
 
     let shouldCompileModules = this._shouldCompileModules();
