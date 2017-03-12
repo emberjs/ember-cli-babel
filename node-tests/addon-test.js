@@ -1,9 +1,11 @@
-var expect = require('chai').expect;
-var MockUI = require('console-ui/mock');
-var CoreObject = require('core-object');
-var AddonMixin = require('../index');
+'use strict';
 
-var Addon = CoreObject.extend(AddonMixin);
+const expect = require('chai').expect;
+const MockUI = require('console-ui/mock');
+const CoreObject = require('core-object');
+const AddonMixin = require('../index');
+
+let Addon = CoreObject.extend(AddonMixin);
 
 describe('ember-cli-babel', function() {
   beforeEach(function() {
@@ -48,7 +50,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -70,7 +72,7 @@ describe('ember-cli-babel', function() {
         this.addon._shouldIncludePolyfill();
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -92,7 +94,7 @@ describe('ember-cli-babel', function() {
         this.addon._shouldIncludePolyfill();
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -112,7 +114,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -132,7 +134,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -157,7 +159,7 @@ describe('ember-cli-babel', function() {
         this.addon._shouldIncludePolyfill();
         this.addon._shouldIncludePolyfill();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
         });
 
@@ -181,7 +183,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldCompileModules();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
         });
 
@@ -203,7 +205,7 @@ describe('ember-cli-babel', function() {
         this.addon._shouldCompileModules();
         this.addon._shouldCompileModules();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
         });
 
@@ -225,7 +227,7 @@ describe('ember-cli-babel', function() {
         this.addon._shouldCompileModules();
         this.addon._shouldCompileModules();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
         });
 
@@ -249,7 +251,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldCompileModules();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
         });
 
@@ -273,7 +275,7 @@ describe('ember-cli-babel', function() {
       it('should not print deprecation messages', function() {
         this.addon._shouldCompileModules();
 
-        var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
         });
 
