@@ -308,6 +308,8 @@ describe('ember-cli-babel', function() {
   });
 
   describe('_getBabelOptions', function() {
+    this.timeout(20000);
+
     it('does not mutate addonOptions.babel', function() {
       let babelOptions = { blah: true };
       this.addon.parent = {
