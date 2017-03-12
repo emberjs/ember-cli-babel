@@ -124,11 +124,26 @@ module.exports = {
     let addonOptions = this._getAddonOptions();
     let options = clone(addonOptions.babel || {});
 
+    // used only to support using ember-cli-babel@6 at the
+    // top level (app or addon during development) on ember-cli
+    // older than 2.13
+    //
+    // without this, we mutate the same shared `options.babel.plugins`
+    // that is used to transpile internally (via `_prunedBabelOptions`
+    // in older ember-cli versions)
+    let babel6Options = clone(addonOptions.babel6 || {});
+
+    // options.modules is set only for things assuming babel@5 usage
     if (options.modules) {
       // using babel@5 configuration with babel@6
       // without overriding here we would trigger
       // an error
-      options = { plugins: options.plugins };
+      options = {
+        plugins: [].concat(
+          babel6Options.plugins,
+          options.plugins
+        ).filter(Boolean)
+      };
     }
 
     let shouldCompileModules = this._shouldCompileModules();
