@@ -8,12 +8,34 @@ var Addon = CoreObject.extend(AddonMixin);
 describe('ember-cli-babel', function() {
   beforeEach(function() {
     this.ui = new MockUI();
+    let project = { root: __dirname };
     this.addon = new Addon({
-      project: {
-        root: __dirname,
-      },
-      parent: {},
+      project,
+      parent: project,
       ui: this.ui,
+    });
+  });
+
+  describe('_getAddonOptions', function() {
+    it('uses parent options if present', function() {
+      let mockOptions = this.addon.parent.options = {};
+
+      expect(this.addon._getAddonOptions()).to.be.equal(mockOptions);
+    });
+
+    it('uses app options if present', function() {
+      let mockOptions = {};
+      this.addon.app = { options: mockOptions };
+
+      expect(this.addon._getAddonOptions()).to.be.equal(mockOptions);
+    });
+
+    it('parent options win over app options', function() {
+      let mockParentOptions = this.addon.parent.options = {};
+      let mockAppOptions = {};
+      this.addon.app = { options: mockAppOptions };
+
+      expect(this.addon._getAddonOptions()).to.be.equal(mockParentOptions);
     });
   });
 
