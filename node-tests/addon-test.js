@@ -296,4 +296,74 @@ describe('ember-cli-babel', function() {
       });
     });
   });
+
+  describe('_getBabelOptions', function() {
+    it('does not mutate addonOptions.babel', function() {
+      let babelOptions = { blah: true };
+      this.addon.parent = {
+        options: {
+          babel: babelOptions,
+        },
+      };
+
+      let result = this.addon._getBabelOptions();
+      expect(result).to.not.equal(babelOptions);
+    });
+
+    it('includes user plugins in parent.options.babel.plugins', function() {
+      let plugin = {};
+      this.addon.parent = {
+        options: {
+          babel: {
+            plugins: [ plugin ]
+          },
+        },
+      };
+
+      let result = this.addon._getBabelOptions();
+      expect(result.plugins).to.include(plugin);
+    });
+
+    it('includes user plugins in parent.options.babel6.plugins', function() {
+      let plugin = {};
+      this.addon.parent = {
+        options: {
+          babel6: {
+            plugins: [ plugin ]
+          },
+        },
+      };
+
+      let result = this.addon._getBabelOptions();
+      expect(result.plugins).to.include(plugin);
+    });
+
+    it('user plugins are before preset-env plugins', function() {
+      let plugin = function Plugin() {};
+      this.addon.parent = {
+        options: {
+          babel: {
+            plugins: [ plugin ]
+          },
+        },
+      };
+
+      let result = this.addon._getBabelOptions();
+      expect(result.plugins[0]).to.equal(plugin);
+    });
+
+    it('includes resolveModuleSource if compiling modules', function() {
+      this.addon._shouldCompileModules = () => true;
+
+      let result = this.addon._getBabelOptions();
+      expect(result.resolveModuleSource).to.equal(require('amd-name-resolver').moduleResolve);
+    });
+
+    it('does not include resolveModuleSource when not compiling modules', function() {
+      this.addon._shouldCompileModules = () => false;
+
+      let result = this.addon._getBabelOptions();
+      expect(result.resolveModuleSource).to.equal(undefined);
+    });
+  });
 });

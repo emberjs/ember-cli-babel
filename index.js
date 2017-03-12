@@ -148,7 +148,7 @@ module.exports = {
 
     let shouldCompileModules = this._shouldCompileModules();
 
-    let userPlugins = options.plugins || [];
+    let userPlugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
 
     options.plugins = [].concat(
       userPlugins,
