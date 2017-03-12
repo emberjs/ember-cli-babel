@@ -176,8 +176,16 @@ describe('ember-cli-babel', function() {
     });
 
     describe('without any compileModules option set', function() {
-      it('should return false', function() {
+      it('should return false for ember-cli < 2.12', function() {
+        this.addon.emberCLIChecker = { gt() { return false; } };
+
         expect(this.addon._shouldCompileModules()).to.be.false;
+      });
+
+      it('should return true for ember-cli > 2.12.0-alpha.1', function() {
+        this.addon.emberCLIChecker = { gt() { return true; } };
+
+        expect(this.addon._shouldCompileModules()).to.be.true;
       });
 
       it('should not print deprecation messages', function() {

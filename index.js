@@ -23,7 +23,7 @@ module.exports = {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
-    let dep = checker.for('ember-cli', 'npm');
+    let dep = this.emberCLIChecker = checker.for('ember-cli', 'npm');
 
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
@@ -217,10 +217,8 @@ module.exports = {
 
       return addonOptions.babel.compileModules;
     } else {
-      const VersionChecker = require('ember-cli-version-checker');
-      let checker = new VersionChecker(this);
-
-      return checker.for('ember-cli', 'npm').gt('2.12.0-alpha.1');
+      return this.emberCLIChecker.gt('2.12.0-alpha.1');
     }
-  }
+  },
+
 };
