@@ -1,10 +1,19 @@
 /* jshint node: true */
 'use strict';
 
-var VersionChecker = require('ember-cli-version-checker');
-var clone     = require('clone');
-var path      = require('path');
-var resolve   = require('resolve');
+const VersionChecker = require('ember-cli-version-checker');
+const clone = require('clone');
+const path = require('path');
+
+function addBaseDir(Plugin) {
+  let type = typeof Plugin;
+
+  if (type === 'function' && !Plugin.baseDir) {
+    Plugin.baseDir = () => __dirname;
+  } else if (type === 'object' && Plugin !== null && Plugin.default) {
+    addBaseDir(Plugin.default);
+  }
+}
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -13,15 +22,14 @@ module.exports = {
   init: function() {
     this._super.init && this._super.init.apply(this, arguments);
 
-    var checker = new VersionChecker(this);
-    var dep = checker.for('ember-cli', 'npm');
+    let checker = new VersionChecker(this);
+    let dep = this.emberCLIChecker = checker.for('ember-cli', 'npm');
 
-    this._shouldSetupRegistryInIncluded = dep.lt('0.2.0-alpha.1');
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
   setupPreprocessorRegistry: function(type, registry) {
-    var addon = this;
+    let addon = this;
 
     registry.add('js', {
       name: 'ember-cli-babel',
@@ -32,10 +40,10 @@ module.exports = {
     });
   },
 
-  shouldIncludePolyfill: function() {
-    var addonOptions = this._getAddonOptions();
-    var babelOptions = addonOptions.babel;
-    var customOptions = addonOptions['ember-cli-babel'];
+  _shouldIncludePolyfill: function() {
+    let addonOptions = this._getAddonOptions();
+    let babelOptions = addonOptions.babel;
+    let customOptions = addonOptions['ember-cli-babel'];
 
     if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted &&
       babelOptions && 'includePolyfill' in babelOptions) {
@@ -56,26 +64,29 @@ module.exports = {
     }
   },
 
-  importPolyfill: function(app) {
+  _importPolyfill: function(app) {
+    let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
+
     if (this.import) {  // support for ember-cli >= 2.7
-      this.import('vendor/browser-polyfill.js', { prepend: true });
+      this.import(polyfillPath, { prepend: true });
     } else if (app.import) { // support ember-cli < 2.7
-      app.import('vendor/browser-polyfill.js', { prepend: true });
+      app.import(polyfillPath, { prepend: true });
     } else {
-      console.warn('Please run: ember install ember-cli-import-polyfill')
+      console.warn('Please run: ember install ember-cli-import-polyfill');
     }
   },
 
-  treeFor: function(name) {
-    if (name !== 'vendor') { return; }
-    if (!this.shouldIncludePolyfill()) { return; }
+  treeForVendor: function() {
+    if (!this._shouldIncludePolyfill()) { return; }
+
+    const Funnel = require('broccoli-funnel');
+    const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    var transpilerRoot = path.dirname(resolve.sync('broccoli-babel-transpiler'));
-    var polyfillDir = path.dirname(resolve.sync('babel-core/browser-polyfill', { basedir: transpilerRoot }));
-    var Funnel = require('broccoli-funnel');
-    return new Funnel(polyfillDir, {
-      files: ['browser-polyfill.js']
+    let polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
+
+    return new Funnel(new UnwatchedDir(polyfillDir), {
+      destDir: 'babel-polyfill'
     });
   },
 
@@ -83,44 +94,24 @@ module.exports = {
     this._super.included.apply(this, arguments);
     this.app = app;
 
-    if (this._shouldSetupRegistryInIncluded) {
-      this.setupPreprocessorRegistry('parent', app.registry);
+    if (this._shouldIncludePolyfill()) {
+      this._importPolyfill(app);
     }
+  },
 
-    if (this.shouldIncludePolyfill()) {
-      this.importPolyfill(app);
-    }
+  isPluginRequired(plugin) {
+    const isPluginRequired = require('babel-preset-env').isPluginRequired;
+    let targets = this._getTargets();
+
+    return isPluginRequired(targets, plugin);
   },
 
   _getAddonOptions: function() {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _shouldCompileModules: function(addonOptions) {
-    var babelOptions = addonOptions.babel;
-    var customOptions = addonOptions['ember-cli-babel'];
-
-    if (this._shouldShowBabelDeprecations && !this._modulesDeprecationPrinted &&
-      babelOptions && 'compileModules' in babelOptions) {
-
-      this._modulesDeprecationPrinted = true;
-
-      // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
-      this.ui.writeDeprecateLine(
-        'Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-    }
-
-    if (customOptions && 'compileModules' in customOptions) {
-      return customOptions.compileModules === true;
-    } else if (babelOptions && 'compileModules' in babelOptions) {
-      return babelOptions.compileModules === true;
-    } else {
-      return false;
-    }
-  },
-
   _getBabelOptions: function() {
-    var parentName;
+    let parentName;
 
     if (this.parent) {
       if (typeof this.parent.name === 'function') {
@@ -130,71 +121,98 @@ module.exports = {
       }
     }
 
-    var addonOptions = this._getAddonOptions();
-    var options = clone(addonOptions.babel || {});
+    let addonOptions = this._getAddonOptions();
+    let options = clone(addonOptions.babel || {});
 
-    var compileModules = this._shouldCompileModules(addonOptions);
+    // used only to support using ember-cli-babel@6 at the
+    // top level (app or addon during development) on ember-cli
+    // older than 2.13
+    //
+    // without this, we mutate the same shared `options.babel.plugins`
+    // that is used to transpile internally (via `_prunedBabelOptions`
+    // in older ember-cli versions)
+    let babel6Options = clone(addonOptions.babel6 || {});
 
-    var ui = this.ui;
-
-    options.annotation = 'Babel: ' + parentName;
-    // pass a console object that wraps the addon's `UI` object
-    options.console = {
-      log: function(message) {
-        // fallback needed for support of ember-cli < 2.2.0
-        if (ui.writeInfoLine) {
-          ui.writeInfoLine(message);
-        } else {
-          ui.writeLine(message, 'INFO');
-        }
-      },
-
-      warn: function(message) {
-        // fallback needed for support of ember-cli < 2.2.0
-        if (ui.writeWarnLine) {
-          ui.writeWarnLine(message);
-        } else {
-          ui.writeLine(message, 'WARN');
-        }
-      },
-
-      error: function(message) {
-        // fallback needed for support of ember-cli < 2.2.0
-        if (ui.writeError) {
-          ui.writeError(message);
-        } else {
-          ui.writeLine(message, 'ERROR');
-        }
-      }
-    };
-
-    // Ensure modules aren't compiled unless explicitly set to compile
-    options.blacklist = options.blacklist || ['es6.modules'];
-
-    // do not enable non-standard transforms
-    if (!('nonStandard' in options)) {
-      options.nonStandard = false;
+    // options.modules is set only for things assuming babel@5 usage
+    if (options.modules) {
+      // using babel@5 configuration with babel@6
+      // without overriding here we would trigger
+      // an error
+      options = {
+        plugins: [].concat(
+          babel6Options.plugins,
+          options.plugins
+        ).filter(Boolean)
+      };
     }
 
-    // Remove custom options from `options` hash that is passed to Babel
-    delete options.includePolyfill;
-    delete options.compileModules;
+    let shouldCompileModules = this._shouldCompileModules();
 
-    var blacklistModulesIndex = options.blacklist.indexOf('es6.modules');
-    if (compileModules) {
-      if (blacklistModulesIndex >= 0) {
-        options.blacklist.splice(blacklistModulesIndex, 1);
-      }
-    } else {
-      if (blacklistModulesIndex < 0) {
-        options.blacklist.push('es6.modules');
-      }
+    let userPlugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
+
+    options.plugins = [].concat(
+      userPlugins,
+      shouldCompileModules && this._getModulesPlugin(),
+      this._getPresetEnvPlugins()
+    ).filter(Boolean);
+    options.moduleIds = true;
+
+    if (shouldCompileModules) {
+      options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
     }
 
-    // Ember-CLI inserts its own 'use strict' directive
-    options.blacklist.push('useStrict');
     options.highlightCode = false;
 
     return options;
   },
+
+  _getPresetEnvPlugins() {
+    const presetEnv = require('babel-preset-env').default;
+    let targets = this._getTargets();
+    let browsers = targets && targets.browsers;
+    let presetEnvPlugins = presetEnv(null, {
+      browsers,
+      modules: false,
+    }).plugins;
+
+    presetEnvPlugins.forEach(function(pluginArray) {
+      let Plugin = pluginArray[0];
+      addBaseDir(Plugin);
+    });
+
+    return presetEnvPlugins;
+  },
+
+  _getTargets() {
+    return this.project && this.project.targets && this.project.targets.browsers;
+  },
+
+  _getModulesPlugin() {
+    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
+
+    addBaseDir(ModulesTransform);
+
+    return [
+      [ModulesTransform, { noInterop: true }],
+    ];
+  },
+
+  _shouldCompileModules() {
+    let addonOptions = this._getAddonOptions();
+
+    if (addonOptions['ember-cli-babel'] && 'compileModules' in addonOptions['ember-cli-babel']) {
+      return addonOptions['ember-cli-babel'].compileModules;
+    } else if (addonOptions.babel && 'compileModules' in addonOptions.babel) {
+      if (this._shouldShowBabelDeprecations && !this._compileModulesDeprecationPrinted) {
+        this._compileModulesDeprecationPrinted = true;
+        // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
+        this.ui.writeDeprecateLine('Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
+      }
+
+      return addonOptions.babel.compileModules;
+    } else {
+      return this.emberCLIChecker.gt('2.12.0-alpha.1');
+    }
+  },
+
 };
