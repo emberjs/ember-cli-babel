@@ -378,4 +378,31 @@ describe('ember-cli-babel', function() {
       expect(result.resolveModuleSource).to.equal(undefined);
     });
   });
+
+  describe('isPluginRequired', function() {
+    it('returns true when no targets are specified', function() {
+      this.addon.project.targets = null;
+
+      let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
+      expect(pluginRequired).to.be.true;
+    });
+
+    it('returns true when targets require plugin', function() {
+      this.addon.project.targets = {
+        browsers: ['ie 9']
+      };
+
+      let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
+      expect(pluginRequired).to.be.true;
+    });
+
+    it('returns false when targets do not require plugin', function() {
+      this.addon.project.targets = {
+        browsers: ['last 2 chrome versions']
+      };
+
+      let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
+      expect(pluginRequired).to.be.false;
+    });
+  });
 });
