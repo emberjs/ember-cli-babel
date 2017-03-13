@@ -99,14 +99,16 @@ module.exports = {
     }
   },
 
-  isPluginRequired(plugin) {
-    const isPluginRequired = require('babel-preset-env').isPluginRequired;
+  isPluginRequired(pluginName) {
     let targets = this._getTargets();
 
     // if no targets are setup, assume that all plugins are required
     if (!targets) { return true; }
 
-    return isPluginRequired(targets, plugin);
+    const isPluginRequired = require('babel-preset-env').isPluginRequired;
+    const pluginList = require('babel-preset-env/data/plugins');
+
+    return isPluginRequired(targets, pluginList[pluginName]);
   },
 
   _getAddonOptions: function() {
@@ -187,7 +189,7 @@ module.exports = {
   },
 
   _getTargets() {
-    return this.project && this.project.targets && this.project.targets.browsers;
+    return this.project && this.project.targets && this.project.targets;
   },
 
   _getModulesPlugin() {
