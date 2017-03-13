@@ -103,6 +103,9 @@ module.exports = {
     const isPluginRequired = require('babel-preset-env').isPluginRequired;
     let targets = this._getTargets();
 
+    // if no targets are setup, assume that all plugins are required
+    if (!targets) { return true; }
+
     return isPluginRequired(targets, plugin);
   },
 
