@@ -48,8 +48,10 @@ features that require the polyfill to work.
 To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel` options.
 
 ```js
-var app = new EmberApp({
-  babel: {
+// ember-cli-build.js
+
+var app = new EmberApp(defaults, {
+  'ember-cli-babel': {
     includePolyfill: true
   }
 });
