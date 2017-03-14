@@ -47,6 +47,14 @@ features that require the polyfill to work.
 
 To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel` options.
 
+```js
+var app = new EmberApp({
+  babel: {
+    includePolyfill: true
+  }
+});
+```
+
 ### Features
 
 Out of the box without a polyfill the following ES6 features are enabled:
