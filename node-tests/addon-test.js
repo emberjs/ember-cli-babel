@@ -336,6 +336,25 @@ describe('ember-cli-babel', function() {
       expect(result.plugins).to.include(plugin);
     });
 
+    it('includes postTransformPlugins after preset-env plugins', function() {
+      let plugin = {};
+      let pluginAfter = {};
+      this.addon.parent = {
+        options: {
+          babel: {
+            plugins: [ plugin ],
+            postTransformPlugins: [ pluginAfter ]
+          },
+        },
+      };
+
+      let result = this.addon._getBabelOptions();
+
+      expect(result.plugins).to.include(plugin);
+      expect(result.plugins.slice(-1)).to.deep.equal([pluginAfter]);
+      expect(result.postTransformPlugins).to.be.undefined;
+    });
+
     it('includes user plugins in parent.options.babel6.plugins', function() {
       let plugin = {};
       this.addon.parent = {
