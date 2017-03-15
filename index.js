@@ -154,11 +154,15 @@ module.exports = {
     let shouldCompileModules = this._shouldCompileModules();
 
     let userPlugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
+    let userPostTransformPlugins = [].concat(options.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
+
+    delete options.postTransformPlugins;
 
     options.plugins = [].concat(
       userPlugins,
       shouldCompileModules && this._getModulesPlugin(),
-      this._getPresetEnvPlugins()
+      this._getPresetEnvPlugins(),
+      userPostTransformPlugins
     ).filter(Boolean);
     options.moduleIds = true;
 
