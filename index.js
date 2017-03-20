@@ -115,7 +115,11 @@ module.exports = {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _getBabelOptions: function() {
+  _getProvidedBabelConfig: function() {
+    if (this._cachedProvidedConfig) {
+      return this._cachedProvidedConfig;
+    }
+
     let parentName;
 
     if (this.parent) {
@@ -151,12 +155,24 @@ module.exports = {
       };
     }
 
+    let plugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
+    let postTransformPlugins = [].concat(options.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
+
+    delete options.plugins;
+    delete options.postTransformPlugins;
+
+    this._cachedProvidedConfig =  { options, plugins, postTransformPlugins };
+
+    return this._cachedProvidedConfig;
+  },
+
+  _getBabelOptions() {
+    let providedConfig = this._getProvidedBabelConfig();
     let shouldCompileModules = this._shouldCompileModules();
 
-    let userPlugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
-    let userPostTransformPlugins = [].concat(options.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
-
-    delete options.postTransformPlugins;
+    let options = providedConfig.options;
+    let userPlugins = providedConfig.plugins;
+    let userPostTransformPlugins = providedConfig.postTransformPlugins;
 
     options.plugins = [].concat(
       userPlugins,
@@ -176,13 +192,17 @@ module.exports = {
   },
 
   _getPresetEnvPlugins() {
-    const presetEnv = require('babel-preset-env').default;
+    let providedConfig = this._getProvidedBabelConfig();
+    let options = providedConfig.options;
+
     let targets = this._getTargets();
     let browsers = targets && targets.browsers;
-    let presetEnvPlugins = presetEnv(null, {
-      browsers,
+    let presetOptions = Object.assign({}, options, {
       modules: false,
-    }).plugins;
+      browsers
+    });
+
+    let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
 
     presetEnvPlugins.forEach(function(pluginArray) {
       let Plugin = pluginArray[0];
@@ -190,6 +210,12 @@ module.exports = {
     });
 
     return presetEnvPlugins;
+  },
+
+  _presetEnv() {
+    const presetEnv = require('babel-preset-env').default;
+
+    return presetEnv.apply(null, arguments);
   },
 
   _getTargets() {

@@ -398,6 +398,27 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_getPresetEnvPlugins', function() {
+    it('passes options through to preset-env', function() {
+      let babelOptions = { loose: true };
+      this.addon.parent = {
+        options: {
+          babel: babelOptions,
+        },
+      };
+
+      let invokingOptions;
+      this.addon._presetEnv = function(context, options) {
+        invokingOptions = options;
+        return { plugins: [] };
+      };
+
+      this.addon._getPresetEnvPlugins();
+
+      expect(invokingOptions.loose).to.be.true;
+    });
+  });
+
   describe('isPluginRequired', function() {
     it('returns true when no targets are specified', function() {
       this.addon.project.targets = null;
