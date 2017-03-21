@@ -4,6 +4,8 @@ const expect = require('chai').expect;
 const MockUI = require('console-ui/mock');
 const CoreObject = require('core-object');
 const AddonMixin = require('../index');
+const path = require('path');
+const resolve = require('resolve');
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -411,6 +413,23 @@ describe('ember-cli-babel', function() {
   });
 
   describe('_getPresetEnvPlugins', function() {
+    function includesPlugin(haystack, needleName) {
+      let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
+      let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
+      let PluginModule = require(pluginPath);
+      let Needle = PluginModule.__esModule ? PluginModule.default : PluginModule;
+
+      for (let i = 0; i < haystack.length; i++) {
+        let Plugin = haystack[i][0];
+
+        if (Plugin === Needle) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     it('passes options through to preset-env', function() {
       let babelOptions = { loose: true };
       this.addon.parent = {
@@ -428,6 +447,28 @@ describe('ember-cli-babel', function() {
       this.addon._getPresetEnvPlugins();
 
       expect(invokingOptions.loose).to.be.true;
+    });
+
+    it('includes class transform when targets require plugin', function() {
+      this.addon.project.targets = {
+        browsers: ['ie 9']
+      };
+
+      let plugins = this.addon._getPresetEnvPlugins();
+      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
+
+      expect(found).to.be.true;
+    });
+
+    it('returns false when targets do not require plugin', function() {
+      this.addon.project.targets = {
+        browsers: ['last 2 chrome versions']
+      };
+
+      let plugins = this.addon._getPresetEnvPlugins();
+      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
+
+      expect(found).to.be.false;
     });
   });
 
