@@ -199,7 +199,7 @@ module.exports = {
     let browsers = targets && targets.browsers;
     let presetOptions = Object.assign({}, options, {
       modules: false,
-      browsers
+      targets: { browsers },
     });
 
     let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
