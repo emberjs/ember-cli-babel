@@ -131,7 +131,7 @@ module.exports = {
     }
 
     let addonOptions = this._getAddonOptions();
-    let options = clone(addonOptions.babel || {});
+    let babelOptions = clone(addonOptions.babel || {});
 
     // used only to support using ember-cli-babel@6 at the
     // top level (app or addon during development) on ember-cli
@@ -142,24 +142,22 @@ module.exports = {
     // in older ember-cli versions)
     let babel6Options = clone(addonOptions.babel6 || {});
 
+
+    let options;
     // options.modules is set only for things assuming babel@5 usage
-    if (options.modules) {
+    if (babelOptions.modules) {
       // using babel@5 configuration with babel@6
       // without overriding here we would trigger
       // an error
-      options = {
-        plugins: [].concat(
-          babel6Options.plugins,
-          options.plugins
-        ).filter(Boolean)
-      };
+      options = Object.assign({}, babel6Options);
+    } else {
+      // shallow merge both babelOptions and babel6Options
+      // (plugins/postTransformPlugins are handled separately)
+      options = Object.assign({}, babelOptions, babel6Options);
     }
 
-    let plugins = [].concat(options.plugins, babel6Options.plugins).filter(Boolean);
-    let postTransformPlugins = [].concat(options.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
-
-    delete options.plugins;
-    delete options.postTransformPlugins;
+    let plugins = [].concat(babelOptions.plugins, babel6Options.plugins).filter(Boolean);
+    let postTransformPlugins = [].concat(babelOptions.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
 
     this._cachedProvidedConfig =  { options, plugins, postTransformPlugins };
 

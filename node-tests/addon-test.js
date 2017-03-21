@@ -309,6 +309,33 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_getProvidedBabelConfig', function() {
+    it('does not mutate addonOptions.babel', function() {
+      let babelOptions = { blah: true };
+      this.addon.parent = {
+        options: {
+          babel: babelOptions,
+        },
+      };
+
+      let result = this.addon._getProvidedBabelConfig();
+      expect(result.options).to.not.equal(babelOptions);
+    });
+
+    it('includes options specified in parent.options.babel6', function() {
+      this.addon.parent = {
+        options: {
+          babel6: {
+            loose: true
+          },
+        },
+      };
+
+      let result = this.addon._getProvidedBabelConfig();
+      expect(result.options.loose).to.be.true;
+    });
+  });
+
   describe('_getBabelOptions', function() {
     this.timeout(20000);
 
@@ -322,18 +349,6 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon._getBabelOptions();
       expect(result.blah).to.be.undefined;
-    });
-
-    it('does not mutate addonOptions.babel', function() {
-      let babelOptions = { blah: true };
-      this.addon.parent = {
-        options: {
-          babel: babelOptions,
-        },
-      };
-
-      let result = this.addon._getBabelOptions();
-      expect(result).to.not.equal(babelOptions);
     });
 
     it('includes user plugins in parent.options.babel.plugins', function() {
@@ -430,11 +445,30 @@ describe('ember-cli-babel', function() {
       return false;
     }
 
-    it('passes options through to preset-env', function() {
+    it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };
       this.addon.parent = {
         options: {
           babel: babelOptions,
+        },
+      };
+
+      let invokingOptions;
+      this.addon._presetEnv = function(context, options) {
+        invokingOptions = options;
+        return { plugins: [] };
+      };
+
+      this.addon._getPresetEnvPlugins();
+
+      expect(invokingOptions.loose).to.be.true;
+    });
+
+    it('passes options.babel6 through to preset-env', function() {
+      let babelOptions = { loose: true };
+      this.addon.parent = {
+        options: {
+          babel6: babelOptions,
         },
       };
 
