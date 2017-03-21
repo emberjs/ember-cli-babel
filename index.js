@@ -170,7 +170,7 @@ module.exports = {
     let providedConfig = this._getProvidedBabelConfig();
     let shouldCompileModules = this._shouldCompileModules();
 
-    let options = providedConfig.options;
+    let options = {};
     let userPlugins = providedConfig.plugins;
     let userPostTransformPlugins = providedConfig.postTransformPlugins;
 
