@@ -28,15 +28,15 @@ module.exports = {
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
-  setupPreprocessorRegistry: function(type, registry) {
-    let addon = this;
+  transpileTree(tree) {
+    return require('broccoli-babel-transpiler')(tree, this._getBabelOptions());
+  },
 
+  setupPreprocessorRegistry: function(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
       ext: 'js',
-      toTree: function(tree) {
-        return require('broccoli-babel-transpiler')(tree, addon._getBabelOptions());
-      }
+      toTree: (tree) => this.transpileTree(tree)
     });
   },
 
