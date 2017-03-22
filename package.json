@@ -44,7 +44,9 @@
     "ember-cli-version-checker": "^1.2.0"
   },
   "devDependencies": {
+    "broccoli-test-helper": "^1.1.0",
     "chai": "^3.5.0",
+    "co": "^4.6.0",
     "console-ui": "^1.0.2",
     "core-object": "^2.0.6",
     "ember-cli": "^2.6.2",

@@ -1,11 +1,15 @@
 'use strict';
 
+const co = require('co');
 const expect = require('chai').expect;
 const MockUI = require('console-ui/mock');
 const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const path = require('path');
 const resolve = require('resolve');
+const BroccoliTestHelper = require('broccoli-test-helper');
+const createBuilder = BroccoliTestHelper.createBuilder;
+const createTempDir = BroccoliTestHelper.createTempDir;
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -18,6 +22,41 @@ describe('ember-cli-babel', function() {
       parent: project,
       ui: this.ui,
     });
+  });
+
+  describe('transpileTree', function() {
+    this.timeout(50000);
+
+    let input;
+    let output;
+    let subject;
+
+    beforeEach(co.wrap(function* () {
+      input = yield createTempDir();
+      subject = this.addon.transpileTree(input.path());
+      output = createBuilder(subject);
+    }));
+
+    afterEach(co.wrap(function* () {
+      yield input.dispose();
+      yield output.dispose();
+    }));
+
+    it("should build", co.wrap(function* () {
+      input.write({
+        "foo.js": `let foo = () => {};`,
+        "bar.js": `let bar = () => {};`
+      });
+
+      yield output.build();
+
+      expect(
+        output.read()
+      ).to.deep.equal({
+        "bar.js": `var bar = function bar() {};`,
+        "foo.js": `var foo = function foo() {};`,
+      });
+    }));
   });
 
   describe('_getAddonOptions', function() {
