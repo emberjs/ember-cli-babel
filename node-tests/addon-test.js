@@ -217,20 +217,20 @@ describe('ember-cli-babel', function() {
     });
 
     describe('without any compileModules option set', function() {
-      it('should return false for ember-cli < 2.12', function() {
+      it('returns false for ember-cli < 2.12', function() {
         this.addon.emberCLIChecker = { gt() { return false; } };
 
-        expect(this.addon._shouldCompileModules()).to.be.false;
+        expect(this.addon.shouldCompileModules()).to.eql(false);
       });
 
-      it('should return true for ember-cli > 2.12.0-alpha.1', function() {
+      it('returns true for ember-cli > 2.12.0-alpha.1', function() {
         this.addon.emberCLIChecker = { gt() { return true; } };
 
-        expect(this.addon._shouldCompileModules()).to.be.true;
+        expect(this.addon.shouldCompileModules()).to.be.true;
       });
 
-      it('should not print deprecation messages', function() {
-        this.addon._shouldCompileModules();
+      it('does not print deprecation messages', function() {
+        this.addon.shouldCompileModules();
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -246,13 +246,13 @@ describe('ember-cli-babel', function() {
       });
 
       it('should return true', function() {
-        expect(this.addon._shouldCompileModules()).to.be.true;
+        expect(this.addon.shouldCompileModules()).to.eql(true);
       });
 
       it('should print deprecation message exactly once', function() {
-        this.addon._shouldCompileModules();
-        this.addon._shouldCompileModules();
-        this.addon._shouldCompileModules();
+        this.addon.shouldCompileModules();
+        this.addon.shouldCompileModules();
+        this.addon.shouldCompileModules();
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -268,13 +268,13 @@ describe('ember-cli-babel', function() {
       });
 
       it('should return false', function() {
-        expect(this.addon._shouldCompileModules()).to.be.false;
+        expect(this.addon.shouldCompileModules()).to.eql(false);
       });
 
       it('should print deprecation message exactly once', function() {
-        this.addon._shouldCompileModules();
-        this.addon._shouldCompileModules();
-        this.addon._shouldCompileModules();
+        this.addon.shouldCompileModules();
+        this.addon.shouldCompileModules();
+        this.addon.shouldCompileModules();
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -285,20 +285,16 @@ describe('ember-cli-babel', function() {
     });
 
     describe('with ember-cli-babel.compileModules = true', function() {
-      beforeEach(function() {
-        this.addon.parent = {
-          options: {
-            'ember-cli-babel': { compileModules: true }
-          }
-        };
-      });
-
       it('should return true', function() {
-        expect(this.addon._shouldCompileModules()).to.be.true;
+        expect(this.addon._shouldCompileModules({
+          'ember-cli-babel': { compileModules: true }
+        })).to.eql(true);
       });
 
       it('should not print deprecation messages', function() {
-        this.addon._shouldCompileModules();
+        this.addon._shouldCompileModules({
+          'ember-cli-babel': { compileModules: true }
+        });
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -318,11 +314,11 @@ describe('ember-cli-babel', function() {
       });
 
       it('should return false', function() {
-        expect(this.addon._shouldCompileModules()).to.be.false;
+        expect(this.addon.shouldCompileModules()).to.be.false;
       });
 
       it('should not print deprecation messages', function() {
-        this.addon._shouldCompileModules();
+        this.addon.shouldCompileModules();
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -331,24 +327,9 @@ describe('ember-cli-babel', function() {
         expect(deprecationMessages).to.have.lengthOf(0);
       });
     });
-
-    describe('with ember-cli-babel.compileModules = true and babel.compileModules = false', function() {
-      beforeEach(function() {
-        this.addon.parent = {
-          options: {
-            'babel': { compileModules: false },
-            'ember-cli-babel': { compileModules: true },
-          },
-        };
-      });
-
-      it('should prefer the "ember-cli-babel" setting', function() {
-        expect(this.addon._shouldCompileModules(this.addonOptions)).to.be.true;
-      });
-    });
   });
 
-  describe('_getProvidedBabelConfig', function() {
+  describe('_getAddonProvidedConfig', function() {
     it('does not mutate addonOptions.babel', function() {
       let babelOptions = { blah: true };
       this.addon.parent = {
@@ -357,7 +338,7 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getProvidedBabelConfig();
+      let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
     });
 
@@ -370,13 +351,23 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getProvidedBabelConfig();
+      let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options.loose).to.be.true;
     });
   });
 
-  describe('_getBabelOptions', function() {
+  describe('buildBabelOptions', function() {
     this.timeout(20000);
+
+    it('does not include all provided options', function() {
+      let babelOptions = { blah: true };
+      let options = {
+        babel: babelOptions
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.blah).to.be.undefined;
+    });
 
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
@@ -386,7 +377,7 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.blah).to.be.undefined;
     });
 
@@ -400,7 +391,7 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.plugins).to.include(plugin);
     });
 
@@ -416,7 +407,7 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
 
       expect(result.plugins).to.include(plugin);
       expect(result.plugins.slice(-1)).to.deep.equal([pluginAfter]);
@@ -433,7 +424,7 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.plugins).to.include(plugin);
     });
 
@@ -447,21 +438,21 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.plugins[0]).to.equal(plugin);
     });
 
     it('includes resolveModuleSource if compiling modules', function() {
       this.addon._shouldCompileModules = () => true;
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.resolveModuleSource).to.equal(require('amd-name-resolver').moduleResolve);
     });
 
     it('does not include resolveModuleSource when not compiling modules', function() {
       this.addon._shouldCompileModules = () => false;
 
-      let result = this.addon._getBabelOptions();
+      let result = this.addon.buildBabelOptions();
       expect(result.resolveModuleSource).to.equal(undefined);
     });
   });
@@ -498,7 +489,7 @@ describe('ember-cli-babel', function() {
         return { plugins: [] };
       };
 
-      this.addon._getPresetEnvPlugins();
+      this.addon.buildBabelOptions();
 
       expect(invokingOptions.loose).to.be.true;
     });
@@ -517,7 +508,7 @@ describe('ember-cli-babel', function() {
         return { plugins: [] };
       };
 
-      this.addon._getPresetEnvPlugins();
+      this.addon.buildBabelOptions();
 
       expect(invokingOptions.loose).to.be.true;
     });
@@ -527,7 +518,7 @@ describe('ember-cli-babel', function() {
         browsers: ['ie 9']
       };
 
-      let plugins = this.addon._getPresetEnvPlugins();
+      let plugins = this.addon.buildBabelOptions().plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.true;
@@ -538,7 +529,7 @@ describe('ember-cli-babel', function() {
         browsers: ['last 2 chrome versions']
       };
 
-      let plugins = this.addon._getPresetEnvPlugins();
+      let plugins = this.addon.buildBabelOptions().plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.false;

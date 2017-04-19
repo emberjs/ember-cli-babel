@@ -15,14 +15,14 @@ ember install ember-cli-babel
 ## Usage
 
 This plugin should work without any configuration after installing. By default it will take every `.js` file
-in your project and run it through the Babel transpiler to convert your ES6 code to code supported by your 
+in your project and run it through the Babel transpiler to convert your ES6 code to code supported by your
 target browsers (as specified in `config/targets.js` in ember-cli >= 2.13). Running non-ES6 code
 through the transpiler shouldn't change the code at all (likely just a format change if it does).
 
-If you need to customize the way that `babel-preset-env` configures the plugins that transform your code, 
-you can do it by passing in any of the options found [here](https://github.com/babel/babel-preset-env#options). 
+If you need to customize the way that `babel-preset-env` configures the plugins that transform your code,
+you can do it by passing in any of the options found [here](https://github.com/babel/babel-preset-env#options).
 
-Example:
+Example (configuring babel directly):
 
 ```js
 // ember-cli-build.js
@@ -35,6 +35,18 @@ var app = new EmberApp({
     exclude: [
       'transform-regenerator',
     ]
+  }
+});
+```
+
+Example (configuring ember-cli-babel itself):
+
+```js
+// ember-cli-build.js
+
+var app = new EmberApp({
+  'ember-cli-babel': {
+    compileModules: false
   }
 });
 ```
@@ -56,6 +68,31 @@ var app = new EmberApp(defaults, {
     includePolyfill: true
   }
 });
+```
+
+### Addon usage
+
+For addons which want additional customizations, they are able to interact with
+this addon directly.
+
+```js
+treeForAddon(tree) {
+  let addon = this.addons.find(addon => addon.name === 'ember-cli-babel'); // find your babel addon
+
+  let options = addon.buildBabelOptions({
+    'ember-cli-babel'
+  })
+
+  return addon.transpileTree(tree, {
+    'babel': {
+      // any babel specific options
+     },
+
+    'ember-cli-babel': {
+      // any ember-cli-babel options
+    }
+  });
+}
 ```
 
 ### About Modules
