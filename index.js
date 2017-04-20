@@ -28,8 +28,14 @@ module.exports = {
     this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
   },
 
-  transpileTree(tree) {
-    return require('broccoli-babel-transpiler')(tree, this._getBabelOptions());
+  buildBabelOptions(_config) {
+    let config = _config || this._getAddonOptions();
+
+    return this._getBabelOptions(config);
+  },
+
+  transpileTree(tree, config) {
+    return require('broccoli-babel-transpiler')(tree, this.buildBabelOptions(config));
   },
 
   setupPreprocessorRegistry: function(type, registry) {
@@ -115,11 +121,7 @@ module.exports = {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _getProvidedBabelConfig: function() {
-    if (this._cachedProvidedConfig) {
-      return this._cachedProvidedConfig;
-    }
-
+  _getAddonProvidedConfig: function(addonOptions) {
     let parentName;
 
     if (this.parent) {
@@ -130,7 +132,6 @@ module.exports = {
       }
     }
 
-    let addonOptions = this._getAddonOptions();
     let babelOptions = clone(addonOptions.babel || {});
 
     // used only to support using ember-cli-babel@6 at the
@@ -141,7 +142,6 @@ module.exports = {
     // that is used to transpile internally (via `_prunedBabelOptions`
     // in older ember-cli versions)
     let babel6Options = clone(addonOptions.babel6 || {});
-
 
     let options;
     // options.modules is set only for things assuming babel@5 usage
@@ -159,28 +159,31 @@ module.exports = {
     let plugins = [].concat(babelOptions.plugins, babel6Options.plugins).filter(Boolean);
     let postTransformPlugins = [].concat(babelOptions.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
 
-    this._cachedProvidedConfig =  { options, plugins, postTransformPlugins };
-
-    return this._cachedProvidedConfig;
+    return {
+      options,
+      plugins,
+      postTransformPlugins
+    };
   },
 
-  _getBabelOptions() {
-    let providedConfig = this._getProvidedBabelConfig();
-    let shouldCompileModules = this._shouldCompileModules();
+  _getBabelOptions(config) {
+    let addonProvidedConfig = this._getAddonProvidedConfig(config);
+    let shouldCompileModules = this._shouldCompileModules(config);
+    console.log(shouldCompileModules, config['ember-cli-babel']);
 
     let options = {};
-    let userPlugins = providedConfig.plugins;
-    let userPostTransformPlugins = providedConfig.postTransformPlugins;
+    let userPlugins = addonProvidedConfig.plugins;
+    let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
     options.plugins = [].concat(
       userPlugins,
       shouldCompileModules && this._getModulesPlugin(),
-      this._getPresetEnvPlugins(),
+      this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
-    options.moduleIds = true;
 
     if (shouldCompileModules) {
+      options.moduleIds = true;
       options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
     }
 
@@ -189,9 +192,8 @@ module.exports = {
     return options;
   },
 
-  _getPresetEnvPlugins() {
-    let providedConfig = this._getProvidedBabelConfig();
-    let options = providedConfig.options;
+  _getPresetEnvPlugins(config) {
+    let options = config.options;
 
     let targets = this._getTargets();
     let browsers = targets && targets.browsers;
@@ -230,19 +232,32 @@ module.exports = {
     ];
   },
 
-  _shouldCompileModules() {
-    let addonOptions = this._getAddonOptions();
+  /*
+   * Used to discover if the addon's current configuration will compile modules
+   * or not.
+   *
+   * @public
+   * @method shouldCompileModules
+   */
+  shouldCompileModules() {
+    return this._shouldCompileModules(this._getAddonOptions());
+  },
 
-    if (addonOptions['ember-cli-babel'] && 'compileModules' in addonOptions['ember-cli-babel']) {
-      return addonOptions['ember-cli-babel'].compileModules;
-    } else if (addonOptions.babel && 'compileModules' in addonOptions.babel) {
+  // will use any provided configuration
+  _shouldCompileModules(options) {
+    let addonOptions = options['ember-cli-babel'];
+    let babelOptions = options.babel;
+
+    if (addonOptions && 'compileModules' in addonOptions) {
+      return addonOptions.compileModules;
+    } else if (babelOptions && 'compileModules' in babelOptions) {
       if (this._shouldShowBabelDeprecations && !this._compileModulesDeprecationPrinted) {
         this._compileModulesDeprecationPrinted = true;
         // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
         this.ui.writeDeprecateLine('Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
       }
 
-      return addonOptions.babel.compileModules;
+      return babelOptions.compileModules;
     } else {
       return this.emberCLIChecker.gt('2.12.0-alpha.1');
     }

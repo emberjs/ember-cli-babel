@@ -30,6 +30,8 @@
     "build": "ember build",
     "jshint": "jshint",
     "start": "ember server",
+    "test:node": "mocha node-tests",
+    "test:debug": "mocha debug node-tests",
     "test": "mocha node-tests && ember test"
   },
   "dependencies": {
