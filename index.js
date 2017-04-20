@@ -169,7 +169,6 @@ module.exports = {
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
-    console.log(shouldCompileModules, config['ember-cli-babel']);
 
     let options = {};
     let userPlugins = addonProvidedConfig.plugins;
