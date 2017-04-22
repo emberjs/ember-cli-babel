@@ -176,6 +176,7 @@ module.exports = {
 
     options.plugins = [].concat(
       userPlugins,
+      this._getDebugMacroPlugins(config),
       shouldCompileModules && this._getModulesPlugin(),
       this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
@@ -189,6 +190,32 @@ module.exports = {
     options.highlightCode = false;
 
     return options;
+  },
+
+  _getDebugMacroPlugins(config) {
+    let addonOptions = config['ember-cli-babel'] || {};
+
+    if (addonOptions.disableDebugTooling) { return; }
+
+    const DebugMacros = require('babel-plugin-debug-macros').default;
+    const isProduction = process.env.EMBER_ENV === 'production';
+
+    let options = {
+      envFlags: {
+        source: '@glimmer/env',
+        flags: { DEBUG: !isProduction, CI: !!process.env.CI }
+      },
+
+      externalizeHelpers: {
+        global: 'Ember'
+      },
+
+      debugTools: {
+        source: '@ember/debug'
+      }
+    };
+
+    return [[DebugMacros, options]];
   },
 
   _getPresetEnvPlugins(config) {
