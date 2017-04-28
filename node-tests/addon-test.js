@@ -727,11 +727,12 @@ describe('ember-cli-babel', function() {
     function includesPlugin(haystack, needleName) {
       let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
       let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
-      let PluginModule = require(pluginPath);
-      let Needle = PluginModule.__esModule ? PluginModule.default : PluginModule;
+      let NeedleModule = require(pluginPath);
+      let Needle = NeedleModule.__esModule ? NeedleModule.default : NeedleModule;
 
       for (let i = 0; i < haystack.length; i++) {
-        let Plugin = haystack[i][0];
+        let PluginModule = haystack[i][0];
+        let Plugin = PluginModule.__esModule ? PluginModule.default : PluginModule;
 
         if (Plugin === Needle) {
           return true;
