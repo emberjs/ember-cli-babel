@@ -625,6 +625,14 @@ describe('ember-cli-babel', function() {
       expect(result.sourceMaps).to.equal('inline');
     });
 
+    it('disables reading `.babelrc`', function() {
+      let options = {};
+
+      let result = this.addon.buildBabelOptions(options);
+
+      expect(result.babelrc).to.be.false;
+    });
+
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
       let options = {
