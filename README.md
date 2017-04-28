@@ -129,7 +129,7 @@ The following are named exports that are available from `@ember/debug`:
 
 * `function deprecate(message: string, predicate: boolean, options: any): void` - Results in calling `Ember.deprecate`.
 * `function assert(message: string, predicate: boolean): void` - Results in calling `Ember.assert`.
-* `function warn(message: string, predicate: boolean)` - Results in calling `Ember.warn`.
+* `function warn(message: string, predicate: boolean): void` - Results in calling `Ember.warn`.
 
 #### General Purpose Env Flags
 
