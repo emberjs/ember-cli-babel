@@ -190,6 +190,7 @@ module.exports = {
     }
 
     options.highlightCode = false;
+    options.babelrc = false;
 
     return options;
   },
