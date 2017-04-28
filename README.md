@@ -95,6 +95,83 @@ treeForAddon(tree) {
 }
 ```
 
+### Debug Tooling
+
+In order to allow apps and addons to easily provide good development mode ergonomics (assertions, deprecations, etc) but
+still perform well in production mode ember-cli-babel automatically manages stripping / removing certain debug
+statements. This concept was originally proposed in [ember-cli/rfcs#50](https://github.com/ember-cli/rfcs/pull/50), 
+but has been slightly modified during implementation (after researching what works well and what does not).
+
+#### Debug Macros
+
+To add convienient deprecations and assertions, consumers (in either an app or an addon) can do the following:
+
+```js
+import { deprecate, assert } from '@ember/debug';
+
+export default Ember.Component.extend({
+  init() {
+    this._super(...arguments);
+    deprecate(
+      'Passing a string value or the `sauce` parameter is deprecated, please pass an instance of Sauce instead',
+      false,
+      { until: '1.0.0', id: 'some-addon-sauce' }
+    );
+    assert('You must provide sauce for x-awesome.', this.sauce);
+  }
+})
+```
+
+In testing and development environments those statements will be executed (and assert or deprecate as appropriate), but
+in production builds they will be inert (and stripped during minification).
+
+The following are named exports that are available from `@ember/debug`:
+
+* `function deprecate(message: string, predicate: boolean, options: any): void` - Results in calling `Ember.deprecate`.
+* `function assert(message: string, predicate: boolean): void` - Results in calling `Ember.assert`.
+* `function warn(message: string, predicate: boolean)` - Results in calling `Ember.warn`.
+
+#### General Purpose Env Flags
+
+In some cases you may have the need to do things in debug builds that isn't related to asserts/deprecations/etc. For
+example, you may expose certain API's for debugging only. You can do that via the `DEBUG` environment flag:
+
+```js
+import { DEBUG } from '@glimmer/env';
+
+const Component = Ember.Component.extend();
+
+if (DEBUG) {
+  Component.reopen({
+    specialMethodForDebugging() {
+      // do things ;)
+    }
+  });
+}
+```
+
+In testing and development environments `DEBUG` will be replaced by the boolean literal `true`, and in production builds it will be
+replaced by `false`. When ran through a minifier (with dead code elimination) the entire section will be stripped.
+
+#### Disabling Debug Tooling Support
+
+If for some reason you need to disable this debug tooling, you can opt-out via configuration.
+
+In an app that would look like:
+
+```js
+// ember-cli-build.js
+module.exports = function(defaults) {
+  let app = new EmberApp(defaults, {
+    'ember-cli-babel': {
+      disableDebugTooling: true
+    }
+  });
+
+  return app.toTree();
+}
+```
+
 ### About Modules
 
 Older versions of Ember CLI (`< 2.12`) use its own ES6 module transpiler. Because of that, this plugin disables Babel

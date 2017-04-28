@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "amd-name-resolver": "0.0.6",
+    "babel-plugin-debug-macros": "^0.1.6",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-env": "^1.2.0",
@@ -49,6 +50,7 @@
     "broccoli-test-helper": "^1.1.0",
     "chai": "^3.5.0",
     "co": "^4.6.0",
+    "common-tags": "^1.4.0",
     "console-ui": "^1.0.2",
     "core-object": "^2.0.6",
     "ember-cli": "^2.6.2",

@@ -7,6 +7,8 @@ const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const path = require('path');
 const resolve = require('resolve');
+const CommonTags = require('common-tags');
+const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
@@ -14,6 +16,8 @@ const createTempDir = BroccoliTestHelper.createTempDir;
 let Addon = CoreObject.extend(AddonMixin);
 
 describe('ember-cli-babel', function() {
+  const ORIGINAL_EMBER_ENV = process.env.EMBER_ENV;
+
   beforeEach(function() {
     this.ui = new MockUI();
     let project = { root: __dirname };
@@ -24,8 +28,16 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  afterEach(function() {
+    if (ORIGINAL_EMBER_ENV === undefined) {
+      delete process.env.EMBER_ENV;
+    } else {
+      process.env.EMBER_ENV = ORIGINAL_EMBER_ENV;
+    }
+  });
+
   describe('transpileTree', function() {
-    this.timeout(50000);
+    this.timeout(100000);
 
     let input;
     let output;
@@ -33,8 +45,6 @@ describe('ember-cli-babel', function() {
 
     beforeEach(co.wrap(function* () {
       input = yield createTempDir();
-      subject = this.addon.transpileTree(input.path());
-      output = createBuilder(subject);
     }));
 
     afterEach(co.wrap(function* () {
@@ -48,6 +58,9 @@ describe('ember-cli-babel', function() {
         "bar.js": `let bar = () => {};`
       });
 
+      subject = this.addon.transpileTree(input.path());
+      output = createBuilder(subject);
+
       yield output.build();
 
       expect(
@@ -57,6 +70,131 @@ describe('ember-cli-babel', function() {
         "foo.js": `var foo = function foo() {};`,
       });
     }));
+
+    describe('debug macros', function() {
+      it("can opt-out via ember-cli-babel.disableDebugTooling", co.wrap(function* () {
+        process.env.EMBER_ENV = 'development';
+
+        let contents = stripIndent`
+          import { DEBUG } from '@glimmer/env';
+          if (DEBUG) {
+            console.log('debug mode!');
+          }
+        `;
+
+        input.write({
+          "foo.js": contents
+        });
+
+        subject = this.addon.transpileTree(input.path(), {
+          'ember-cli-babel': {
+            disableDebugTooling: true
+          }
+        });
+
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": contents
+        });
+      }));
+
+      describe('in development', function() {
+        it("should replace env flags by default ", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          input.write({
+            "foo.js": stripIndent`
+              import { DEBUG } from '@glimmer/env';
+              if (DEBUG) { console.log('debug mode!'); }
+            `
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `\nif (true) {\n  console.log('debug mode!');\n}`
+          });
+        }));
+
+        it("should replace debug macros by default ", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          input.write({
+            "foo.js": stripIndent`
+              import { assert } from '@ember/debug';
+              assert('stuff here', isNotBad());
+            `
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `(true && Ember.assert('stuff here', isNotBad()));`
+          });
+        }));
+      });
+
+      describe('in production', function() {
+        it("should replace env flags by default ", co.wrap(function* () {
+          process.env.EMBER_ENV = 'production';
+
+          input.write({
+            "foo.js": stripIndent`
+              import { DEBUG } from '@glimmer/env';
+              if (DEBUG) { console.log('debug mode!'); }
+            `
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `\nif (false) {\n  console.log('debug mode!');\n}`
+          });
+        }));
+
+        it("should replace debug macros by default ", co.wrap(function* () {
+          process.env.EMBER_ENV = 'production';
+
+          input.write({
+            "foo.js": stripIndent`
+              import { assert } from '@ember/debug';
+              assert('stuff here', isNotBad());
+            `
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `(false && Ember.assert('stuff here', isNotBad()));`
+          });
+        }));
+      });
+    });
   });
 
   describe('_getAddonOptions', function() {
