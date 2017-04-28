@@ -128,9 +128,11 @@ module.exports = {
     if (!targets) { return true; }
 
     const isPluginRequired = require('babel-preset-env').isPluginRequired;
+    const getTargets = require('babel-preset-env/lib/targets-parser').default;
     const pluginList = require('babel-preset-env/data/plugins');
 
-    return isPluginRequired(targets, pluginList[pluginName]);
+    let parsedTargets = getTargets(targets);
+    return isPluginRequired(parsedTargets, pluginList[pluginName]);
   },
 
   _getAddonOptions: function() {
