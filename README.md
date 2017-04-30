@@ -153,6 +153,9 @@ if (DEBUG) {
 In testing and development environments `DEBUG` will be replaced by the boolean literal `true`, and in production builds it will be
 replaced by `false`. When ran through a minifier (with dead code elimination) the entire section will be stripped.
 
+Please note, that these general purpose environment related flags (e.g. `DEBUG` as a boolean flag) are imported from `@glimmer/env`
+not from an `@ember` namespace.
+
 #### Disabling Debug Tooling Support
 
 If for some reason you need to disable this debug tooling, you can opt-out via configuration.
