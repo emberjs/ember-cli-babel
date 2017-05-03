@@ -25,9 +25,7 @@ module.exports = {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
-    let dep = this.emberCLIChecker = checker.for('ember-cli', 'npm');
-
-    this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
+    this.emberCLIChecker = checker.for('ember-cli', 'npm');
   },
 
   buildBabelOptions(_config) {
@@ -64,23 +62,10 @@ module.exports = {
 
   _shouldIncludePolyfill: function() {
     let addonOptions = this._getAddonOptions();
-    let babelOptions = addonOptions.babel;
     let customOptions = addonOptions['ember-cli-babel'];
-
-    if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted &&
-      babelOptions && 'includePolyfill' in babelOptions) {
-
-      this._polyfillDeprecationPrinted = true;
-
-      // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
-      this.ui.writeDeprecateLine(
-        'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-    }
 
     if (customOptions && 'includePolyfill' in customOptions) {
       return customOptions.includePolyfill === true;
-    } else if (babelOptions && 'includePolyfill' in babelOptions) {
-      return babelOptions.includePolyfill === true;
     } else {
       return false;
     }
@@ -327,18 +312,9 @@ module.exports = {
   // will use any provided configuration
   _shouldCompileModules(options) {
     let addonOptions = options['ember-cli-babel'];
-    let babelOptions = options.babel;
 
     if (addonOptions && 'compileModules' in addonOptions) {
       return addonOptions.compileModules;
-    } else if (babelOptions && 'compileModules' in babelOptions) {
-      if (this._shouldShowBabelDeprecations && !this._compileModulesDeprecationPrinted) {
-        this._compileModulesDeprecationPrinted = true;
-        // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
-        this.ui.writeDeprecateLine('Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-      }
-
-      return babelOptions.compileModules;
     } else {
       return this.emberCLIChecker.gt('2.12.0-alpha.1');
     }
