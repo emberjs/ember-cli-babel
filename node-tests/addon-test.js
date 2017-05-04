@@ -12,6 +12,7 @@ const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
+const walkSync = require('walk-sync');
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -826,6 +827,72 @@ describe('ember-cli-babel', function() {
 
       let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
       expect(pluginRequired).to.be.false;
+    });
+  });
+
+  describe('_requiredPolyfills', function() {
+    const builtInsList = require('babel-preset-env/data/built-ins');
+    const defaultWebIncludes = require('babel-preset-env/lib/default-includes').defaultWebIncludes;
+
+    let allKnownPolyfills = [].concat(
+      Object.keys(builtInsList),
+      defaultWebIncludes
+    );
+
+    beforeEach(function() {
+      this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: true } };
+    });
+
+    it('returns the list of all polyfills for an old platform', function() {
+      this.addon.project.targets = {
+        browsers: ['ie 9']
+      };
+
+      let polyfills = this.addon._requiredPolyfills();
+
+      // ie 9 requires all the polyfills :P
+      expect(polyfills).to.deep.equal(allKnownPolyfills);
+    });
+
+    it('returns a subset of the polyfills for a recent platform', function() {
+      this.addon.project.targets = {
+        browsers: ['last 1 chrome versions']
+      };
+
+      let polyfills = this.addon._requiredPolyfills();
+
+      // chrome only gets the `defaultWebIncludes`
+      expect(polyfills.length).to.be.lt(allKnownPolyfills.length);
+    });
+  });
+
+  describe('treeForVendor', function() {
+    let output, subject;
+
+    this.timeout(100000);
+
+    afterEach(co.wrap(function* () {
+      yield output.dispose();
+    }));
+
+    it("should include polyfills for target platform", co.wrap(function* () {
+      this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: true } };
+
+      subject = this.addon.treeForVendor();
+      output = createBuilder(subject);
+
+      yield output.build();
+
+      let files = walkSync(output.path(), { directories: false });
+      expect(files).to.deep.equal(['ember-cli-babel/polyfill.js']);
+    }));
+
+    it("should return undefined when `includePolyfill` is false", function() {
+      this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: false } };
+
+      subject = this.addon.treeForVendor();
+
+      expect(subject).to.be.undefined;
     });
   });
 });

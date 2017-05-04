@@ -87,7 +87,7 @@ module.exports = {
   },
 
   _importPolyfill: function(app) {
-    let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
+    let polyfillPath = 'vendor/ember-cli-babel/polyfill.js';
 
     if (this.import) {  // support for ember-cli >= 2.7
       this.import(polyfillPath, { prepend: true });
@@ -98,18 +98,83 @@ module.exports = {
     }
   },
 
+  _requiredPolyfills() {
+    const parseTargets = require('babel-preset-env/').getTargets;
+    const builtInsList = require('babel-preset-env/data/built-ins');
+    const defaultWebIncludes = require('babel-preset-env/lib/default-includes').defaultWebIncludes;
+    const normalizeOptions = require('babel-preset-env/lib/normalize-options').default;
+
+    let config = this._getAddonOptions();
+    let addonProvidedConfig = this._getAddonProvidedConfig(config);
+    let presetOptions = this._getPresetEnvOptions(addonProvidedConfig);
+    let validatedOptions = normalizeOptions(presetOptions);
+    let targets = parseTargets(validatedOptions.targets);
+
+    let polyfillTargets = Object.assign({}, targets);
+    delete polyfillTargets.uglify;
+
+    let polyfills = Object.keys(builtInsList)
+        .concat(defaultWebIncludes)
+        .filter((item) => {
+          let isDefault = defaultWebIncludes.indexOf(item) >= 0;
+          let notExcluded = validatedOptions.exclude.indexOf(item) === -1;
+
+          if (isDefault) { return notExcluded; }
+
+          let isRequired = this.isPluginRequired(builtInsList[item]);
+
+          return isRequired && notExcluded;
+        })
+        .concat(validatedOptions.include);
+
+    return polyfills;
+  },
+
   treeForVendor: function() {
     if (!this._shouldIncludePolyfill()) { return; }
 
-    const Funnel = require('broccoli-funnel');
+    const MergeTrees = require('broccoli-merge-trees');
     const UnwatchedDir = require('broccoli-source').UnwatchedDir;
+    const CreateFile = require('broccoli-file-creator');
+    const Rollup = require('broccoli-rollup');
+
+
+    let requiredPolyfills = this._requiredPolyfills();
+    let polyFillImports = requiredPolyfills
+        .map(module => `import "./${module}"`)
+        .join('\n');
+    let entryPointContents = `;
+if (global._includedPolyfill) {
+  throw new Error("only one instance of ember-cli-babel can have \`includePolyfill\` set");
+}
+global._includedPolyfill = true;
+${polyFillImports}`;
+
+    let entryPointTree = new CreateFile('index.js', entryPointContents);
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    let polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
+    let coreJSDir = path.dirname(require.resolve('core-js/package'));
+    let coreJSModulesDir = path.join(coreJSDir, 'modules');
+    let coreJSModulesTree = new UnwatchedDir(coreJSModulesDir);
+    let combinedTree = new MergeTrees([coreJSModulesTree, entryPointTree]);
 
-    return new Funnel(new UnwatchedDir(polyfillDir), {
-      destDir: 'babel-polyfill'
+    const resolve = require('rollup-plugin-node-resolve');
+    const commonjs = require('rollup-plugin-commonjs');
+
+    let outputTree = new Rollup(combinedTree, {
+      rollup: {
+        plugins: [
+          resolve({ main: true }),
+          commonjs()
+        ],
+        format: 'umd',
+        entry: 'index.js',
+        dest: 'ember-cli-babel/polyfill.js',
+        sourceMap: false
+      }
     });
+
+    return outputTree;
   },
 
   included: function(app) {
@@ -121,7 +186,7 @@ module.exports = {
     }
   },
 
-  isPluginRequired(pluginName) {
+  isPluginRequired(plugin) {
     let targets = this._getTargets();
 
     // if no targets are setup, assume that all plugins are required
@@ -130,7 +195,12 @@ module.exports = {
     const isPluginRequired = require('babel-preset-env').isPluginRequired;
     const pluginList = require('babel-preset-env/data/plugins');
 
-    return isPluginRequired(targets, pluginList[pluginName]);
+    if (typeof plugin === 'string') {
+      const pluginList = require('babel-preset-env/data/plugins');
+      plugin = pluginList[plugin];
+    }
+
+    return isPluginRequired(targets, plugin);
   },
 
   _getAddonOptions: function() {
@@ -264,7 +334,7 @@ module.exports = {
     }
   },
 
-  _getPresetEnvPlugins(config) {
+  _getPresetEnvOptions(config) {
     let options = config.options;
 
     let targets = this._getTargets();
@@ -274,6 +344,11 @@ module.exports = {
       targets
     });
 
+    return presetOptions;
+  },
+
+  _getPresetEnvPlugins(config) {
+    let presetOptions = this._getPresetEnvOptions(config);
     let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
 
     presetEnvPlugins.forEach(function(pluginArray) {
