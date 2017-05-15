@@ -66,8 +66,8 @@ describe('ember-cli-babel', function() {
       expect(
         output.read()
       ).to.deep.equal({
-        "bar.js": `var bar = function bar() {};`,
-        "foo.js": `var foo = function foo() {};`,
+        "bar.js": `define("bar", [], function () {\n  "use strict";\n\n  var bar = function bar() {};\n});`,
+        "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  var foo = function foo() {};\n});`,
       });
     }));
 
@@ -99,7 +99,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": contents
+          "foo.js": `define('foo', ['@glimmer/env'], function (_env) {\n  'use strict';\n\n  if (_env.DEBUG) {\n    console.log('debug mode!');\n  }\n});`
         });
       }));
 
@@ -122,7 +122,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `\nif (true) {\n  console.log('debug mode!');\n}`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (true) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -144,7 +144,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `(true && Ember.assert('stuff here', isNotBad()));`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -168,11 +168,11 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `\nif (false) {\n  console.log('debug mode!');\n}`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (false) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
-        it("should replace debug macros by default ", co.wrap(function* () {
+        it('should replace debug macros by default ', co.wrap(function* () {
           process.env.EMBER_ENV = 'production';
 
           input.write({
@@ -190,7 +190,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `(false && Ember.assert('stuff here', isNotBad()));`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
