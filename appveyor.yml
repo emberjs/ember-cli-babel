@@ -10,6 +10,7 @@ environment:
   matrix:
     - nodejs_version: "4"
     - nodejs_version: "6"
+    - nodejs_version: "7"
 
 cache:
   - '%APPDATA%\npm-cache'
@@ -26,8 +27,6 @@ install:
   - npm install phantomjs-prebuilt
   - npm install mocha-appveyor-reporter
   - npm install --no-optional
-  - npm install -g bower
-  - bower install
 
 # Post-install test scripts.
 test_script:
