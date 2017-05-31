@@ -691,7 +691,7 @@ describe('ember-cli-babel', function() {
       expect(pluginRequired).to.be.true;
     });
 
-    it.skip('returns false when targets do not require plugin', function() {
+    it('returns false when targets do not require plugin', function() {
       this.addon.project.targets = {
         browsers: ['last 2 chrome versions']
       };
