@@ -219,13 +219,14 @@ module.exports = {
   },
 
   _getPresetEnvPlugins(config) {
+    debugger;
     let options = config.options;
 
     let targets = this._getTargets();
     let browsers = targets && targets.browsers;
     let presetOptions = Object.assign({}, options, {
       modules: false,
-      targets: { browsers },
+      targets: targets
     });
 
     let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
@@ -245,7 +246,14 @@ module.exports = {
   },
 
   _getTargets() {
-    return this.project && this.project.targets && this.project.targets;
+    let targets = this.project && this.project.targets && this.project.targets;
+
+    let parser = require('babel-preset-env/lib/targets-parser').default;
+    if (typeof targets === 'object' && targets !== null) {
+      return parser(targets);
+    } else {
+      return targets;
+    }
   },
 
   _getModulesPlugin() {
