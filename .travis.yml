@@ -4,6 +4,7 @@ node_js:
   - "4"
   - "6"
   - "7"
+  - "8"
 
 sudo: false
 
@@ -14,6 +15,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: EMBER_TRY_SCENARIO=ember-canary
+    - node_js: "8"
 
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
