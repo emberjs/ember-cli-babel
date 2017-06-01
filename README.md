@@ -52,12 +52,42 @@ var app = new EmberApp({
 });
 ```
 
-### Polyfill
+### Options
+
+There are a few different options that may be provided to ember-cli-babel. These options
+are typically set in an apps `ember-cli-build.js` file, or in an addons `index.js`.
+
+```ts
+interface EmberCLIBabelConfig {
+  /**
+    Configuration options for babel-preset-env.
+    See https://github.com/babel/babel-preset-env#options for details on these options.
+  */
+  babel?: {
+    spec?: boolean;
+    loose?: boolean;
+    debug?: boolean;
+    include?: string[];
+    exclude?: string[];
+    useBuiltIns?: boolean;
+  };
+  
+  /**
+    Configuration options for ember-cli-babel itself.
+  */
+  'ember-cli-babel'?: {
+    includePolyfill?: boolean;
+    compileModules?: boolean;
+    disableDebugTooling?: boolean;
+  };
+}
+```
+
+#### Polyfill
 
 Babel comes with a polyfill that includes a custom [regenerator runtime](https://github.com/facebook/regenerator/blob/master/runtime.js)
-and [core.js](https://github.com/zloirock/core-js). Many transformations will work without it, but for full support you
-must include the polyfill in your app. The [Babel feature tour](https://babeljs.io/docs/tour/) includes a note for
-features that require the polyfill to work.
+and [core-js](https://github.com/zloirock/core-js). Many transformations will work without it, but for full support you
+may need to include the polyfill in your app.
 
 To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel` options.
 
@@ -71,29 +101,84 @@ var app = new EmberApp(defaults, {
 });
 ```
 
+#### Modules
+
+Older versions of Ember CLI (`< 2.12`) use its own ES6 module transpiler. Because of that, this plugin disables Babel
+module compilation by blacklisting that transform when running under affected ember-cli versions. If you find that you
+want to use the Babel module transform instead of the Ember CLI one, you'll have to explicitly set `compileModules` to `true`
+in your configuration. If `compileModules` is anything other than `true`, this plugin will leave the module
+syntax compilation up to Ember CLI.
+
+#### Disabling Debug Tooling Support
+
+If for some reason you need to disable this debug tooling, you can opt-out via configuration.
+
+In an app that would look like:
+
+```js
+// ember-cli-build.js
+module.exports = function(defaults) {
+  let app = new EmberApp(defaults, {
+    'ember-cli-babel': {
+      disableDebugTooling: true
+    }
+  });
+
+  return app.toTree();
+}
+```
+
 ### Addon usage
 
 For addons which want additional customizations, they are able to interact with
 this addon directly.
 
-```js
-treeForAddon(tree) {
-  let addon = this.addons.find(addon => addon.name === 'ember-cli-babel'); // find your babel addon
-
-  let options = addon.buildBabelOptions({
-    'ember-cli-babel'
-  })
-
-  return addon.transpileTree(tree, {
-    'babel': {
-      // any babel specific options
-     },
-
-    'ember-cli-babel': {
-      // any ember-cli-babel options
-    }
-  });
+```ts
+interface EmberCLIBabel {
+  /**
+    Used to generate the options that will ultimately be passed to babel itself.
+  */
+  buildBabelOptions(config?: EmberCLIBabelConfig): Opaque;
+  
+  /**
+    Supports easier transpilation of non-standard input paths (e.g. to transpile 
+    a non-addon NPM dependency) while still leveraging the logic within 
+    ember-cli-babel for transpiling (e.g. targets, preset-env config, etc).
+  */
+  transpileTree(inputTree: BroccoliTree, config?: EmberCLIBabelConfig): BroccoliTree;
+  
+  /**
+    Used to determine if a given plugin is required by the current target configuration.
+    Does not take `includes` / `excludes` into account.
+    
+    See https://github.com/babel/babel-preset-env/blob/master/data/plugins.json for the list
+    of known plugins.
+  */
+  isPluginRequired(pluginName: string): boolean;
 }
+```
+
+#### `buildBabelOptions` usage
+
+```js
+// find your babel addon (can use `this.findAddonByName('ember-cli-babel')` in ember-cli@2.14 and newer)
+let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
+
+// create the babel options to use elsewhere based on the config above
+let options = babelAddon.buildBabelOptions(config)
+
+// now you can pass these options off to babel or broccoli-babel-transpiler
+require('babel-core').transform('something', options);
+```
+
+#### `transpileTree` usage
+
+```js
+// find your babel addon (can use `this.findAddonByName('ember-cli-babel')` in ember-cli@2.14 and newer)
+let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
+
+// invoke .transpileTree passing in the custom input tree
+let transpiledCustomTree = babelAddon.transpileTree(someCustomTree);
 ```
 
 ### Debug Tooling
@@ -156,30 +241,3 @@ replaced by `false`. When ran through a minifier (with dead code elimination) th
 
 Please note, that these general purpose environment related flags (e.g. `DEBUG` as a boolean flag) are imported from `@glimmer/env`
 not from an `@ember` namespace.
-
-#### Disabling Debug Tooling Support
-
-If for some reason you need to disable this debug tooling, you can opt-out via configuration.
-
-In an app that would look like:
-
-```js
-// ember-cli-build.js
-module.exports = function(defaults) {
-  let app = new EmberApp(defaults, {
-    'ember-cli-babel': {
-      disableDebugTooling: true
-    }
-  });
-
-  return app.toTree();
-}
-```
-
-### About Modules
-
-Older versions of Ember CLI (`< 2.12`) use its own ES6 module transpiler. Because of that, this plugin disables Babel
-module compilation by blacklisting that transform when running under affected ember-cli versions. If you find that you
-want to use the Babel module transform instead of the Ember CLI one, you'll have to explicitly set `compileModules` to `true`
-in your configuration. If `compileModules` is anything other than `true`, this plugin will leave the module
-syntax compilation up to Ember CLI.

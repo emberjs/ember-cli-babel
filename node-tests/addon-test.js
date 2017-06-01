@@ -144,7 +144,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -190,7 +190,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -503,6 +503,33 @@ describe('ember-cli-babel', function() {
       let result = this.addon.buildBabelOptions(options);
 
       expect(result.babelrc).to.be.false;
+    });
+
+    it('provides an annotation including parent name - addon', function() {
+      this.addon.parent = {
+        name: 'derpy-herpy'
+      };
+      let result = this.addon.buildBabelOptions();
+      expect(result.annotation).to.include('derpy-herpy');
+    });
+
+    it('provides an annotation including parent name - project', function() {
+      this.addon.parent = {
+        name() { return 'derpy-herpy'; }
+      };
+      let result = this.addon.buildBabelOptions();
+      expect(result.annotation).to.include('derpy-herpy');
+    });
+
+    it('uses provided annotation if specified', function() {
+      let options = {
+        'ember-cli-babel': {
+          annotation: 'Hello World!'
+        }
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.annotation).to.equal('Hello World!');
     });
 
     it('does not include all provided options', function() {

@@ -5,6 +5,8 @@ const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
 
+let count = 0;
+
 function addBaseDir(Plugin) {
   let type = typeof Plugin;
 
@@ -34,8 +36,22 @@ module.exports = {
     return this._getBabelOptions(config);
   },
 
-  transpileTree(tree, config) {
-    return require('broccoli-babel-transpiler')(tree, this.buildBabelOptions(config));
+  _debugTree() {
+    if (!this._cachedDebugTree) {
+      this._cachedDebugTree = require('broccoli-debug').buildDebugCallback(`ember-cli-babel:${this._parentName()}`);
+    }
+
+    return this._cachedDebugTree.apply(null, arguments);
+  },
+
+  transpileTree(inputTree, config) {
+    let description = `000${++count}`.slice(-3);
+    let postDebugTree = this._debugTree(inputTree, `${description}:input`);
+
+    let BabelTranspiler = require('broccoli-babel-transpiler');
+    let output = new BabelTranspiler(postDebugTree, this.buildBabelOptions(config));
+
+    return this._debugTree(output, `${description}:output`);
   },
 
   setupPreprocessorRegistry: function(type, registry) {
@@ -121,7 +137,7 @@ module.exports = {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _getAddonProvidedConfig: function(addonOptions) {
+  _parentName() {
     let parentName;
 
     if (this.parent) {
@@ -132,6 +148,10 @@ module.exports = {
       }
     }
 
+    return parentName;
+  },
+
+  _getAddonProvidedConfig(addonOptions) {
     let babelOptions = clone(addonOptions.babel || {});
 
     // used only to support using ember-cli-babel@6 at the
@@ -170,7 +190,12 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
 
-    let options = {};
+    let providedAnnotation = config['ember-cli-babel'] && config['ember-cli-babel'].annotation;
+
+    let options = {
+      annotation: providedAnnotation || `Babel: ${this._parentName()}`
+    };
+
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
@@ -212,7 +237,8 @@ module.exports = {
       },
 
       debugTools: {
-        source: '@ember/debug'
+        source: '@ember/debug',
+        assertPredicateIndex: 1
       }
     };
 
