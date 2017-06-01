@@ -121,7 +121,7 @@ module.exports = {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
-  _getAddonProvidedConfig: function(addonOptions) {
+  _parentName() {
     let parentName;
 
     if (this.parent) {
@@ -132,6 +132,10 @@ module.exports = {
       }
     }
 
+    return parentName;
+  },
+
+  _getAddonProvidedConfig(addonOptions) {
     let babelOptions = clone(addonOptions.babel || {});
 
     // used only to support using ember-cli-babel@6 at the
@@ -170,7 +174,12 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
 
-    let options = {};
+    let providedAnnotation = config['ember-cli-babel'] && config['ember-cli-babel'].annotation;
+
+    let options = {
+      annotation: providedAnnotation || `Babel: ${this._parentName()}`
+    };
+
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
