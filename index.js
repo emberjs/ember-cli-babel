@@ -237,7 +237,8 @@ module.exports = {
       },
 
       debugTools: {
-        source: '@ember/debug'
+        source: '@ember/debug',
+        assertPredicateIndex: 1
       }
     };
 

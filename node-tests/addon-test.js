@@ -144,7 +144,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -190,7 +190,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
