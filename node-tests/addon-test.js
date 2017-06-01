@@ -37,7 +37,7 @@ describe('ember-cli-babel', function() {
   });
 
   describe('transpileTree', function() {
-    this.timeout(100000);
+    this.timeout(0);
 
     let input;
     let output;
@@ -495,7 +495,7 @@ describe('ember-cli-babel', function() {
   });
 
   describe('buildBabelOptions', function() {
-    this.timeout(20000);
+    this.timeout(0);
 
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
