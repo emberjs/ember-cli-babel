@@ -5,6 +5,8 @@ const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
 
+let count = 0;
+
 function addBaseDir(Plugin) {
   let type = typeof Plugin;
 
@@ -34,8 +36,22 @@ module.exports = {
     return this._getBabelOptions(config);
   },
 
-  transpileTree(tree, config) {
-    return require('broccoli-babel-transpiler')(tree, this.buildBabelOptions(config));
+  _debugTree() {
+    if (!this._cachedDebugTree) {
+      this._cachedDebugTree = require('broccoli-debug').buildDebugCallback(`ember-cli-babel:${this._parentName()}`);
+    }
+
+    return this._cachedDebugTree.apply(null, arguments);
+  },
+
+  transpileTree(inputTree, config) {
+    let description = `000${++count}`.slice(-3);
+    let postDebugTree = this._debugTree(inputTree, `${description}:input`);
+
+    let BabelTranspiler = require('broccoli-babel-transpiler');
+    let output = new BabelTranspiler(postDebugTree, this.buildBabelOptions(config));
+
+    return this._debugTree(output, `${description}:output`);
   },
 
   setupPreprocessorRegistry: function(type, registry) {
