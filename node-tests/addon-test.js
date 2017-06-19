@@ -532,6 +532,17 @@ describe('ember-cli-babel', function() {
       expect(result.annotation).to.equal('Hello World!');
     });
 
+    it('uses provided sourceMaps if specified', function() {
+      let options = {
+        babel: {
+          sourceMaps: 'inline'
+        }
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.sourceMaps).to.equal('inline');
+    });
+
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
       let options = {
