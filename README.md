@@ -35,6 +35,9 @@ var app = new EmberApp({
     // don't transpile generator functions
     exclude: [
       'transform-regenerator',
+    ],
+    plugins: [
+      'transform-object-rest-spread'
     ]
   }
 });
@@ -58,6 +61,8 @@ There are a few different options that may be provided to ember-cli-babel. These
 are typically set in an apps `ember-cli-build.js` file, or in an addons `index.js`.
 
 ```ts
+type BabelPlugin = string | [string, any] | [any, any];
+
 interface EmberCLIBabelConfig {
   /**
     Configuration options for babel-preset-env.
@@ -70,6 +75,7 @@ interface EmberCLIBabelConfig {
     include?: string[];
     exclude?: string[];
     useBuiltIns?: boolean;
+    plugins?: BabelPlugin[];
   };
   
   /**
@@ -129,6 +135,32 @@ module.exports = function(defaults) {
 ```
 
 ### Addon usage
+
+#### Adding Custom Plugins
+
+You can add custom plugins to be used during transpilation of the `addon/` or `addon-test-support/`
+trees by ensuring that your addon's `options.babel` is properly populated (as mentioned above in the
+`Options` section).
+
+For example, to add `babel-plugin-transform-object-rest-spread` so that your addon can use object
+rest/spread you would do something like this:
+
+```js
+module.exports = {
+  name: 'my-special-addon',
+
+  init() {
+    this._super && this._super.init.apply(this, arguments);
+
+    this.options = this.options || {};
+    this.options.babel = this.options.babel || {};
+    this.options.babel.plugins = this.options.babel.plugins || [];
+    this.options.babel.plugins.push('transform-object-rest-spread');
+  };
+}
+```
+
+#### Additional Trees
 
 For addons which want additional customizations, they are able to interact with
 this addon directly.
