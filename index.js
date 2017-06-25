@@ -192,8 +192,14 @@ module.exports = {
 
     let providedAnnotation = config['ember-cli-babel'] && config['ember-cli-babel'].annotation;
 
+    let sourceMaps = false;
+    if (config.babel && 'sourceMaps' in config.babel) {
+      sourceMaps = config.babel.sourceMaps;
+    }
+
     let options = {
-      annotation: providedAnnotation || `Babel: ${this._parentName()}`
+      annotation: providedAnnotation || `Babel: ${this._parentName()}`,
+      sourceMaps
     };
 
     let userPlugins = addonProvidedConfig.plugins;

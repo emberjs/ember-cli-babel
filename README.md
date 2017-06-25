@@ -20,7 +20,7 @@ target browsers (as specified in `config/targets.js` in ember-cli >= 2.13). Runn
 through the transpiler shouldn't change the code at all (likely just a format change if it does).
 
 If you need to customize the way that `babel-preset-env` configures the plugins that transform your code,
-you can do it by passing in any of the options found [here](https://github.com/babel/babel-preset-env#options). 
+you can do it by passing in any of the options found [here](https://github.com/babel/babel-preset-env#options).
 *Note: `.babelrc` files are ignored by default.*
 
 Example (configuring babel directly):
@@ -75,9 +75,10 @@ interface EmberCLIBabelConfig {
     include?: string[];
     exclude?: string[];
     useBuiltIns?: boolean;
+    sourceMaps?: boolean | "inline" | "both";
     plugins?: BabelPlugin[];
   };
-  
+
   /**
     Configuration options for ember-cli-babel itself.
   */
@@ -103,6 +104,22 @@ To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel
 var app = new EmberApp(defaults, {
   'ember-cli-babel': {
     includePolyfill: true
+  }
+});
+```
+
+#### Enabling Source Maps
+
+Babel generated source maps will enable you to debug your original ES6 source code. This is disabled by default because it will slow down compilation times.
+
+To enable it, pass `sourceMaps: 'inline'` in your `babel` options.
+
+```js
+// ember-cli-build.js
+
+var app = new EmberApp(defaults, {
+  babel: {
+    sourceMaps: 'inline'
   }
 });
 ```
@@ -171,18 +188,18 @@ interface EmberCLIBabel {
     Used to generate the options that will ultimately be passed to babel itself.
   */
   buildBabelOptions(config?: EmberCLIBabelConfig): Opaque;
-  
+
   /**
-    Supports easier transpilation of non-standard input paths (e.g. to transpile 
-    a non-addon NPM dependency) while still leveraging the logic within 
+    Supports easier transpilation of non-standard input paths (e.g. to transpile
+    a non-addon NPM dependency) while still leveraging the logic within
     ember-cli-babel for transpiling (e.g. targets, preset-env config, etc).
   */
   transpileTree(inputTree: BroccoliTree, config?: EmberCLIBabelConfig): BroccoliTree;
-  
+
   /**
     Used to determine if a given plugin is required by the current target configuration.
     Does not take `includes` / `excludes` into account.
-    
+
     See https://github.com/babel/babel-preset-env/blob/master/data/plugins.json for the list
     of known plugins.
   */
@@ -217,7 +234,7 @@ let transpiledCustomTree = babelAddon.transpileTree(someCustomTree);
 
 In order to allow apps and addons to easily provide good development mode ergonomics (assertions, deprecations, etc) but
 still perform well in production mode ember-cli-babel automatically manages stripping / removing certain debug
-statements. This concept was originally proposed in [ember-cli/rfcs#50](https://github.com/ember-cli/rfcs/pull/50), 
+statements. This concept was originally proposed in [ember-cli/rfcs#50](https://github.com/ember-cli/rfcs/pull/50),
 but has been slightly modified during implementation (after researching what works well and what does not).
 
 #### Debug Macros
