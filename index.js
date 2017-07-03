@@ -208,6 +208,7 @@ module.exports = {
     options.plugins = [].concat(
       userPlugins,
       this._getDebugMacroPlugins(config),
+      this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
       this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
@@ -249,6 +250,18 @@ module.exports = {
     };
 
     return [[DebugMacros, options]];
+  },
+
+  _getEmberModulesAPIPolyfill(config) {
+    let addonOptions = config['ember-cli-babel'] || {};
+
+    if (addonOptions.disableEmberModulesAPIPolyfill) { return; }
+
+    if (this._emberVersionRequiresModulesAPIPolyfill()) {
+      const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
+
+      return [[ModulesAPIPolyfill]];
+    }
   },
 
   _getPresetEnvPlugins(config) {
@@ -329,4 +342,10 @@ module.exports = {
     }
   },
 
+  _emberVersionRequiresModulesAPIPolyfill() {
+    // once a version of Ember ships with the
+    // emberjs/rfcs#176 modules natively this will
+    // be updated to detect that and return false
+    return true;
+  }
 };
