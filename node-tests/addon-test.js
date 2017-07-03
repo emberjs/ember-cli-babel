@@ -110,6 +110,24 @@ describe('ember-cli-babel', function() {
           "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`
         });
       }));
+
+      it("does not remove _asyncToGenerator helper function when used together with debug-macros", co.wrap(function* () {
+        input.write({
+          "foo.js": stripIndent`
+            import { assert } from '@ember/debug';
+            export default { async foo() { await this.baz; }}
+          `
+        });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        let contents = output.read()['foo.js'];
+
+        expect(contents).to.include('function _asyncToGenerator');
+      }));
     });
 
     describe('debug macros', function() {
