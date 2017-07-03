@@ -86,6 +86,7 @@ interface EmberCLIBabelConfig {
     includePolyfill?: boolean;
     compileModules?: boolean;
     disableDebugTooling?: boolean;
+    disableEmberModulesAPIPolyfill?: boolean;
   };
 }
 ```
