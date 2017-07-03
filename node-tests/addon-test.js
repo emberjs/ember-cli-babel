@@ -71,47 +71,6 @@ describe('ember-cli-babel', function() {
       });
     }));
 
-    describe('ember modules API polyfill', function() {
-      it("can opt-out via ember-cli-babel.disableEmberModulesAPIPolyfill", co.wrap(function* () {
-        input.write({
-          "foo.js": `import Component from '@ember/component';`
-        });
-
-        subject = this.addon.transpileTree(input.path(), {
-          'ember-cli-babel': {
-            disableEmberModulesAPIPolyfill: true
-          }
-        });
-
-        output = createBuilder(subject);
-
-        yield output.build();
-
-        expect(
-          output.read()
-        ).to.deep.equal({
-          "foo.js": `define('foo', ['@ember/component'], function (_component) {\n  'use strict';\n});`
-        });
-      }));
-
-      it("should replace imports by default", co.wrap(function* () {
-        input.write({
-          "foo.js": `import Component from '@ember/component';`
-        });
-
-        subject = this.addon.transpileTree(input.path());
-        output = createBuilder(subject);
-
-        yield output.build();
-
-        expect(
-          output.read()
-        ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`
-        });
-      }));
-    });
-
     describe('debug macros', function() {
       it("can opt-out via ember-cli-babel.disableDebugTooling", co.wrap(function* () {
         process.env.EMBER_ENV = 'development';
