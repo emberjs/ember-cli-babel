@@ -128,6 +128,26 @@ describe('ember-cli-babel', function() {
 
         expect(contents).to.include('function _asyncToGenerator');
       }));
+
+      it("allows @ember/debug to be consumed via both debug-macros and ember-modules-api-polyfill", co.wrap(function* () {
+        input.write({
+          "foo.js": stripIndent`
+            import { assert, inspect } from '@ember/debug';
+            export default { async foo() { await this.baz; }}
+          `
+        });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        let contents = output.read()['foo.js'];
+
+        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('var inspect = Ember.inspect;');
+        expect(contents).to.not.include('assert');
+      }));
     });
 
     describe('debug macros', function() {
