@@ -96,7 +96,8 @@ describe('ember-cli-babel', function() {
 
       it("should replace imports by default", co.wrap(function* () {
         input.write({
-          "foo.js": `import Component from '@ember/component';`
+          "foo.js": `import Component from '@ember/component';`,
+          "app.js": `import Application from '@ember/application';`
         });
 
         subject = this.addon.transpileTree(input.path());
@@ -107,7 +108,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`,
+          "app.js": `define('app', [], function () {\n  'use strict';\n\n  var Application = Ember.Application;\n});`
         });
       }));
 
