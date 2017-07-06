@@ -260,7 +260,7 @@ module.exports = {
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
       const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
 
-      return [[ModulesAPIPolyfill]];
+      return [[ModulesAPIPolyfill, { blacklist: { '@ember/debug': ['assert', 'deprecate', 'warn']} }]];
     }
   },
 

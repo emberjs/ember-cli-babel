@@ -96,7 +96,8 @@ describe('ember-cli-babel', function() {
 
       it("should replace imports by default", co.wrap(function* () {
         input.write({
-          "foo.js": `import Component from '@ember/component';`
+          "foo.js": `import Component from '@ember/component';`,
+          "app.js": `import Application from '@ember/application';`
         });
 
         subject = this.addon.transpileTree(input.path());
@@ -107,8 +108,48 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`,
+          "app.js": `define('app', [], function () {\n  'use strict';\n\n  var Application = Ember.Application;\n});`
         });
+      }));
+
+      it("does not remove _asyncToGenerator helper function when used together with debug-macros", co.wrap(function* () {
+        input.write({
+          "foo.js": stripIndent`
+            import { assert } from '@ember/debug';
+            export default { async foo() { await this.baz; }}
+          `
+        });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        let contents = output.read()['foo.js'];
+
+        expect(contents).to.include('function _asyncToGenerator');
+      }));
+
+      it("allows @ember/debug to be consumed via both debug-macros and ember-modules-api-polyfill", co.wrap(function* () {
+        input.write({
+          "foo.js": stripIndent`
+            import { assert, inspect } from '@ember/debug';
+            export default { async foo() { await this.baz; }}
+          `
+        });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        let contents = output.read()['foo.js'];
+
+        expect(contents).to.not.include('@ember/debug');
+        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('var inspect = Ember.inspect;');
+        expect(contents).to.not.include('assert');
       }));
     });
 
