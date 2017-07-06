@@ -144,6 +144,7 @@ describe('ember-cli-babel', function() {
 
         let contents = output.read()['foo.js'];
 
+        expect(contents).to.not.include('@ember/debug');
         expect(contents).to.include('function _asyncToGenerator');
         expect(contents).to.include('var inspect = Ember.inspect;');
         expect(contents).to.not.include('assert');
