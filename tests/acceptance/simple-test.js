@@ -23,6 +23,5 @@ test('ES6 features work correcly', function(assert) {
     assert.equal('Test Value', find('#test-input').val(), 'Has arrow functions and template string as ES6 feature');
     assert.equal('one', find('#first-value').text(), 'Has generatos as ES6 feature');
     assert.equal('two', find('#last-value').text(), 'Has generatos as ES6 feature');
-    assert.equal('true', find('#proxy-value').text(), 'Has proxies as ES6 feature');
   });
 });

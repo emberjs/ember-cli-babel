@@ -9,18 +9,4 @@ export default Controller.extend({
 
   // Test a generator (needs the regenerator runtime) and some ES6 constructs (requires the corejs polyfill)
   values: A(Array.from({ *[Symbol.iterator]() { yield 'one'; yield 'two'; } })), // jshint ignore:line
-
-  hasProxies: computed({
-    get() {
-      const target = {};
-      const handler = {
-        get: (receiver, name) => {
-          return `Hello, ${name}!`;
-        }
-      };
-
-      const p = new Proxy(target, handler);
-      return p.world === 'Hello, world!';
-    }
-  })
 });
