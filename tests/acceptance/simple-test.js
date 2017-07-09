@@ -2,6 +2,8 @@ import Ember from 'ember';
 import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
 
+const { run } = Ember;
+
 let App;
 
 module('Simple Acceptance Test', {
@@ -10,16 +12,17 @@ module('Simple Acceptance Test', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   }
 });
 
-test('value of input', function(assert) {
+test('ES6 features work correcly', function(assert) {
   visit('/');
 
   andThen(() => {
-    assert.equal('Test Value', find('#test-input').val());
-    assert.equal('one', find('#first-value').text());
-    assert.equal('two', find('#last-value').text());
+    assert.equal('Test Value', find('#test-input').val(), 'Has arrow functions and template string as ES6 feature');
+    assert.equal('one', find('#first-value').text(), 'Has generatos as ES6 feature');
+    assert.equal('two', find('#last-value').text(), 'Has generatos as ES6 feature');
+    assert.equal('true', find('#proxy-value').text(), 'Has proxies as ES6 feature');
   });
 });
