@@ -2,8 +2,6 @@ import Ember from 'ember';
 import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
 
-const { run } = Ember;
-
 let App;
 
 module('Simple Acceptance Test', {
@@ -12,7 +10,7 @@ module('Simple Acceptance Test', {
   },
 
   afterEach() {
-    run(App, 'destroy');
+    Ember.run(App, 'destroy');
   }
 });
 
