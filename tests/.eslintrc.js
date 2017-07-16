@@ -1,5 +1,6 @@
 module.exports = {
   env: {
-    embertest: true
+    embertest: true,
+    es6: true
   }
 };
