@@ -58,7 +58,7 @@ var app = new EmberApp({
 ### Options
 
 There are a few different options that may be provided to ember-cli-babel. These options
-are typically set in an apps `ember-cli-build.js` file, or in an addons `index.js`.
+are typically set in an apps `ember-cli-build.js` file, or in an addon or engine's `index.js`.
 
 ```ts
 type BabelPlugin = string | [string, any] | [any, any];
@@ -89,6 +89,39 @@ interface EmberCLIBabelConfig {
     disableEmberModulesAPIPolyfill?: boolean;
   };
 }
+```
+
+The exact location you specify these options varies depending on the type of project you're working on. As a concrete example, to add `babel-plugin-transform-object-rest-spread` so that your project can use object rest/spread syntax, you would do something like this in an app:
+
+```js
+// ember-cli-build.js
+var app = new EmberApp(defaults, {
+  babel: {
+    plugins: ['transform-object-rest-spread']
+  }
+});
+```
+
+In an engine:
+```js
+// index.js
+module.exports = EngineAddon.extend({
+  babel: {
+    plugins: ['transform-object-rest-spread']
+  }
+});
+```
+
+In an addon:
+```js
+// index.js
+module.exports = {
+  options: {
+    babel: {
+      plugins: ['transform-object-rest-spread']
+    }
+  }
+};
 ```
 
 #### Polyfill
@@ -159,24 +192,6 @@ module.exports = function(defaults) {
 You can add custom plugins to be used during transpilation of the `addon/` or `addon-test-support/`
 trees by ensuring that your addon's `options.babel` is properly populated (as mentioned above in the
 `Options` section).
-
-For example, to add `babel-plugin-transform-object-rest-spread` so that your addon can use object
-rest/spread you would do something like this:
-
-```js
-module.exports = {
-  name: 'my-special-addon',
-
-  init() {
-    this._super && this._super.init.apply(this, arguments);
-
-    this.options = this.options || {};
-    this.options.babel = this.options.babel || {};
-    this.options.babel.plugins = this.options.babel.plugins || [];
-    this.options.babel.plugins.push('transform-object-rest-spread');
-  };
-}
-```
 
 #### Additional Trees
 
