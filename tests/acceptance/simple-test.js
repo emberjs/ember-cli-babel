@@ -1,18 +1,7 @@
-import Ember from 'ember';
-import { module, test } from 'qunit';
-import startApp from '../helpers/start-app';
+import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
+import { test } from 'qunit';
 
-let App;
-
-module('Simple Acceptance Test', {
-  beforeEach() {
-    App = startApp();
-  },
-
-  afterEach() {
-    Ember.run(App, 'destroy');
-  }
-});
+moduleForAcceptance('Acceptance | Simple Acceptance Test');
 
 test('ES6 features work correcly', function(assert) {
   visit('/');
