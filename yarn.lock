@@ -916,7 +916,7 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-broccoli-babel-transpiler@^6.0.0:
+broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.1:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-6.1.1.tgz#938f470e1ddb47047a77ef5e38f34c21de0e85a8"
   dependencies:
