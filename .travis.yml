@@ -27,4 +27,17 @@ install:
   - yarn install --no-lockfile --non-interactive
 
 script:
-  - yarn run test
+  - yarn test
+
+before_deploy:
+  - yarn global add auto-dist-tag
+  - auto-dist-tag --write
+
+deploy:
+  provider: npm
+  email: stefan.penner+ember-cli@gmail.com
+  api_key:
+    secure: OVMYTMjIiSuBxCB0vQZJfaQzyeaR0U5dgRZaoc5CRd4yys9i+rL3PlJaWeeO6Lm950j+v6fDKHZg6aMLAhLOosZfkLEZh0ycvBSKq//ZI5yAhqnp9LV7/FGCEBT0ij1Mp3cqCaIlQIZjPo6lS+hIsYf3tqg1/cw2VOtDO4RprJ4=
+  on:
+    tags: true
+    repo: babel/ember-cli-babel
