@@ -277,6 +277,72 @@ describe('ember-cli-babel', function() {
         }));
       });
     });
+
+    describe('@ember/string detection', function() {
+      beforeEach(function() {
+        let project = { root: input.path() };
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+      });
+
+      it('does not transpile the @ember/string imports when addon is present', co.wrap(function* () {
+        input.write({
+          node_modules: {
+            '@ember': {
+              'string': {
+                'package.json': JSON.stringify({ name: '@ember/string', version: '1.0.0' }),
+                'index.js': 'module.exports = {};',
+              },
+            },
+          },
+          app: {
+            "foo.js": stripIndent`
+              import { camelize } from '@ember/string';
+              camelize('stuff-here');
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define('foo', ['@ember/string'], function (_string) {\n  'use strict';\n\n  (0, _string.camelize)('stuff-here');\n});`
+        });
+      }));
+
+      it('transpiles the @ember/string imports when addon is missing', co.wrap(function* () {
+        input.write({
+          node_modules: {
+          },
+          app: {
+            "foo.js": stripIndent`
+              import { camelize } from '@ember/string';
+              camelize('stuff-here');
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var camelize = Ember.String.camelize;\n\n  camelize('stuff-here');\n});`
+        });
+      }));
+
+    });
   });
 
   describe('_getAddonOptions', function() {
