@@ -36,7 +36,7 @@
   "dependencies": {
     "amd-name-resolver": "0.0.7",
     "babel-plugin-debug-macros": "^0.1.11",
-    "babel-plugin-ember-modules-api-polyfill": "^1.5.0",
+    "babel-plugin-ember-modules-api-polyfill": "^1.5.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-env": "^1.5.1",
