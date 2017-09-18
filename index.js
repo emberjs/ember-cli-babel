@@ -113,11 +113,9 @@ module.exports = {
     if (!targets) { return true; }
 
     const isPluginRequired = require('babel-preset-env').isPluginRequired;
-    const getTargets = require('babel-preset-env/lib/targets-parser').default;
     const pluginList = require('babel-preset-env/data/plugins');
 
-    let parsedTargets = getTargets(targets);
-    return isPluginRequired(parsedTargets, pluginList[pluginName]);
+    return isPluginRequired(targets, pluginList[pluginName]);
   },
 
   _getAddonOptions: function() {
@@ -254,8 +252,7 @@ module.exports = {
   _getPresetEnvPlugins(config) {
     let options = config.options;
 
-    let targets = this._getTargets();
-    let browsers = targets && targets.browsers;
+    let targets = this.project && this.project.targets;
     let presetOptions = Object.assign({}, options, {
       modules: false,
       targets
@@ -278,7 +275,7 @@ module.exports = {
   },
 
   _getTargets() {
-    let targets = this.project && this.project.targets && this.project.targets;
+    let targets = this.project && this.project.targets;
 
     let parser = require('babel-preset-env/lib/targets-parser').default;
     if (typeof targets === 'object' && targets !== null) {

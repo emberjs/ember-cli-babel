@@ -90,7 +90,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@ember/component'], function (_component) {\n  'use strict';\n});`
+          "foo.js": `define("foo", ["@ember/component"], function (_component) {\n  "use strict";\n});`
         });
       }));
 
@@ -108,8 +108,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`,
-          "app.js": `define('app', [], function () {\n  'use strict';\n\n  var Application = Ember.Application;\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  var Component = Ember.Component;\n});`,
+          "app.js": `define("app", [], function () {\n  "use strict";\n\n  var Application = Ember.Application;\n});`
         });
       }));
 
@@ -181,7 +181,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@glimmer/env'], function (_env) {\n  'use strict';\n\n  if (_env.DEBUG) {\n    console.log('debug mode!');\n  }\n});`
+          "foo.js": `define("foo", ["@glimmer/env"], function (_env) {\n  "use strict";\n\n  if (_env.DEBUG) {\n    console.log('debug mode!');\n  }\n});`
         });
       }));
 
@@ -204,7 +204,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (true) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -226,7 +226,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -250,7 +250,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (false) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -272,7 +272,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
