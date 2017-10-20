@@ -99,7 +99,7 @@ module.exports = {
   },
 
   _requiredPolyfills() {
-    const parseTargets = require('babel-preset-env/').getTargets;
+    const parseTargets = require('babel-preset-env/lib/targets-parser').default;
     const builtInsList = require('babel-preset-env/data/built-ins');
     const defaultWebIncludes = require('babel-preset-env/lib/default-includes').defaultWebIncludes;
     const normalizeOptions = require('babel-preset-env/lib/normalize-options').default;
