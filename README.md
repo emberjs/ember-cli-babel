@@ -20,7 +20,7 @@ target browsers (as specified in `config/targets.js` in ember-cli >= 2.13). Runn
 through the transpiler shouldn't change the code at all (likely just a format change if it does).
 
 If you need to customize the way that `babel-preset-env` configures the plugins that transform your code,
-you can do it by passing in any of the options found [here](https://github.com/babel/babel-preset-env#options).
+you can do it by passing in any of the options found [here](https://github.com/babel/babel/tree/master/experimental/babel-preset-env#options).
 *Note: `.babelrc` files are ignored by default.*
 
 Example (configuring babel directly):
