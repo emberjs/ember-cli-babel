@@ -259,8 +259,9 @@ module.exports = {
 
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
       const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
+      const blacklist = this._getEmberModulesAPIBlacklist();
 
-      return [[ModulesAPIPolyfill, { blacklist: { '@ember/debug': ['assert', 'deprecate', 'warn']} }]];
+      return [[ModulesAPIPolyfill, { blacklist }]];
     }
   },
 
@@ -347,5 +348,27 @@ module.exports = {
     // emberjs/rfcs#176 modules natively this will
     // be updated to detect that and return false
     return true;
-  }
+  },
+
+  _getEmberModulesAPIBlacklist() {
+    const blacklist = { 
+      '@ember/debug': ['assert', 'deprecate', 'warn'],
+    };
+    
+    if (this._emberStringDependencyPresent()) {
+      blacklist['@ember/string'] = [
+        'fmt', 'loc', 'w',
+        'decamelize', 'dasherize', 'camelize',
+        'classify', 'underscore', 'capitalize',
+      ];
+    }
+
+    return blacklist;
+  },
+
+  _emberStringDependencyPresent() {
+    let checker = new VersionChecker(this.parent).for('@ember/string', 'npm');
+
+    return checker.exists();
+  },
 };
