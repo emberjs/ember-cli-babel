@@ -1,5 +1,19 @@
 # Changelog
 
+
+## v6.9.0 (2017-11-08)
+
+#### :rocket: Enhancement
+* [#176](https://github.com/babel/ember-cli-babel/pull/176) Blacklists `@ember/string` if dependency is present. ([@locks](https://github.com/locks))
+
+#### :memo: Documentation
+* [#185](https://github.com/babel/ember-cli-babel/pull/185) Add CHANGELOG file. ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 3
+- Alvin Crespo ([alvincrespo](https://github.com/alvincrespo))
+- Ricardo Mendes ([locks](https://github.com/locks))
+- Tobias Bieniek ([Turbo87](https://github.com/Turbo87))
+
 ## v6.8.2 (2017-08-30)
 
 #### :bug: Bug Fix
