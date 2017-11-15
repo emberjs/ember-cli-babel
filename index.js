@@ -351,10 +351,10 @@ module.exports = {
   },
 
   _getEmberModulesAPIBlacklist() {
-    const blacklist = { 
+    const blacklist = {
       '@ember/debug': ['assert', 'deprecate', 'warn'],
     };
-    
+
     if (this._emberStringDependencyPresent()) {
       blacklist['@ember/string'] = [
         'fmt', 'loc', 'w',
