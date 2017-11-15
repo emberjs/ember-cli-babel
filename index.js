@@ -4,6 +4,7 @@
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
+const semver = require('semver');
 
 let count = 0;
 
@@ -339,7 +340,7 @@ module.exports = {
 
       return babelOptions.compileModules;
     } else {
-      return this.emberCLIChecker.gt('2.12.0-alpha.1');
+      return semver.gt(this.project.emberCLIVersion, '2.12.0-alpha.1');
     }
   },
 
