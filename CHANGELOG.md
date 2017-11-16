@@ -1,5 +1,13 @@
 # Changelog
 
+## v6.9.2 (2017-11-16)
+
+#### :bug: Bug Fix
+* [#192](https://github.com/babel/ember-cli-babel/pull/192) `Project.prototype.emberCLIVersion` is a function.. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
+
 ## v6.9.1 (2017-11-16)
 
 #### :bug: Bug Fix
