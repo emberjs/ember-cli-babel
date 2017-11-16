@@ -340,7 +340,7 @@ module.exports = {
 
       return babelOptions.compileModules;
     } else {
-      return semver.gt(this.project.emberCLIVersion, '2.12.0-alpha.1');
+      return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
     }
   },
 
