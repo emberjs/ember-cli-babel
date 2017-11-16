@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.9.1 (2017-11-16)
+
+#### :bug: Bug Fix
+* [#190](https://github.com/babel/ember-cli-babel/pull/190) Properly detect host ember-cli version.. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
 
 ## v6.9.0 (2017-11-08)
 
