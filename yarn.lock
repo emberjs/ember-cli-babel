@@ -4888,7 +4888,7 @@ sane@^1.1.1, sane@^1.4.1, sane@^1.6.0:
     walker "~1.0.5"
     watch "~0.10.0"
 
-"semver@2 || 3 || 4 || 5":
+"semver@2 || 3 || 4 || 5", semver@^5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 

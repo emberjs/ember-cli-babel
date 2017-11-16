@@ -20,7 +20,7 @@ describe('ember-cli-babel', function() {
 
   beforeEach(function() {
     this.ui = new MockUI();
-    let project = { root: __dirname };
+    let project = { root: __dirname, emberCLIVersion: '2.16.2' };
     this.addon = new Addon({
       project,
       parent: project,
@@ -280,7 +280,7 @@ describe('ember-cli-babel', function() {
 
     describe('@ember/string detection', function() {
       beforeEach(function() {
-        let project = { root: input.path() };
+        let project = { root: input.path(), emberCLIVersion: '2.16.2' };
         this.addon = new Addon({
           project,
           parent: project,
@@ -504,13 +504,13 @@ describe('ember-cli-babel', function() {
 
     describe('without any compileModules option set', function() {
       it('returns false for ember-cli < 2.12', function() {
-        this.addon.emberCLIChecker = { gt() { return false; } };
+        this.addon.project.emberCLIVersion = '2.11.1';
 
         expect(this.addon.shouldCompileModules()).to.eql(false);
       });
 
       it('returns true for ember-cli > 2.12.0-alpha.1', function() {
-        this.addon.emberCLIChecker = { gt() { return true; } };
+        this.addon.project.emberCLIVersion = '2.13.0';
 
         expect(this.addon.shouldCompileModules()).to.be.true;
       });
