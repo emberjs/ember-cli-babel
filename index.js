@@ -191,7 +191,14 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
 
-    let providedAnnotation = config['ember-cli-babel'] && config['ember-cli-babel'].annotation;
+    let emberCLIBabelConfig = config['ember-cli-babel'];
+    let shouldRunPresetEnv = true;
+    let providedAnnotation;
+
+    if (emberCLIBabelConfig) {
+      providedAnnotation = emberCLIBabelConfig.annotation;
+      shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
+    }
 
     let sourceMaps = false;
     if (config.babel && 'sourceMaps' in config.babel) {
@@ -211,7 +218,7 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
-      this._getPresetEnvPlugins(addonProvidedConfig),
+      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
 
@@ -270,7 +277,6 @@ module.exports = {
     let options = config.options;
 
     let targets = this._getTargets();
-    let browsers = targets && targets.browsers;
     let presetOptions = Object.assign({}, options, {
       modules: false,
       targets
