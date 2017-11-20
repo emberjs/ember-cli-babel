@@ -1,5 +1,13 @@
 # Changelog
 
+## v6.10.0 (2017-11-20)
+
+#### :rocket: Enhancement
+* [#193](https://github.com/babel/ember-cli-babel/pull/193) Allow configuration to opt-out of babel-preset-env.. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
+-
 ## v6.9.2 (2017-11-16)
 
 #### :bug: Bug Fix
