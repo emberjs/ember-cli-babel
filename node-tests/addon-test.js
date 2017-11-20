@@ -807,6 +807,22 @@ describe('ember-cli-babel', function() {
       return false;
     }
 
+    it('does nothing when disablePresetEnv is set', function() {
+      let _presetEnvCalled = false;
+
+      this.addon._presetEnv = function() {
+        _presetEnvCalled = true;
+      };
+
+      this.addon.buildBabelOptions({
+        'ember-cli-babel': {
+          disablePresetEnv: true,
+        }
+      });
+
+      expect(_presetEnvCalled).to.be.false;
+    });
+
     it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };
       this.addon.parent = {
