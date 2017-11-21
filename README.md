@@ -66,7 +66,7 @@ type BabelPlugin = string | [string, any] | [any, any];
 interface EmberCLIBabelConfig {
   /**
     Configuration options for babel-preset-env.
-    See https://github.com/babel/babel-preset-env#options for details on these options.
+    See https://github.com/babel/babel/tree/master/experimental/babel-preset-env#options for details on these options.
   */
   babel?: {
     spec?: boolean;
