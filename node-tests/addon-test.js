@@ -96,8 +96,8 @@ describe('ember-cli-babel', function() {
 
       it("should replace imports by default", co.wrap(function* () {
         input.write({
-          "foo.js": `import Component from '@ember/component';`,
-          "app.js": `import Application from '@ember/application';`
+          "foo.js": `import Component from '@ember/component'; Component.extend()`,
+          "app.js": `import Application from '@ember/application'; Application.extend()`
         });
 
         subject = this.addon.transpileTree(input.path());
@@ -108,8 +108,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var Component = Ember.Component;\n});`,
-          "app.js": `define('app', [], function () {\n  'use strict';\n\n  var Application = Ember.Application;\n});`
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.Component.extend();\n});`,
+          "app.js": `define('app', [], function () {\n  'use strict';\n\n  Ember.Application.extend();\n});`
         });
       }));
 
@@ -135,7 +135,7 @@ describe('ember-cli-babel', function() {
         input.write({
           "foo.js": stripIndent`
             import { assert, inspect } from '@ember/debug';
-            export default { async foo() { await this.baz; }}
+            export default { async foo() { inspect(await this.baz); }}
           `
         });
 
@@ -148,7 +148,7 @@ describe('ember-cli-babel', function() {
 
         expect(contents).to.not.include('@ember/debug');
         expect(contents).to.include('function _asyncToGenerator');
-        expect(contents).to.include('var inspect = Ember.inspect;');
+        expect(contents).to.include('Ember.inspect;');
         expect(contents).to.not.include('assert');
       }));
     });
@@ -338,7 +338,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  var camelize = Ember.String.camelize;\n\n  camelize('stuff-here');\n});`
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.String.camelize('stuff-here');\n});`
         });
       }));
 
