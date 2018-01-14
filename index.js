@@ -299,7 +299,7 @@ module.exports = {
   },
 
   _getTargets() {
-    let targets = this.project && this.project.targets && this.project.targets;
+    let targets = this.project && this.project.targets;
 
     let parser = require('babel-preset-env/lib/targets-parser').default;
     if (typeof targets === 'object' && targets !== null) {
