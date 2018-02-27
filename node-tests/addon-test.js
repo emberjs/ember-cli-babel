@@ -343,6 +343,33 @@ describe('ember-cli-babel', function() {
       }));
 
     });
+
+    describe('_shouldDoNothing', function() {
+      it("will no-op if nothing to do", co.wrap(function* () {
+        input.write({
+          "foo.js": `invalid code`
+        });
+
+        subject = this.addon.transpileTree(input.path(), {
+          'ember-cli-babel': {
+            compileModules: false,
+            disablePresetEnv: true,
+            disableDebugTooling: true,
+            disableEmberModulesAPIPolyfill: true
+          }
+        });
+
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `invalid code`
+        });
+      }));
+    });
   });
 
   describe('_getAddonOptions', function() {

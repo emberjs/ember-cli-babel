@@ -49,8 +49,14 @@ module.exports = {
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
 
-    let BabelTranspiler = require('broccoli-babel-transpiler');
-    let output = new BabelTranspiler(postDebugTree, this.buildBabelOptions(config));
+    let options = this.buildBabelOptions(config);
+    let output;
+    if (this._shouldDoNothing(options)) {
+      output = postDebugTree;
+    } else {
+      let BabelTranspiler = require('broccoli-babel-transpiler');
+      output = new BabelTranspiler(postDebugTree, options);
+    }
 
     return this._debugTree(output, `${description}:output`);
   },
@@ -378,4 +384,9 @@ module.exports = {
 
     return checker.exists();
   },
+
+  // detect if running babel would do nothing... and do nothing instead
+  _shouldDoNothing(options) {
+    return !options.sourceMaps && !options.plugins.length;
+  }
 };
