@@ -211,10 +211,12 @@ module.exports = {
       sourceMaps = config.babel.sourceMaps;
     }
 
-    let options = {
-      annotation: providedAnnotation || `Babel: ${this._parentName()}`,
-      sourceMaps
-    };
+    let retainLines = false;
+    if (config.babel && "retainLines" in config.babel) {
+      retainLines = config.babel.retainLines;
+    }
+
+    let options = { annotation: providedAnnotation || `Babel: ${this._parentName()}`, sourceMaps, retainLines };
 
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
