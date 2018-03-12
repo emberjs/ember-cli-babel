@@ -17,10 +17,10 @@ describe('ember-cli-babel', function() {
     });
   });
 
-  describe('Deprecate ember-cli-babel 5', function() {
-    it('should always print deprecaiton', function() {
+  describe('init()', function() {
+    it('should always print deprecation for version 5.x', function() {
       var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-        return line.indexOf('Write actual deprecation') !== -1;
+        return line.indexOf('ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6.0') !== -1;
       });
 
       expect(deprecationMessages).to.have.lengthOf(1);
