@@ -17,6 +17,16 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('Deprecate ember-cli-babel 5', function() {
+    it('should always print deprecaiton', function() {
+      var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
+        return line.indexOf('Write actual deprecation') !== -1;
+      });
+
+      expect(deprecationMessages).to.have.lengthOf(1);
+    });
+  });
+
   describe('shouldIncludePolyfill()', function() {
     describe('without any includePolyfill option set', function() {
       it('should return false', function() {
