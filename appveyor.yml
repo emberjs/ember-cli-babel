@@ -24,7 +24,7 @@ install:
   - md C:\nc
   - npm config set cache C:\nc
   - npm version
-  - npm install phantomjs-prebuilt
+  - npm install phantomjs-prebuilt@2.1.7
   - npm install mocha-appveyor-reporter
   - npm install --no-optional
   - npm install -g bower
