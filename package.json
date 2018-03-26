@@ -62,5 +62,8 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "publishConfig": {
+    "tag": "5.x"
   }
 }
