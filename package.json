@@ -44,7 +44,7 @@
     "chai": "^3.5.0",
     "console-ui": "^1.0.2",
     "core-object": "^2.0.6",
-    "ember-cli": "~2.6.2",
+    "ember-cli": "~0.2.0",
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-htmlbars": "^1.0.8",
     "ember-cli-htmlbars-inline-precompile": "0.3.2",
