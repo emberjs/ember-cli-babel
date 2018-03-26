@@ -12,12 +12,12 @@ module.exports = {
 
   init: function() {
     this._super.init && this._super.init.apply(this, arguments);
-    
+
     var deprecationMessage = 'ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6.0';
-    if (typeof this.ui === 'object' && typeof this.ui.writeDeprecateLine === 'function') {
-        this.ui.writeDeprecateLine(deprecationMessage);
+    if (this.ui.writeDeprecateLine) {
+      this.ui.writeDeprecateLine(deprecationMessage);
     } else {
-        console.warn(deprecationMessage);
+      console.warn('DEPRECATION: ' + deprecationMessage);
     }
 
     var checker = new VersionChecker(this);
