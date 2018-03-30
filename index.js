@@ -6,6 +6,19 @@ var clone     = require('clone');
 var path      = require('path');
 var resolve   = require('resolve');
 
+var roots = {};
+
+function calcAddonChain(addon) {
+  var project = addon.project;
+  var addonChain = [];
+  while (addon !== project) {
+    addonChain.push(addon.name);
+    addon = addon.parent;
+  }
+  addonChain.push(project.name());
+  return addonChain.reverse().join(' -> ');
+}
+
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
@@ -13,11 +26,15 @@ module.exports = {
   init: function() {
     this._super.init && this._super.init.apply(this, arguments);
 
-    var deprecationMessage = 'ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6.0';
-    if (this.ui && this.ui.writeDeprecateLine) {
-      this.ui.writeDeprecateLine(deprecationMessage);
-    } else {
-      console.warn('DEPRECATION: ' + deprecationMessage);
+    var addonChainString = calcAddonChain(this);
+    if (!roots[addonChainString]) {
+      var deprecationMessage = 'ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6. Version ' + this.pkg.version + ' located: ' + addonChainString;
+      if (this.ui && this.ui.writeDeprecateLine) {
+        this.ui.writeDeprecateLine(deprecationMessage);
+      } else {
+        console.warn('DEPRECATION: ' + deprecationMessage);
+      }
+      roots[addonChainString] = true;
     }
 
     var checker = new VersionChecker(this);

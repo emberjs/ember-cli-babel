@@ -8,19 +8,26 @@ var Addon = CoreObject.extend(AddonMixin);
 describe('ember-cli-babel', function() {
   beforeEach(function() {
     this.ui = new MockUI();
+    var project = {
+      root: __dirname,
+      name: function() {
+        return 'test-app';
+      }
+    };
     this.addon = new Addon({
-      project: {
-        root: __dirname,
-      },
-      parent: {},
+      project: project,
+      parent: project,
       ui: this.ui,
+      pkg: {
+        version: '1.2.3'
+      }
     });
   });
 
   describe('init()', function() {
     it('should always print deprecation for version 5.x', function() {
       var deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-        return line.indexOf('ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6.0') !== -1;
+        return line.indexOf('DEPRECATION: ember-cli-babel 5.x has been deprecated. Please upgrade to at least ember-cli-babel 6.6. Version 1.2.3 located: test-app -> ember-cli-babel') !== -1;
       });
 
       expect(deprecationMessages).to.have.lengthOf(1);
