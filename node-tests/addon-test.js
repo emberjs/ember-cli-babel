@@ -20,7 +20,7 @@ describe('ember-cli-babel', function() {
 
   beforeEach(function() {
     this.ui = new MockUI();
-    let project = { root: __dirname };
+    let project = { root: __dirname, emberCLIVersion: () => '2.16.2' };
     this.addon = new Addon({
       project,
       parent: project,
@@ -96,8 +96,8 @@ describe('ember-cli-babel', function() {
 
       it("should replace imports by default", co.wrap(function* () {
         input.write({
-          "foo.js": `import Component from '@ember/component';`,
-          "app.js": `import Application from '@ember/application';`
+          "foo.js": `import Component from '@ember/component'; Component.extend()`,
+          "app.js": `import Application from '@ember/application'; Application.extend()`
         });
 
         subject = this.addon.transpileTree(input.path());
@@ -108,8 +108,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  var Component = Ember.Component;\n});`,
-          "app.js": `define("app", [], function () {\n  "use strict";\n\n  var Application = Ember.Application;\n});`
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.Component.extend();\n});`,
+          "app.js": `define('app', [], function () {\n  'use strict';\n\n  Ember.Application.extend();\n});`
         });
       }));
 
@@ -135,7 +135,7 @@ describe('ember-cli-babel', function() {
         input.write({
           "foo.js": stripIndent`
             import { assert, inspect } from '@ember/debug';
-            export default { async foo() { await this.baz; }}
+            export default { async foo() { inspect(await this.baz); }}
           `
         });
 
@@ -148,7 +148,7 @@ describe('ember-cli-babel', function() {
 
         expect(contents).to.not.include('@ember/debug');
         expect(contents).to.include('function _asyncToGenerator');
-        expect(contents).to.include('var inspect = Ember.inspect;');
+        expect(contents).to.include('Ember.inspect;');
         expect(contents).to.not.include('assert');
       }));
     });
@@ -277,6 +277,99 @@ describe('ember-cli-babel', function() {
         }));
       });
     });
+
+    describe('@ember/string detection', function() {
+      beforeEach(function() {
+        let project = { root: input.path(), emberCLIVersion: () => '2.16.2' };
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+      });
+
+      it('does not transpile the @ember/string imports when addon is present', co.wrap(function* () {
+        input.write({
+          node_modules: {
+            '@ember': {
+              'string': {
+                'package.json': JSON.stringify({ name: '@ember/string', version: '1.0.0' }),
+                'index.js': 'module.exports = {};',
+              },
+            },
+          },
+          app: {
+            "foo.js": stripIndent`
+              import { camelize } from '@ember/string';
+              camelize('stuff-here');
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define('foo', ['@ember/string'], function (_string) {\n  'use strict';\n\n  (0, _string.camelize)('stuff-here');\n});`
+        });
+      }));
+
+      it('transpiles the @ember/string imports when addon is missing', co.wrap(function* () {
+        input.write({
+          node_modules: {
+          },
+          app: {
+            "foo.js": stripIndent`
+              import { camelize } from '@ember/string';
+              camelize('stuff-here');
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.String.camelize('stuff-here');\n});`
+        });
+      }));
+
+    });
+
+    describe('_shouldDoNothing', function() {
+      it("will no-op if nothing to do", co.wrap(function* () {
+        input.write({
+          "foo.js": `invalid code`
+        });
+
+        subject = this.addon.transpileTree(input.path(), {
+          'ember-cli-babel': {
+            compileModules: false,
+            disablePresetEnv: true,
+            disableDebugTooling: true,
+            disableEmberModulesAPIPolyfill: true
+          }
+        });
+
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `invalid code`
+        });
+      }));
+    });
   });
 
   describe('_getAddonOptions', function() {
@@ -369,13 +462,13 @@ describe('ember-cli-babel', function() {
 
     describe('without any compileModules option set', function() {
       it('returns false for ember-cli < 2.12', function() {
-        this.addon.emberCLIChecker = { gt() { return false; } };
+        this.addon.project.emberCLIVersion = () => '2.11.1';
 
         expect(this.addon.shouldCompileModules()).to.eql(false);
       });
 
       it('returns true for ember-cli > 2.12.0-alpha.1', function() {
-        this.addon.emberCLIChecker = { gt() { return true; } };
+        this.addon.project.emberCLIVersion = () => '2.13.0';
 
         expect(this.addon.shouldCompileModules()).to.be.true;
       });
@@ -636,6 +729,22 @@ describe('ember-cli-babel', function() {
 
       return false;
     }
+
+    it('does nothing when disablePresetEnv is set', function() {
+      let _presetEnvCalled = false;
+
+      this.addon._presetEnv = function() {
+        _presetEnvCalled = true;
+      };
+
+      this.addon.buildBabelOptions({
+        'ember-cli-babel': {
+          disablePresetEnv: true,
+        }
+      });
+
+      expect(_presetEnvCalled).to.be.false;
+    });
 
     it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };

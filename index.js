@@ -4,6 +4,7 @@
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
+const semver = require('semver');
 
 let count = 0;
 
@@ -46,8 +47,14 @@ module.exports = {
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
 
-    let BabelTranspiler = require('broccoli-babel-transpiler');
-    let output = new BabelTranspiler(postDebugTree, this.buildBabelOptions(config));
+    let options = this.buildBabelOptions(config);
+    let output;
+    if (this._shouldDoNothing(options)) {
+      output = postDebugTree;
+    } else {
+      let BabelTranspiler = require('broccoli-babel-transpiler');
+      output = new BabelTranspiler(postDebugTree, options);
+    }
 
     return this._debugTree(output, `${description}:output`);
   },
@@ -175,7 +182,14 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
 
-    let providedAnnotation = config['ember-cli-babel'] && config['ember-cli-babel'].annotation;
+    let emberCLIBabelConfig = config['ember-cli-babel'];
+    let shouldRunPresetEnv = true;
+    let providedAnnotation;
+
+    if (emberCLIBabelConfig) {
+      providedAnnotation = emberCLIBabelConfig.annotation;
+      shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
+    }
 
     let sourceMaps = false;
     if (config.babel && 'sourceMaps' in config.babel) {
@@ -195,7 +209,7 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
-      this._getPresetEnvPlugins(addonProvidedConfig),
+      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
 
@@ -244,8 +258,9 @@ module.exports = {
 
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
       const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
+      const blacklist = this._getEmberModulesAPIBlacklist();
 
-      return [[ModulesAPIPolyfill, { blacklist: { '@ember/debug': ['assert', 'deprecate', 'warn']} }]];
+      return [[ModulesAPIPolyfill, { blacklist }]];
     }
   },
 
@@ -313,7 +328,7 @@ module.exports = {
     if (addonOptions && 'compileModules' in addonOptions) {
       return addonOptions.compileModules;
     } else {
-      return this.emberCLIChecker.gt('2.12.0-alpha.1');
+      return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
     }
   },
 
@@ -322,5 +337,32 @@ module.exports = {
     // emberjs/rfcs#176 modules natively this will
     // be updated to detect that and return false
     return true;
+  },
+
+  _getEmberModulesAPIBlacklist() {
+    const blacklist = {
+      '@ember/debug': ['assert', 'deprecate', 'warn'],
+    };
+
+    if (this._emberStringDependencyPresent()) {
+      blacklist['@ember/string'] = [
+        'fmt', 'loc', 'w',
+        'decamelize', 'dasherize', 'camelize',
+        'classify', 'underscore', 'capitalize',
+      ];
+    }
+
+    return blacklist;
+  },
+
+  _emberStringDependencyPresent() {
+    let checker = new VersionChecker(this.parent).for('@ember/string', 'npm');
+
+    return checker.exists();
+  },
+
+  // detect if running babel would do nothing... and do nothing instead
+  _shouldDoNothing(options) {
+    return !options.sourceMaps && !options.plugins.length;
   }
 };
