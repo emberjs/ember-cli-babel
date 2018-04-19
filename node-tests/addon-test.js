@@ -108,8 +108,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.Component.extend();\n});`,
-          "app.js": `define('app', [], function () {\n  'use strict';\n\n  Ember.Application.extend();\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.Component.extend();\n});`,
+          "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`
         });
       }));
 
@@ -314,7 +314,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@ember/string'], function (_string) {\n  'use strict';\n\n  (0, _string.camelize)('stuff-here');\n});`
+          "foo.js": `define("foo", ["@ember/string"], function (_string) {\n  "use strict";\n\n  (0, _string.camelize)('stuff-here');\n});`
         });
       }));
 
@@ -338,7 +338,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.String.camelize('stuff-here');\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.String.camelize('stuff-here');\n});`
         });
       }));
 
