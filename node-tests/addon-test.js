@@ -699,21 +699,30 @@ describe('ember-cli-babel', function() {
     it('includes resolveModuleSource if compiling modules', function() {
       this.addon._shouldCompileModules = () => true;
 
+      let expectedPlugin = require('babel-plugin-module-resolver').default;
+      let resolvePath = require('amd-name-resolver').moduleResolve;
+
       let result = this.addon.buildBabelOptions();
-      expect(result.resolveModuleSource).to.equal(require('amd-name-resolver').moduleResolve);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
+
+      expect(found).to.deep.equal([expectedPlugin, { resolvePath }]);
     });
 
     it('does not include resolveModuleSource when not compiling modules', function() {
       this.addon._shouldCompileModules = () => false;
 
+      let expectedPlugin = require('babel-plugin-module-resolver').default;
+
       let result = this.addon.buildBabelOptions();
-      expect(result.resolveModuleSource).to.equal(undefined);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
+
+      expect(found).to.equal(undefined);
     });
   });
 
   describe('_getPresetEnvPlugins', function() {
     function includesPlugin(haystack, needleName) {
-      let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
+      let presetEnvBaseDir = path.dirname(require.resolve('@babel/preset-env'));
       let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
       let NeedleModule = require(pluginPath);
       let Needle = NeedleModule.__esModule ? NeedleModule.default : NeedleModule;
@@ -790,7 +799,7 @@ describe('ember-cli-babel', function() {
       };
 
       let plugins = this.addon.buildBabelOptions().plugins;
-      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
+      let found = includesPlugin(plugins, '@babel/plugin-transform-classes');
 
       expect(found).to.be.true;
     });
