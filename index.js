@@ -229,7 +229,7 @@ module.exports = {
 
     if (addonOptions.disableDebugTooling) { return; }
 
-    const DebugMacros = require('babel-plugin-debug-macros').default;
+    const DebugMacros = require('babel-plugin-debug-macros');
     const isProduction = process.env.EMBER_ENV === 'production';
 
     let options = {

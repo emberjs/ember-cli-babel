@@ -37,7 +37,7 @@
   "dependencies": {
     "@babel/preset-env": "^7.0.0-beta.44",
     "amd-name-resolver": "0.0.7",
-    "babel-plugin-debug-macros": "^0.2.0-beta.1",
+    "babel-plugin-debug-macros": "^0.2.0-beta.2",
     "babel-plugin-transform-es2015-modules-amd": "^7.0.0-beta.0",
     "babel-polyfill": "^7.0.0-beta.0",
     "broccoli-babel-transpiler": "^7.0.0-beta.2",
