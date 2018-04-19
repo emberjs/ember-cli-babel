@@ -8,7 +8,7 @@
   dependencies:
     "@babel/highlight" "7.0.0-beta.44"
 
-"@babel/core@^7.0.0-beta.38":
+"@babel/core@^7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.0.0-beta.44.tgz#90bb9e897427e7ebec2a1b857f458ff74ca28057"
   dependencies:
@@ -1659,11 +1659,11 @@ broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.2:
     rsvp "^3.5.0"
     workerpool "^2.3.0"
 
-broccoli-babel-transpiler@^7.0.0-beta.2:
-  version "7.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-7.0.0-beta.2.tgz#9524d0dac56978ccc698779f209269d5103794dd"
+broccoli-babel-transpiler@^7.0.0-beta.3:
+  version "7.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-7.0.0-beta.3.tgz#9a6668d49418cf96ff0669b08c53dd2cd4f124c4"
   dependencies:
-    "@babel/core" "^7.0.0-beta.38"
+    "@babel/core" "^7.0.0-beta.44"
     broccoli-funnel "^1.0.0"
     broccoli-merge-trees "^1.0.0"
     broccoli-persistent-filter "^1.4.0"
@@ -1672,7 +1672,7 @@ broccoli-babel-transpiler@^7.0.0-beta.2:
     heimdalljs-logger "^0.1.7"
     json-stable-stringify "^1.0.0"
     rsvp "^3.5.0"
-    workerpool "^2.2.1"
+    workerpool "^2.3.0"
 
 broccoli-brocfile-loader@^0.18.0:
   version "0.18.0"
@@ -7344,7 +7344,7 @@ wordwrap@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
 
-workerpool@^2.2.1, workerpool@^2.3.0:
+workerpool@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-2.3.0.tgz#86c5cbe946b55e7dc9d12b1936c8801a6e2d744d"
   dependencies:
