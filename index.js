@@ -304,13 +304,13 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const ModulesTransform = addBaseDir(require('babel-plugin-transform-es2015-modules-amd'));
+    const ModulesTransform = addBaseDir(require('@babel/plugin-transform-modules-amd'));
     const ModuleResolver = addBaseDir(require('babel-plugin-module-resolver'));
     const resolvePath = addBaseDir(require('amd-name-resolver').moduleResolve);
 
     return [
-      [ModulesTransform, { noInterop: true }],
       [ModuleResolver, { resolvePath: require('amd-name-resolver').moduleResolve }]
+      [ModulesTransform, { noInterop: true }],
     ];
   },
 
