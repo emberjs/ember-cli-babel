@@ -209,13 +209,13 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
+      shouldCompileModules && ['module-resolver', { resolvePath: require('amd-name-resolver').moduleResolve }],
       shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
 
     if (shouldCompileModules) {
       options.moduleIds = true;
-      options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
     }
 
     options.highlightCode = false;
