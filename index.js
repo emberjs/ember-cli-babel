@@ -14,8 +14,10 @@ function addBaseDir(Plugin) {
   if (type === 'function' && !Plugin.baseDir) {
     Plugin.baseDir = () => __dirname;
   } else if (type === 'object' && Plugin !== null && Plugin.default) {
-    addBaseDir(Plugin.default);
+    return addBaseDir(Plugin.default);
   }
+
+  return Plugin;
 }
 
 module.exports = {
@@ -209,7 +211,6 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
-      shouldCompileModules && ['module-resolver', { resolvePath: require('amd-name-resolver').moduleResolve }],
       shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
@@ -275,12 +276,14 @@ module.exports = {
 
     let presetEnvPlugins = this._presetEnv({ assertVersion() {} }, presetOptions).plugins;
 
-    presetEnvPlugins.forEach(function(pluginArray) {
+    let unwrappedPlugins = presetEnvPlugins.map(function(pluginArray) {
       let Plugin = pluginArray[0];
-      addBaseDir(Plugin);
+      Plugin = addBaseDir(Plugin);
+
+      return [Plugin, pluginArray[1]];
     });
 
-    return presetEnvPlugins;
+    return unwrappedPlugins;
   },
 
   _presetEnv() {
@@ -301,12 +304,13 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
-
-    addBaseDir(ModulesTransform);
+    const ModulesTransform = addBaseDir(require('babel-plugin-transform-es2015-modules-amd'));
+    const ModuleResolver = addBaseDir(require('babel-plugin-module-resolver'));
+    const resolvePath = addBaseDir(require('amd-name-resolver').moduleResolve);
 
     return [
       [ModulesTransform, { noInterop: true }],
+      [ModuleResolver, { resolvePath: require('amd-name-resolver').moduleResolve }]
     ];
   },
 
