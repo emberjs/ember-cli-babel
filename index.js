@@ -309,7 +309,7 @@ module.exports = {
     const resolvePath = addBaseDir(require('amd-name-resolver').moduleResolve);
 
     return [
-      [ModuleResolver, { resolvePath: require('amd-name-resolver').moduleResolve }]
+      [ModuleResolver, { resolvePath }],
       [ModulesTransform, { noInterop: true }],
     ];
   },
