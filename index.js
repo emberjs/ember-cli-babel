@@ -119,8 +119,8 @@ module.exports = {
     // if no targets are setup, assume that all plugins are required
     if (!targets) { return true; }
 
-    const isPluginRequired = require('babel-preset-env').isPluginRequired;
-    const pluginList = require('babel-preset-env/data/plugins');
+    const isPluginRequired = require('@babel/preset-env').isPluginRequired;
+    const pluginList = require('@babel/preset-env/data/plugins');
 
     return isPluginRequired(targets, pluginList[pluginName]);
   },
@@ -273,7 +273,7 @@ module.exports = {
       targets
     });
 
-    let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
+    let presetEnvPlugins = this._presetEnv({ assertVersion() {} }, presetOptions).plugins;
 
     presetEnvPlugins.forEach(function(pluginArray) {
       let Plugin = pluginArray[0];
@@ -284,7 +284,7 @@ module.exports = {
   },
 
   _presetEnv() {
-    const presetEnv = require('babel-preset-env').default;
+    const presetEnv = require('@babel/preset-env').default;
 
     return presetEnv.apply(null, arguments);
   },
@@ -292,7 +292,7 @@ module.exports = {
   _getTargets() {
     let targets = this.project && this.project.targets;
 
-    let parser = require('babel-preset-env/lib/targets-parser').default;
+    let parser = require('@babel/preset-env/lib/targets-parser').default;
     if (typeof targets === 'object' && targets !== null) {
       return parser(targets);
     } else {
