@@ -22,7 +22,7 @@ module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
 
-  init: function() {
+  init() {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
@@ -61,7 +61,7 @@ module.exports = {
     return this._debugTree(output, `${description}:output`);
   },
 
-  setupPreprocessorRegistry: function(type, registry) {
+  setupPreprocessorRegistry(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
       ext: 'js',
@@ -69,7 +69,7 @@ module.exports = {
     });
   },
 
-  _shouldIncludePolyfill: function() {
+  _shouldIncludePolyfill() {
     let addonOptions = this._getAddonOptions();
     let babelOptions = addonOptions.babel;
     let customOptions = addonOptions['ember-cli-babel'];
@@ -93,7 +93,7 @@ module.exports = {
     }
   },
 
-  _importPolyfill: function(app) {
+  _importPolyfill(app) {
     let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
 
     if (this.import) {  // support for ember-cli >= 2.7
@@ -105,7 +105,7 @@ module.exports = {
     }
   },
 
-  treeForVendor: function() {
+  treeForVendor() {
     if (!this._shouldIncludePolyfill()) { return; }
 
     const Funnel = require('broccoli-funnel');
@@ -140,7 +140,7 @@ module.exports = {
     return isPluginRequired(targets, pluginList[pluginName]);
   },
 
-  _getAddonOptions: function() {
+  _getAddonOptions() {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
