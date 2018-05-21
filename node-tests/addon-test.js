@@ -751,7 +751,7 @@ describe('ember-cli-babel', function() {
       };
 
       let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
     });
 
     it('includes postTransformPlugins after preset-env plugins', function() {
@@ -768,7 +768,7 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon.buildBabelOptions();
 
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
       expect(result.plugins.slice(-1)).to.deep.equal([pluginAfter]);
       expect(result.postTransformPlugins).to.be.undefined;
     });
@@ -784,7 +784,7 @@ describe('ember-cli-babel', function() {
       };
 
       let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
     });
 
     it('user plugins are before preset-env plugins', function() {

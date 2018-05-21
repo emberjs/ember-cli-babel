@@ -101,6 +101,7 @@ module.exports = {
     } else if (app.import) { // support ember-cli < 2.7
       app.import(polyfillPath, { prepend: true });
     } else {
+      // eslint-disable-next-line no-console
       console.warn('Please run: ember install ember-cli-import-polyfill');
     }
   },
