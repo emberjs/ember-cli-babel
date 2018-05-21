@@ -49,6 +49,7 @@
     "broccoli-source": "^1.1.0",
     "clone": "^2.0.0",
     "ember-cli-version-checker": "^2.1.2",
+    "ember-source-channel-url": "^1.1.0",
     "semver": "^5.5.0"
   },
   "devDependencies": {
