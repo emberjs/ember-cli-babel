@@ -3,10 +3,14 @@ language: node_js
 node_js:
   - "4"
   - "6"
-  - "7"
   - "8"
+  - "10"
+
+dist: trusty
 
 sudo: false
+addons:
+  chrome: stable
 
 cache:
   yarn: true
@@ -27,6 +31,7 @@ install:
   - yarn install --no-lockfile --non-interactive
 
 script:
+  - yarn lint:js
   - yarn test
 
 before_deploy:
