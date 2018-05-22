@@ -191,10 +191,12 @@ module.exports = {
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
     let providedAnnotation;
+    let throwUnlessParallelizable;
 
     if (emberCLIBabelConfig) {
       providedAnnotation = emberCLIBabelConfig.annotation;
       shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
+      throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
     }
 
     let sourceMaps = false;
@@ -204,7 +206,8 @@ module.exports = {
 
     let options = {
       annotation: providedAnnotation || `Babel: ${this._parentName()}`,
-      sourceMaps
+      sourceMaps,
+      throwUnlessParallelizable
     };
 
     let userPlugins = addonProvidedConfig.plugins;
