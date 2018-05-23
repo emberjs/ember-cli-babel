@@ -8,16 +8,6 @@ const semver = require('semver');
 
 let count = 0;
 
-function addBaseDir(Plugin) {
-  let type = typeof Plugin;
-
-  if (type === 'function' && !Plugin.baseDir) {
-    Plugin.baseDir = () => __dirname;
-  } else if (type === 'object' && Plugin !== null && Plugin.default) {
-    addBaseDir(Plugin.default);
-  }
-}
-
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
@@ -225,9 +215,12 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
-      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
+
+    options.presets = [
+      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
+    ]
 
     if (shouldCompileModules) {
       options.moduleIds = true;
@@ -245,7 +238,6 @@ module.exports = {
 
     if (addonOptions.disableDebugTooling) { return; }
 
-    const DebugMacros = require('babel-plugin-debug-macros').default;
     const isProduction = process.env.EMBER_ENV === 'production';
 
     let options = {
@@ -264,7 +256,7 @@ module.exports = {
       }
     };
 
-    return [[DebugMacros, options]];
+    return [[require.resolve('babel-plugin-debug-macros'), options]];
   },
 
   _getEmberModulesAPIPolyfill(config) {
@@ -273,10 +265,9 @@ module.exports = {
     if (addonOptions.disableEmberModulesAPIPolyfill) { return; }
 
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
-      const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
       const blacklist = this._getEmberModulesAPIBlacklist();
 
-      return [[ModulesAPIPolyfill, { blacklist }]];
+      return [[require.resolve('babel-plugin-ember-modules-api-polyfill'), { blacklist }]];
     }
   },
 
@@ -289,20 +280,12 @@ module.exports = {
       targets
     });
 
-    let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
-
-    presetEnvPlugins.forEach(function(pluginArray) {
-      let Plugin = pluginArray[0];
-      addBaseDir(Plugin);
-    });
-
+    let presetEnvPlugins = this._presetEnv(presetOptions);
     return presetEnvPlugins;
   },
 
-  _presetEnv() {
-    const presetEnv = require('babel-preset-env').default;
-
-    return presetEnv.apply(null, arguments);
+  _presetEnv(presetOptions) {
+    return [require.resolve('babel-preset-env'), presetOptions];
   },
 
   _getTargets() {
@@ -317,12 +300,8 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
-
-    addBaseDir(ModulesTransform);
-
     return [
-      [ModulesTransform, { noInterop: true }],
+      [require.resolve('babel-plugin-transform-es2015-modules-amd'), { noInterop: true }]
     ];
   },
 

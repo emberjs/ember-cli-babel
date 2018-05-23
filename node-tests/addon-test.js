@@ -859,9 +859,9 @@ describe('ember-cli-babel', function() {
       };
 
       let invokingOptions;
-      this.addon._presetEnv = function(context, options) {
+      this.addon._presetEnv = function(options) {
         invokingOptions = options;
-        return { plugins: [] };
+        return [];
       };
 
       this.addon.buildBabelOptions();
@@ -878,9 +878,9 @@ describe('ember-cli-babel', function() {
       };
 
       let invokingOptions;
-      this.addon._presetEnv = function(context, options) {
+      this.addon._presetEnv = function(options) {
         invokingOptions = options;
-        return { plugins: [] };
+        return [];
       };
 
       this.addon.buildBabelOptions();
@@ -893,18 +893,38 @@ describe('ember-cli-babel', function() {
         browsers: ['ie 9']
       };
 
-      let plugins = this.addon.buildBabelOptions().plugins;
+      let invokingOptions;
+      let presetEnvOrig = this.addon._presetEnv;
+      this.addon._presetEnv = function(options) {
+        invokingOptions = options;
+        return presetEnvOrig(options);
+      };
+      this.addon.buildBabelOptions();
+      this.addon._presetEnv = presetEnvOrig;
+
+      const presetEnv = require('babel-preset-env').default;
+      let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.true;
     });
 
-    it('returns false when targets do not require plugin', function() {
+    it('does not include class transform when targets do not require plugin', function() {
       this.addon.project.targets = {
         browsers: ['last 2 chrome versions']
       };
 
-      let plugins = this.addon.buildBabelOptions().plugins;
+      let invokingOptions;
+      let presetEnvOrig = this.addon._presetEnv;
+      this.addon._presetEnv = function(options) {
+        invokingOptions = options;
+        return presetEnvOrig(options);
+      };
+      this.addon.buildBabelOptions();
+      this.addon._presetEnv = presetEnvOrig;
+
+      const presetEnv = require('babel-preset-env').default;
+      let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.false;
