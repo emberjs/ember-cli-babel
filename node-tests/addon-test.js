@@ -17,6 +17,7 @@ const terminateWorkerPool = require('./utils/terminate-workers');
 let Addon = CoreObject.extend(AddonMixin);
 
 describe('ember-cli-babel', function() {
+
   const ORIGINAL_EMBER_ENV = process.env.EMBER_ENV;
 
   beforeEach(function() {
@@ -820,6 +821,8 @@ describe('ember-cli-babel', function() {
   });
 
   describe('_getPresetEnvPlugins', function() {
+    this.timeout(5000);
+
     function includesPlugin(haystack, needleName) {
       let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
       let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
