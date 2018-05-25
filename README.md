@@ -328,3 +328,28 @@ stripped.
 Please note, that these general purpose environment related flags (e.g. `DEBUG`
 as a boolean flag) are imported from `@glimmer/env` not from an `@ember`
 namespace.
+
+#### Parallel Builds
+
+By default, [broccoli-babel-transpiler] will attempt to spin up several
+sub-processes (~1 per available core), to achieve parallelization. (Once node
+has built-in worker support, we plan to utilize). This yields significant babel
+build time improvements.
+
+Unfortunately, some babel-plugins may break this functionality [More
+Details](https://github.com/babel/broccoli-babel-transpiler#parallel-transpilation).
+When this occurs, we gracefully fallback to the old serial strategy.
+
+To have the build fail when failing to do parallel builds, opt-in is via:
+
+```js
+let app = new EmberAddon(defaults, {
+  'ember-cli-babel': {
+    includePolyfill: true
+  }
+});
+```
+*note: future versions will enable this flag by default*
+
+[More Details re: broccoli parallel builds](https://github.com/babel/broccoli-babel-transpiler#parallel-transpilation)
+
