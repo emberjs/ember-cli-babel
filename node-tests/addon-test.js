@@ -12,6 +12,7 @@ const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
+const terminateWorkerPool = require('./utils/terminate-workers');
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -50,6 +51,8 @@ describe('ember-cli-babel', function() {
     afterEach(co.wrap(function* () {
       yield input.dispose();
       yield output.dispose();
+      // shut down workers after the tests are run so that mocha doesn't hang
+      yield terminateWorkerPool();
     }));
 
     it("should build", co.wrap(function* () {
