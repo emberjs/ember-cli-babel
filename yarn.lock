@@ -908,7 +908,7 @@ braces@^2.3.1:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.2, broccoli-babel-transpiler@^6.3.0:
+broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.2:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-6.3.0.tgz#3dad36524c66ac66abf27956ea25ce2bcc421fa6"
   dependencies:
@@ -921,6 +921,21 @@ broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.2, broccoli-bab
     heimdalljs-logger "^0.1.7"
     json-stable-stringify "^1.0.0"
     rsvp "^3.5.0"
+    workerpool "^2.3.0"
+
+broccoli-babel-transpiler@^6.4.2:
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-6.4.2.tgz#f9e453ce664d5735baecabbc50e62c1b93b1796d"
+  dependencies:
+    babel-core "^6.26.0"
+    broccoli-funnel "^2.0.1"
+    broccoli-merge-trees "^2.0.0"
+    broccoli-persistent-filter "^1.4.3"
+    clone "^2.0.0"
+    hash-for-dep "^1.2.3"
+    heimdalljs-logger "^0.1.7"
+    json-stable-stringify "^1.0.0"
+    rsvp "^4.8.2"
     workerpool "^2.3.0"
 
 broccoli-builder@^0.18.8:
@@ -3165,7 +3180,7 @@ has@^1.0.1:
   dependencies:
     function-bind "^1.0.2"
 
-hash-for-dep@^1.0.2:
+hash-for-dep@^1.0.2, hash-for-dep@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/hash-for-dep/-/hash-for-dep-1.2.3.tgz#5ec69fca32c23523972d52acb5bb65ffc3664cab"
   dependencies:
@@ -5421,7 +5436,7 @@ rsvp@^3.0.14, rsvp@^3.0.16, rsvp@^3.0.17, rsvp@^3.0.18, rsvp@^3.0.21, rsvp@^3.3.
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
 
-rsvp@^4.6.1, rsvp@^4.7.0:
+rsvp@^4.6.1, rsvp@^4.7.0, rsvp@^4.8.2:
   version "4.8.2"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.2.tgz#9d5647108735784eb13418cdddb56f75b919d722"
 
