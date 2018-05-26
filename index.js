@@ -223,7 +223,7 @@ module.exports = {
 
     options.presets = [
       shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
-    ]
+    ].filter(Boolean);
 
     if (shouldCompileModules) {
       options.moduleIds = true;

@@ -791,6 +791,24 @@ describe('ember-cli-babel', function() {
       expect(result.plugins).to.deep.include(plugin);
     });
 
+    it('sets `presets` to empty array if `disablePresetEnv` is true', function() {
+      let options = {
+        'ember-cli-babel': {
+          disablePresetEnv: true,
+        }
+      };
+      this.addon.parent = {
+        options: {
+          babel6: {
+            plugins: [ {} ]
+          },
+        },
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.presets).to.deep.equal([]);
+    });
+
     it('user plugins are before preset-env plugins', function() {
       let plugin = function Plugin() {};
       this.addon.parent = {
