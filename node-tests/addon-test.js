@@ -12,10 +12,12 @@ const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
+const terminateWorkerPool = require('./utils/terminate-workers');
 
 let Addon = CoreObject.extend(AddonMixin);
 
 describe('ember-cli-babel', function() {
+
   const ORIGINAL_EMBER_ENV = process.env.EMBER_ENV;
 
   beforeEach(function() {
@@ -50,6 +52,8 @@ describe('ember-cli-babel', function() {
     afterEach(co.wrap(function* () {
       yield input.dispose();
       yield output.dispose();
+      // shut down workers after the tests are run so that mocha doesn't hang
+      yield terminateWorkerPool();
     }));
 
     it("should build", co.wrap(function* () {
@@ -758,7 +762,7 @@ describe('ember-cli-babel', function() {
       };
 
       let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
     });
 
     it('includes postTransformPlugins after preset-env plugins', function() {
@@ -775,7 +779,7 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon.buildBabelOptions();
 
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
       expect(result.plugins.slice(-1)).to.deep.equal([pluginAfter]);
       expect(result.postTransformPlugins).to.be.undefined;
     });
@@ -791,7 +795,25 @@ describe('ember-cli-babel', function() {
       };
 
       let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
+    });
+
+    it('sets `presets` to empty array if `disablePresetEnv` is true', function() {
+      let options = {
+        'ember-cli-babel': {
+          disablePresetEnv: true,
+        }
+      };
+      this.addon.parent = {
+        options: {
+          babel6: {
+            plugins: [ {} ]
+          },
+        },
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.presets).to.deep.equal([]);
     });
 
     it('user plugins are before preset-env plugins', function() {
@@ -824,6 +846,8 @@ describe('ember-cli-babel', function() {
   });
 
   describe('_getPresetEnvPlugins', function() {
+    this.timeout(5000);
+
     function includesPlugin(haystack, needleName) {
       let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
       let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
@@ -866,9 +890,9 @@ describe('ember-cli-babel', function() {
       };
 
       let invokingOptions;
-      this.addon._presetEnv = function(context, options) {
+      this.addon._presetEnv = function(options) {
         invokingOptions = options;
-        return { plugins: [] };
+        return [];
       };
 
       this.addon.buildBabelOptions();
@@ -885,9 +909,9 @@ describe('ember-cli-babel', function() {
       };
 
       let invokingOptions;
-      this.addon._presetEnv = function(context, options) {
+      this.addon._presetEnv = function(options) {
         invokingOptions = options;
-        return { plugins: [] };
+        return [];
       };
 
       this.addon.buildBabelOptions();
@@ -900,18 +924,38 @@ describe('ember-cli-babel', function() {
         browsers: ['ie 9']
       };
 
-      let plugins = this.addon.buildBabelOptions().plugins;
+      let invokingOptions;
+      let presetEnvOrig = this.addon._presetEnv;
+      this.addon._presetEnv = function(options) {
+        invokingOptions = options;
+        return presetEnvOrig(options);
+      };
+      this.addon.buildBabelOptions();
+      this.addon._presetEnv = presetEnvOrig;
+
+      const presetEnv = require('babel-preset-env').default;
+      let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.true;
     });
 
-    it('returns false when targets do not require plugin', function() {
+    it('does not include class transform when targets do not require plugin', function() {
       this.addon.project.targets = {
         browsers: ['last 2 chrome versions']
       };
 
-      let plugins = this.addon.buildBabelOptions().plugins;
+      let invokingOptions;
+      let presetEnvOrig = this.addon._presetEnv;
+      this.addon._presetEnv = function(options) {
+        invokingOptions = options;
+        return presetEnvOrig(options);
+      };
+      this.addon.buildBabelOptions();
+      this.addon._presetEnv = presetEnvOrig;
+
+      const presetEnv = require('babel-preset-env').default;
+      let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
       expect(found).to.be.false;

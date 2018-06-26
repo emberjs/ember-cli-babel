@@ -8,21 +8,11 @@ const semver = require('semver');
 
 let count = 0;
 
-function addBaseDir(Plugin) {
-  let type = typeof Plugin;
-
-  if (type === 'function' && !Plugin.baseDir) {
-    Plugin.baseDir = () => __dirname;
-  } else if (type === 'object' && Plugin !== null && Plugin.default) {
-    addBaseDir(Plugin.default);
-  }
-}
-
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
 
-  init: function() {
+  init() {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
@@ -61,7 +51,7 @@ module.exports = {
     return this._debugTree(output, `${description}:output`);
   },
 
-  setupPreprocessorRegistry: function(type, registry) {
+  setupPreprocessorRegistry(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
       ext: 'js',
@@ -69,7 +59,7 @@ module.exports = {
     });
   },
 
-  _shouldIncludePolyfill: function() {
+  _shouldIncludePolyfill() {
     let addonOptions = this._getAddonOptions();
     let babelOptions = addonOptions.babel;
     let customOptions = addonOptions['ember-cli-babel'];
@@ -93,7 +83,7 @@ module.exports = {
     }
   },
 
-  _importPolyfill: function(app) {
+  _importPolyfill(app) {
     let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
 
     if (this.import) {  // support for ember-cli >= 2.7
@@ -101,11 +91,12 @@ module.exports = {
     } else if (app.import) { // support ember-cli < 2.7
       app.import(polyfillPath, { prepend: true });
     } else {
+      // eslint-disable-next-line no-console
       console.warn('Please run: ember install ember-cli-import-polyfill');
     }
   },
 
-  treeForVendor: function() {
+  treeForVendor() {
     if (!this._shouldIncludePolyfill()) { return; }
 
     const Funnel = require('broccoli-funnel');
@@ -140,7 +131,7 @@ module.exports = {
     return isPluginRequired(targets, pluginList[pluginName]);
   },
 
-  _getAddonOptions: function() {
+  _getAddonOptions() {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
   },
 
@@ -200,10 +191,12 @@ module.exports = {
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
     let providedAnnotation;
+    let throwUnlessParallelizable;
 
     if (emberCLIBabelConfig) {
       providedAnnotation = emberCLIBabelConfig.annotation;
       shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
+      throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
     }
 
     let sourceMaps = false;
@@ -215,8 +208,13 @@ module.exports = {
     if (config.babel && "retainLines" in config.babel) {
       retainLines = config.babel.retainLines;
     }
-
-    let options = { annotation: providedAnnotation || `Babel: ${this._parentName()}`, sourceMaps, retainLines };
+    
+    let options = {
+      annotation: providedAnnotation || `Babel: ${this._parentName()}`,
+      sourceMaps,
+      throwUnlessParallelizable,
+      retainLines
+    };
 
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
@@ -226,9 +224,12 @@ module.exports = {
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
-      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
       userPostTransformPlugins
     ).filter(Boolean);
+
+    options.presets = [
+      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
+    ].filter(Boolean);
 
     if (shouldCompileModules) {
       options.moduleIds = true;
@@ -246,7 +247,6 @@ module.exports = {
 
     if (addonOptions.disableDebugTooling) { return; }
 
-    const DebugMacros = require('babel-plugin-debug-macros').default;
     const isProduction = process.env.EMBER_ENV === 'production';
 
     let options = {
@@ -265,7 +265,7 @@ module.exports = {
       }
     };
 
-    return [[DebugMacros, options]];
+    return [[require.resolve('babel-plugin-debug-macros'), options]];
   },
 
   _getEmberModulesAPIPolyfill(config) {
@@ -274,10 +274,9 @@ module.exports = {
     if (addonOptions.disableEmberModulesAPIPolyfill) { return; }
 
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
-      const ModulesAPIPolyfill = require('babel-plugin-ember-modules-api-polyfill');
       const blacklist = this._getEmberModulesAPIBlacklist();
 
-      return [[ModulesAPIPolyfill, { blacklist }]];
+      return [[require.resolve('babel-plugin-ember-modules-api-polyfill'), { blacklist }]];
     }
   },
 
@@ -290,20 +289,12 @@ module.exports = {
       targets
     });
 
-    let presetEnvPlugins = this._presetEnv(null, presetOptions).plugins;
-
-    presetEnvPlugins.forEach(function(pluginArray) {
-      let Plugin = pluginArray[0];
-      addBaseDir(Plugin);
-    });
-
+    let presetEnvPlugins = this._presetEnv(presetOptions);
     return presetEnvPlugins;
   },
 
-  _presetEnv() {
-    const presetEnv = require('babel-preset-env').default;
-
-    return presetEnv.apply(null, arguments);
+  _presetEnv(presetOptions) {
+    return [require.resolve('babel-preset-env'), presetOptions];
   },
 
   _getTargets() {
@@ -318,12 +309,8 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const ModulesTransform = require('babel-plugin-transform-es2015-modules-amd');
-
-    addBaseDir(ModulesTransform);
-
     return [
-      [ModulesTransform, { noInterop: true }],
+      [require.resolve('babel-plugin-transform-es2015-modules-amd'), { noInterop: true }]
     ];
   },
 
