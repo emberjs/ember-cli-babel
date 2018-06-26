@@ -1,5 +1,70 @@
 # Changelog
 
+## v6.14.1 (2018-05-26)
+
+#### :bug: Bug Fix
+* [#224](https://github.com/babel/ember-cli-babel/pull/224) Fix presets array bug. ([@twokul](https://github.com/twokul))
+
+#### Committers: 1
+- Alex Navasardyan ([twokul](https://github.com/twokul))
+
+
+## v6.14.0 (2018-05-25)
+
+#### :rocket: Enhancement
+* [#222](https://github.com/babel/ember-cli-babel/pull/222) Add throwUnlessParallelizable. ([@stefanpenner](https://github.com/stefanpenner))
+
+#### Committers: 1
+- Stefan Penner ([stefanpenner](https://github.com/stefanpenner))
+
+
+## v6.13.0 (2018-05-25)
+
+#### :boom: Breaking Change
+* [#223](https://github.com/babel/ember-cli-babel/pull/223) Drop Node 4 support; Avoid eagerly requiring plugins and presets. ([@mikrostew](https://github.com/mikrostew))
+
+#### :rocket: Enhancement
+* [#220](https://github.com/babel/ember-cli-babel/pull/220) upgrade deps. ([@stefanpenner](https://github.com/stefanpenner))
+* [#217](https://github.com/babel/ember-cli-babel/pull/217) Bumps `broccoli-funnel` version. ([@Bartheleway](https://github.com/Bartheleway))
+
+#### :house: Internal
+* [#221](https://github.com/babel/ember-cli-babel/pull/221) Convert `ember-source-channel-url` to dev dependency. ([@stefanpenner](https://github.com/stefanpenner))
+* [#219](https://github.com/babel/ember-cli-babel/pull/219) Use ES6 method syntax. ([@stefanpenner](https://github.com/stefanpenner))
+* [#209](https://github.com/babel/ember-cli-babel/pull/209) CI: Add missing `skip_cleanup` flag. ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 4
+- Barthélemy Laurans ([Bartheleway](https://github.com/Bartheleway))
+- Michael Stewart ([mikrostew](https://github.com/mikrostew))
+- Stefan Penner ([stefanpenner](https://github.com/stefanpenner))
+- Tobias Bieniek ([Turbo87](https://github.com/Turbo87))
+
+
+## v6.12.0 (2018-02-27)
+
+#### :rocket: Enhancement
+* [#204](https://github.com/babel/ember-cli-babel/pull/204) add a no-op optimization. ([@kellyselden](https://github.com/kellyselden))
+
+#### :house: Internal
+* [#199](https://github.com/babel/ember-cli-babel/pull/199) Remove redundant check for targets. ([@astronomersiva](https://github.com/astronomersiva))
+
+#### Committers: 2
+- Kelly Selden ([kellyselden](https://github.com/kellyselden))
+- Sivasubramanyam A ([astronomersiva](https://github.com/astronomersiva))
+
+
+## v6.11.0 (2017-12-15)
+
+#### :rocket: Enhancement
+* [#197](https://github.com/babel/ember-cli-babel/pull/197) Update babel-plugin-ember-modules-api-polyfill to 2.3.0.. ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#194](https://github.com/babel/ember-cli-babel/pull/194) Fix link. ([@jevanlingen](https://github.com/jevanlingen))
+
+#### Committers: 2
+- Jacob van Lingen ([jevanlingen](https://github.com/jevanlingen))
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
+
+
 ## v6.10.0 (2017-11-20)
 
 #### :rocket: Enhancement
