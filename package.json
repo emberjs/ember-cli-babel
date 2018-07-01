@@ -43,7 +43,7 @@
     "babel-plugin-transform-es2015-modules-amd": "^6.24.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "broccoli-babel-transpiler": "^6.4.2",
+    "broccoli-babel-transpiler": "kellyselden/broccoli-babel-transpiler#preventDoubleAmdCompile",
     "broccoli-debug": "^0.6.4",
     "broccoli-funnel": "^2.0.0",
     "broccoli-source": "^1.1.0",

@@ -192,11 +192,13 @@ module.exports = {
     let shouldRunPresetEnv = true;
     let providedAnnotation;
     let throwUnlessParallelizable;
+    let doubleAmdCallback;
 
     if (emberCLIBabelConfig) {
       providedAnnotation = emberCLIBabelConfig.annotation;
       shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
       throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
+      doubleAmdCallback = emberCLIBabelConfig.doubleAmdCallback;
     }
 
     let sourceMaps = false;
@@ -207,7 +209,9 @@ module.exports = {
     let options = {
       annotation: providedAnnotation || `Babel: ${this._parentName()}`,
       sourceMaps,
-      throwUnlessParallelizable
+      throwUnlessParallelizable,
+      preventDoubleAmdCompile: true,
+      doubleAmdCallback
     };
 
     let userPlugins = addonProvidedConfig.plugins;

@@ -923,9 +923,9 @@ broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.1.2:
     rsvp "^3.5.0"
     workerpool "^2.3.0"
 
-broccoli-babel-transpiler@^6.4.2:
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-6.4.2.tgz#f9e453ce664d5735baecabbc50e62c1b93b1796d"
+broccoli-babel-transpiler@kellyselden/broccoli-babel-transpiler#preventDoubleAmdCompile:
+  version "6.4.3"
+  resolved "https://codeload.github.com/kellyselden/broccoli-babel-transpiler/tar.gz/ba2aee2fb3801201382186bc37b41b02e6799093"
   dependencies:
     babel-core "^6.26.0"
     broccoli-funnel "^2.0.1"
