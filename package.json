@@ -18,6 +18,8 @@
   "files": [
     "index.js"
   ],
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
   "directories": {
     "doc": "doc",
     "test": "tests"
