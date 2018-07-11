@@ -244,16 +244,19 @@ module.exports = {
     const isProduction = process.env.EMBER_ENV === 'production';
 
     let options = {
-      envFlags: {
-        source: '@glimmer/env',
-        flags: { DEBUG: !isProduction, CI: !!process.env.CI }
-      },
+      flags: [
+        {
+          source: '@glimmer/env',
+          flags: { DEBUG: !isProduction, CI: !!process.env.CI }
+        }
+      ],
 
       externalizeHelpers: {
         global: 'Ember'
       },
 
       debugTools: {
+        isDebug: !isProduction,
         source: '@ember/debug',
         assertPredicateIndex: 1
       }
