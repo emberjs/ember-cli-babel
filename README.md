@@ -345,7 +345,7 @@ To have the build fail when failing to do parallel builds, opt-in is via:
 ```js
 let app = new EmberAddon(defaults, {
   'ember-cli-babel': {
-    includePolyfill: true
+    throwUnlessParallelizable: true
   }
 });
 ```
