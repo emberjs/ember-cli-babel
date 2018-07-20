@@ -722,6 +722,13 @@ describe('ember-cli-babel', function() {
       expect(result.sourceMaps).to.equal('inline');
     });
 
+    it("uses provided retainLines if specified", function() {
+      let options = { babel: { retainLines: true } };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.retainLines).to.equal(true);
+    });
+
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
       let options = {

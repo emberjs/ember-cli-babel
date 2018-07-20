@@ -82,6 +82,7 @@ interface EmberCLIBabelConfig {
     exclude?: string[];
     useBuiltIns?: boolean;
     sourceMaps?: boolean | "inline" | "both";
+    retainLines?: boolean;
     plugins?: BabelPlugin[];
   };
 
@@ -167,6 +168,22 @@ To enable it, pass `sourceMaps: 'inline'` in your `babel` options.
 let app = new EmberApp(defaults, {
   babel: {
     sourceMaps: 'inline'
+  }
+});
+```
+
+#### Enabling Retain Lines
+
+Babel generated source maps will enable you to debug your original ES6 source code. This is disabled by default because this will lead to wacky code but is handy for scenarios where you can't use source maps or breakpoints in external debugger are offset (vscode has this issue, see the extension https://github.com/Microsoft/vscode-chrome-debug)
+
+To enable it, pass `retainLines: true` in your `babel` options.
+
+```js
+// ember-cli-build.js
+
+var app = new EmberApp(defaults, {
+  babel: {
+    retainLines: true
   }
 });
 ```

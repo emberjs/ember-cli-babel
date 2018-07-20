@@ -204,10 +204,16 @@ module.exports = {
       sourceMaps = config.babel.sourceMaps;
     }
 
+    let retainLines = false;
+    if (config.babel && "retainLines" in config.babel) {
+      retainLines = config.babel.retainLines;
+    }
+    
     let options = {
       annotation: providedAnnotation || `Babel: ${this._parentName()}`,
       sourceMaps,
-      throwUnlessParallelizable
+      throwUnlessParallelizable,
+      retainLines
     };
 
     let userPlugins = addonProvidedConfig.plugins;
