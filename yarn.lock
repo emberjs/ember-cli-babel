@@ -1460,8 +1460,9 @@ broccoli-babel-transpiler@^6.0.0, broccoli-babel-transpiler@^6.4.5:
     rsvp "^4.8.2"
     workerpool "^2.3.0"
 
-"broccoli-babel-transpiler@file:../broccoli-babel-transpiler":
+"broccoli-babel-transpiler@github:babel/broccoli-babel-transpiler#babel-7":
   version "7.0.0-beta.3"
+  resolved "https://codeload.github.com/babel/broccoli-babel-transpiler/tar.gz/8b801cc061450b37fa5a8f4985e344d2d0088ce7"
   dependencies:
     "@babel/core" "^7.0.0-beta.44"
     broccoli-funnel "^2.0.1"
