@@ -5,6 +5,7 @@ const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
 const semver = require('semver');
+const ensurePosixPath = require('ensure-posix-path');
 
 // From https://github.com/babel/babel-preset-env/tree/v1.6.1#options (linked from our README)
 const PRESET_ENV_OPTIONS = ['spec', 'loose', 'modules', 'debug', 'include', 'exclude', 'useBuiltIns'];
@@ -224,7 +225,7 @@ module.exports = {
 
     if (shouldCompileModules) {
       options.moduleIds = true;
-      options.getModuleId = getRelativeModulePath;
+      options.getModuleId = modulePath => ensurePosixPath(getRelativeModulePath(modulePath));
     }
 
     options.highlightCode = false;

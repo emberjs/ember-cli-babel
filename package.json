@@ -47,6 +47,7 @@
     "broccoli-source": "^1.1.0",
     "clone": "^2.0.0",
     "ember-cli-version-checker": "^2.1.0",
+    "ensure-posix-path": "^1.0.2",
     "semver": "^5.4.1"
   },
   "devDependencies": {
