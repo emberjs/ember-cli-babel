@@ -1,3 +1,4 @@
+/* eslint-env mocha, node */
 'use strict';
 
 const co = require('co');
@@ -204,7 +205,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -250,7 +251,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -700,12 +701,11 @@ describe('ember-cli-babel', function() {
       this.addon._shouldCompileModules = () => true;
 
       let expectedPlugin = require('babel-plugin-module-resolver').default;
-      let resolvePath = require('amd-name-resolver').moduleResolve;
 
       let result = this.addon.buildBabelOptions();
       let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
 
-      expect(found).to.deep.equal([expectedPlugin, { resolvePath }]);
+      expect(typeof found[1].resolvePath).to.equal('function');
     });
 
     it('does not include resolveModuleSource when not compiling modules', function() {

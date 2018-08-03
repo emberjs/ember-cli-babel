@@ -6,6 +6,9 @@ const clone = require('clone');
 const path = require('path');
 const semver = require('semver');
 
+// From https://github.com/babel/babel-preset-env/tree/v1.6.1#options (linked from our README)
+const PRESET_ENV_OPTIONS = ['spec', 'loose', 'modules', 'debug', 'include', 'exclude', 'useBuiltIns'];
+
 let count = 0;
 
 function addBaseDir(Plugin) {
@@ -18,6 +21,10 @@ function addBaseDir(Plugin) {
   }
 
   return Plugin;
+}
+
+function getRelativeModulePath(modulePath) {
+  return path.relative(process.cwd(), modulePath);
 }
 
 module.exports = {
@@ -217,6 +224,7 @@ module.exports = {
 
     if (shouldCompileModules) {
       options.moduleIds = true;
+      options.getModuleId = getRelativeModulePath;
     }
 
     options.highlightCode = false;
@@ -232,18 +240,22 @@ module.exports = {
 
     const DebugMacros = require('babel-plugin-debug-macros');
     const isProduction = process.env.EMBER_ENV === 'production';
+    const isDebug = !isProduction;
 
     let options = {
-      envFlags: {
-        source: '@glimmer/env',
-        flags: { DEBUG: !isProduction, CI: !!process.env.CI }
-      },
+      flags: [
+        {
+          source: '@glimmer/env',
+          flags: { DEBUG: isDebug, CI: !!process.env.CI }
+        }
+      ],
 
       externalizeHelpers: {
         global: 'Ember'
       },
 
       debugTools: {
+        isDebug,
         source: '@ember/debug',
         assertPredicateIndex: 1
       }
@@ -269,10 +281,16 @@ module.exports = {
     let options = config.options;
 
     let targets = this.project && this.project.targets;
-    let presetOptions = Object.assign({}, options, {
-      modules: false,
-      targets
-    });
+    let presetOptions = {};
+
+    for (let key of PRESET_ENV_OPTIONS) {
+      if (key in options) {
+        presetOptions[key] = options[key];
+      }
+    }
+
+    presetOptions.modules = false;
+    presetOptions.targets = targets;
 
     let presetEnvPlugins = this._presetEnv({ assertVersion() {} }, presetOptions).plugins;
 
@@ -304,9 +322,10 @@ module.exports = {
   },
 
   _getModulesPlugin() {
+    const { moduleResolve } = require('amd-name-resolver');
     const ModulesTransform = addBaseDir(require('@babel/plugin-transform-modules-amd'));
     const ModuleResolver = addBaseDir(require('babel-plugin-module-resolver'));
-    const resolvePath = addBaseDir(require('amd-name-resolver').moduleResolve);
+    const resolvePath = addBaseDir((name, child) => moduleResolve(name, getRelativeModulePath(child)));
 
     return [
       [ModuleResolver, { resolvePath }],
