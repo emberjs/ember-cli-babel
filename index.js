@@ -60,7 +60,7 @@ module.exports = {
   setupPreprocessorRegistry(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
-      ext: 'js',
+      ext: this._getExtensions(this._getAddonOptions()),
       toTree: (tree) => this.transpileTree(tree)
     });
   },
@@ -177,6 +177,11 @@ module.exports = {
     };
   },
 
+  _getExtensions(config) {
+    let emberCLIBabelConfig = config['ember-cli-babel'] || {};
+    return emberCLIBabelConfig.extensions || ['js'];
+  },
+
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
@@ -197,10 +202,13 @@ module.exports = {
       sourceMaps = config.babel.sourceMaps;
     }
 
+    let filterExtensions = this._getExtensions(config);
+
     let options = {
       annotation: providedAnnotation || `Babel: ${this._parentName()}`,
       sourceMaps,
-      throwUnlessParallelizable
+      throwUnlessParallelizable,
+      filterExtensions
     };
 
     let userPlugins = addonProvidedConfig.plugins;
