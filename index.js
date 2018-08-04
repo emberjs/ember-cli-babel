@@ -292,7 +292,7 @@ module.exports = {
   },
 
   _presetEnv(presetOptions) {
-    return [require.resolve('babel-preset-env'), presetOptions];
+    return [require.resolve('@babel/preset-env'), presetOptions];
   },
 
   _getTargets() {
