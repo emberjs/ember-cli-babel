@@ -831,7 +831,7 @@ describe('ember-cli-babel', function() {
       this.addon.buildBabelOptions();
       this.addon._presetEnv = presetEnvOrig;
 
-      const presetEnv = require('babel-preset-env').default;
+      const presetEnv = require('@babel/preset-env').default;
       let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, '@babel/plugin-transform-classes');
 
@@ -852,7 +852,7 @@ describe('ember-cli-babel', function() {
       this.addon.buildBabelOptions();
       this.addon._presetEnv = presetEnvOrig;
 
-      const presetEnv = require('babel-preset-env').default;
+      const presetEnv = require('@babel/preset-env').default;
       let plugins = presetEnv(null, invokingOptions).plugins;
       let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
 
