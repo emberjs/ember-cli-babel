@@ -16,7 +16,8 @@
   "license": "MIT",
   "author": "Gordon Kristan",
   "files": [
-    "index.js"
+    "index.js",
+    "lib"
   ],
   "directories": {
     "doc": "doc",
@@ -37,15 +38,16 @@
     "test:all": "mocha node-tests && ember try:each"
   },
   "dependencies": {
-    "@babel/plugin-transform-modules-amd": "^7.0.0-beta.55",
-    "@babel/preset-env": "^7.0.0-beta.55",
+    "@babel/core": "^7.0.0-beta.56",
+    "@babel/plugin-transform-modules-amd": "^7.0.0-beta.56",
+    "@babel/preset-env": "^7.0.0-beta.56",
     "amd-name-resolver": "1.2.0",
     "babel-plugin-debug-macros": "^0.2.0-beta.6",
+    "babel-plugin-ember-modules-api-polyfill": "^2.3.2",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-polyfill": "^7.0.0-beta.0",
     "broccoli-babel-transpiler": "github:babel/broccoli-babel-transpiler#babel-7",
     "broccoli-debug": "^0.6.4",
-    "babel-plugin-ember-modules-api-polyfill": "^2.3.2",
     "broccoli-funnel": "^2.0.0",
     "broccoli-source": "^1.1.0",
     "clone": "^2.0.0",

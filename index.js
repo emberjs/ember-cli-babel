@@ -1,20 +1,15 @@
-/* eslint-env node */
 'use strict';
 
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
 const semver = require('semver');
-const ensurePosixPath = require('ensure-posix-path');
 
 // From https://github.com/babel/babel-preset-env/tree/v1.6.1#options (linked from our README)
 const PRESET_ENV_OPTIONS = ['spec', 'loose', 'modules', 'debug', 'include', 'exclude', 'useBuiltIns'];
 
 let count = 0;
 
-function getRelativeModulePath(modulePath) {
-  return path.relative(process.cwd(), modulePath);
-}
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -220,7 +215,7 @@ module.exports = {
 
     if (shouldCompileModules) {
       options.moduleIds = true;
-      options.getModuleId = modulePath => ensurePosixPath(getRelativeModulePath(modulePath));
+      options.getModuleId = require('./lib/relative-module-paths').getRelativeModulePath;
     }
 
     options.highlightCode = false;
@@ -307,8 +302,7 @@ module.exports = {
   },
 
   _getModulesPlugin() {
-    const { moduleResolve } = require('amd-name-resolver');
-    const resolvePath = (name, child) => moduleResolve(name, getRelativeModulePath(child));
+    const resolvePath = require('./lib/relative-module-paths').resolveRelativeModulePath;
     resolvePath.baseDir = () => __dirname;
 
     return [

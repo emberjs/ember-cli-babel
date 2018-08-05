@@ -23,6 +23,7 @@ module.exports = {
         'ember-cli-build.js',
         'index.js',
         'testem.js',
+        'lib/**/*.js',
         'blueprints/*/index.js',
         'config/**/*.js',
         'tests/dummy/config/**/*.js',
