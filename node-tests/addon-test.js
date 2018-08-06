@@ -57,7 +57,7 @@ describe('ember-cli-babel', function() {
       yield terminateWorkerPool();
     }));
 
-    it.only("should build", co.wrap(function* () {
+    it("should build", co.wrap(function* () {
       input.write({
         "foo.js": `let foo = () => {};`,
         "bar.js": `let bar = () => {};`
