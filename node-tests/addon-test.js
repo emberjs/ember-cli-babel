@@ -745,24 +745,6 @@ describe('ember-cli-babel', function() {
   describe('_getPresetEnvPlugins', function() {
     this.timeout(5000);
 
-    function includesPlugin(haystack, needleName) {
-      let presetEnvBaseDir = path.dirname(require.resolve('@babel/preset-env'));
-      let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
-      let NeedleModule = require(pluginPath);
-      let Needle = NeedleModule.__esModule ? NeedleModule.default : NeedleModule;
-
-      for (let i = 0; i < haystack.length; i++) {
-        let PluginModule = haystack[i][0];
-        let Plugin = PluginModule.__esModule ? PluginModule.default : PluginModule;
-
-        if (Plugin === Needle) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
     it('does nothing when disablePresetEnv is set', function() {
       let _presetEnvCalled = false;
 
@@ -815,48 +797,6 @@ describe('ember-cli-babel', function() {
       this.addon.buildBabelOptions();
 
       expect(invokingOptions.loose).to.be.true;
-    });
-
-    it('includes class transform when targets require plugin', function() {
-      this.addon.project.targets = {
-        browsers: ['ie 9']
-      };
-
-      let invokingOptions;
-      let presetEnvOrig = this.addon._presetEnv;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return presetEnvOrig(options);
-      };
-      this.addon.buildBabelOptions();
-      this.addon._presetEnv = presetEnvOrig;
-
-      const presetEnv = require('babel-preset-env').default;
-      let plugins = presetEnv(null, invokingOptions).plugins;
-      let found = includesPlugin(plugins, '@babel/plugin-transform-classes');
-
-      expect(found).to.be.true;
-    });
-
-    it('does not include class transform when targets do not require plugin', function() {
-      this.addon.project.targets = {
-        browsers: ['last 2 chrome versions']
-      };
-
-      let invokingOptions;
-      let presetEnvOrig = this.addon._presetEnv;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return presetEnvOrig(options);
-      };
-      this.addon.buildBabelOptions();
-      this.addon._presetEnv = presetEnvOrig;
-
-      const presetEnv = require('babel-preset-env').default;
-      let plugins = presetEnv(null, invokingOptions).plugins;
-      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
-
-      expect(found).to.be.false;
     });
   });
 
