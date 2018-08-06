@@ -722,7 +722,7 @@ describe('ember-cli-babel', function() {
     it('includes resolveModuleSource if compiling modules', function() {
       this.addon._shouldCompileModules = () => true;
 
-      let expectedPlugin = require('babel-plugin-module-resolver').default;
+      let expectedPlugin = require.resolve('babel-plugin-module-resolver');
 
       let result = this.addon.buildBabelOptions();
       let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
