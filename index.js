@@ -91,7 +91,7 @@ module.exports = {
     const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    let polyfillDir = path.dirname(require.resolve('@babel/polyfill/dist'));
+    let polyfillDir = path.dirname(require.resolve('@babel/polyfill/dist/polyfill'));
 
     return new Funnel(new UnwatchedDir(polyfillDir), {
       destDir: 'babel-polyfill'
