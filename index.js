@@ -1,4 +1,3 @@
-/* eslint-env node */
 'use strict';
 
 const VersionChecker = require('ember-cli-version-checker');
@@ -16,9 +15,11 @@ module.exports = {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
-    let dep = this.emberCLIChecker = checker.for('ember-cli', 'npm');
+    let dep = checker.for('ember-cli', 'npm');
 
-    this._shouldShowBabelDeprecations = !dep.lt('2.11.0-beta.2');
+    if (dep.lt('2.13.0')) {
+      throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+    }
   },
 
   buildBabelOptions(_config) {
@@ -61,23 +62,10 @@ module.exports = {
 
   _shouldIncludePolyfill() {
     let addonOptions = this._getAddonOptions();
-    let babelOptions = addonOptions.babel;
     let customOptions = addonOptions['ember-cli-babel'];
-
-    if (this._shouldShowBabelDeprecations && !this._polyfillDeprecationPrinted &&
-      babelOptions && 'includePolyfill' in babelOptions) {
-
-      this._polyfillDeprecationPrinted = true;
-
-      // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
-      this.ui.writeDeprecateLine(
-        'Putting the "includePolyfill" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-    }
 
     if (customOptions && 'includePolyfill' in customOptions) {
       return customOptions.includePolyfill === true;
-    } else if (babelOptions && 'includePolyfill' in babelOptions) {
-      return babelOptions.includePolyfill === true;
     } else {
       return false;
     }
@@ -103,7 +91,7 @@ module.exports = {
     const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 
     // Find babel-core's browser polyfill and use its directory as our vendor tree
-    let polyfillDir = path.dirname(require.resolve('babel-polyfill/dist/polyfill'));
+    let polyfillDir = path.dirname(require.resolve('@babel/polyfill/dist/polyfill'));
 
     return new Funnel(new UnwatchedDir(polyfillDir), {
       destDir: 'babel-polyfill'
@@ -125,8 +113,8 @@ module.exports = {
     // if no targets are setup, assume that all plugins are required
     if (!targets) { return true; }
 
-    const isPluginRequired = require('babel-preset-env').isPluginRequired;
-    const pluginList = require('babel-preset-env/data/plugins');
+    const isPluginRequired = require('@babel/preset-env').isPluginRequired;
+    const pluginList = require('@babel/preset-env/data/plugins');
 
     return isPluginRequired(targets, pluginList[pluginName]);
   },
@@ -150,32 +138,10 @@ module.exports = {
   },
 
   _getAddonProvidedConfig(addonOptions) {
-    let babelOptions = clone(addonOptions.babel || {});
+    let options = clone(addonOptions.babel || {});
 
-    // used only to support using ember-cli-babel@6 at the
-    // top level (app or addon during development) on ember-cli
-    // older than 2.13
-    //
-    // without this, we mutate the same shared `options.babel.plugins`
-    // that is used to transpile internally (via `_prunedBabelOptions`
-    // in older ember-cli versions)
-    let babel6Options = clone(addonOptions.babel6 || {});
-
-    let options;
-    // options.modules is set only for things assuming babel@5 usage
-    if (babelOptions.modules) {
-      // using babel@5 configuration with babel@6
-      // without overriding here we would trigger
-      // an error
-      options = Object.assign({}, babel6Options);
-    } else {
-      // shallow merge both babelOptions and babel6Options
-      // (plugins/postTransformPlugins are handled separately)
-      options = Object.assign({}, babelOptions, babel6Options);
-    }
-
-    let plugins = [].concat(babelOptions.plugins, babel6Options.plugins).filter(Boolean);
-    let postTransformPlugins = [].concat(babelOptions.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
+    let plugins = options.plugins || [];
+    let postTransformPlugins = options.postTransformPlugins || [];
 
     return {
       options,
@@ -222,12 +188,12 @@ module.exports = {
     ).filter(Boolean);
 
     options.presets = [
-      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
+      shouldRunPresetEnv && this._getPresetEnv(addonProvidedConfig),
     ].filter(Boolean);
 
     if (shouldCompileModules) {
       options.moduleIds = true;
-      options.resolveModuleSource = require('amd-name-resolver').moduleResolve;
+      options.getModuleId = require('./lib/relative-module-paths').getRelativeModulePath;
     }
 
     options.highlightCode = false;
@@ -242,12 +208,13 @@ module.exports = {
     if (addonOptions.disableDebugTooling) { return; }
 
     const isProduction = process.env.EMBER_ENV === 'production';
+    const isDebug = !isProduction;
 
     let options = {
       flags: [
         {
           source: '@glimmer/env',
-          flags: { DEBUG: !isProduction, CI: !!process.env.CI }
+          flags: { DEBUG: isDebug, CI: !!process.env.CI }
         }
       ],
 
@@ -256,7 +223,7 @@ module.exports = {
       },
 
       debugTools: {
-        isDebug: !isProduction,
+        isDebug,
         source: '@ember/debug',
         assertPredicateIndex: 1
       }
@@ -277,27 +244,28 @@ module.exports = {
     }
   },
 
-  _getPresetEnvPlugins(config) {
+  _getPresetEnv(config) {
     let options = config.options;
 
-    let targets = this._getTargets();
+    let targets = this.project && this.project.targets;
     let presetOptions = Object.assign({}, options, {
       modules: false,
       targets
     });
 
-    let presetEnvPlugins = this._presetEnv(presetOptions);
-    return presetEnvPlugins;
-  },
+    // delete any properties added to `options.babel` that
+    // are invalid for @babel/preset-env
+    delete presetOptions.sourceMaps;
+    delete presetOptions.plugins;
+    delete presetOptions.postTransformPlugins;
 
-  _presetEnv(presetOptions) {
-    return [require.resolve('babel-preset-env'), presetOptions];
+    return [require.resolve('@babel/preset-env'), presetOptions];
   },
 
   _getTargets() {
     let targets = this.project && this.project.targets;
 
-    let parser = require('babel-preset-env/lib/targets-parser').default;
+    let parser = require('@babel/preset-env/lib/targets-parser').default;
     if (typeof targets === 'object' && targets !== null) {
       return parser(targets);
     } else {
@@ -306,8 +274,12 @@ module.exports = {
   },
 
   _getModulesPlugin() {
+    const resolvePath = require('./lib/relative-module-paths').resolveRelativeModulePath;
+    resolvePath.baseDir = () => __dirname;
+
     return [
-      [require.resolve('babel-plugin-transform-es2015-modules-amd'), { noInterop: true }]
+      [require.resolve('babel-plugin-module-resolver'), { resolvePath }],
+      [require.resolve('@babel/plugin-transform-modules-amd'), { noInterop: true }],
     ];
   },
 
@@ -325,18 +297,9 @@ module.exports = {
   // will use any provided configuration
   _shouldCompileModules(options) {
     let addonOptions = options['ember-cli-babel'];
-    let babelOptions = options.babel;
 
     if (addonOptions && 'compileModules' in addonOptions) {
       return addonOptions.compileModules;
-    } else if (babelOptions && 'compileModules' in babelOptions) {
-      if (this._shouldShowBabelDeprecations && !this._compileModulesDeprecationPrinted) {
-        this._compileModulesDeprecationPrinted = true;
-        // we can use writeDeprecateLine() here because the warning will only be shown on newer Ember CLIs
-        this.ui.writeDeprecateLine('Putting the "compileModules" option in "babel" is deprecated, please put it in "ember-cli-babel" instead.');
-      }
-
-      return babelOptions.compileModules;
     } else {
       return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
     }

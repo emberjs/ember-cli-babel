@@ -1,3 +1,4 @@
+/* eslint-env mocha, node */
 'use strict';
 
 const co = require('co');
@@ -5,8 +6,6 @@ const expect = require('chai').expect;
 const MockUI = require('console-ui/mock');
 const CoreObject = require('core-object');
 const AddonMixin = require('../index');
-const path = require('path');
-const resolve = require('resolve');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
@@ -94,7 +93,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@ember/component'], function (_component) {\n  'use strict';\n});`
+          "foo.js": `define("foo", ["@ember/component"], function (_component) {\n  "use strict";\n});`
         });
       }));
 
@@ -112,8 +111,8 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.Component.extend();\n});`,
-          "app.js": `define('app', [], function () {\n  'use strict';\n\n  Ember.Application.extend();\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.Component.extend();\n});`,
+          "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`
         });
       }));
 
@@ -185,7 +184,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@glimmer/env'], function (_env) {\n  'use strict';\n\n  if (_env.DEBUG) {\n    console.log('debug mode!');\n  }\n});`
+          "foo.js": `define("foo", ["@glimmer/env"], function (_env) {\n  "use strict";\n\n  if (_env.DEBUG) {\n    console.log('debug mode!');\n  }\n});`
         });
       }));
 
@@ -208,7 +207,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (true) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -230,7 +229,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -254,7 +253,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  if (false) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -276,7 +275,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (false && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
           });
         }));
       });
@@ -318,7 +317,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', ['@ember/string'], function (_string) {\n  'use strict';\n\n  (0, _string.camelize)('stuff-here');\n});`
+          "foo.js": `define("foo", ["@ember/string"], function (_string) {\n  "use strict";\n\n  (0, _string.camelize)('stuff-here');\n});`
         });
       }));
 
@@ -342,7 +341,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define('foo', [], function () {\n  'use strict';\n\n  Ember.String.camelize('stuff-here');\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.String.camelize('stuff-here');\n});`
         });
       }));
 
@@ -416,50 +415,6 @@ describe('ember-cli-babel', function() {
       });
     });
 
-    describe('with babel.includePolyfill = true', function() {
-      beforeEach(function() {
-        this.addon.parent.options = { babel: { includePolyfill: true } };
-      });
-
-      it('should return true', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.true;
-      });
-
-      it('should print deprecation message exactly once', function() {
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(1);
-      });
-    });
-
-    describe('with babel.includePolyfill = false', function() {
-      beforeEach(function() {
-        this.addon.parent.options = { babel: { includePolyfill: false } };
-      });
-
-      it('should return false', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.false;
-      });
-
-      it('should print deprecation message exactly once', function() {
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(1);
-      });
-    });
-
     describe('with ember-cli-babel.includePolyfill = true', function() {
       beforeEach(function() {
         this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: true } };
@@ -499,31 +454,6 @@ describe('ember-cli-babel', function() {
         expect(deprecationMessages).to.have.lengthOf(0);
       });
     });
-
-    describe('with ember-cli-babel.includePolyfill = true and babel.includePolyfill = false', function() {
-      beforeEach(function() {
-        this.addon.parent.options = {
-          'babel': { includePolyfill: false },
-          'ember-cli-babel': { includePolyfill: true },
-        };
-      });
-
-      it('should prefer the "ember-cli-babel" setting', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.true;
-      });
-
-      it('should print deprecation message exactly once', function() {
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(1);
-      });
-    });
   });
 
   describe('_shouldCompileModules()', function() {
@@ -554,50 +484,6 @@ describe('ember-cli-babel', function() {
         });
 
         expect(deprecationMessages).to.have.lengthOf(0);
-      });
-    });
-
-    describe('with babel.compileModules = true', function() {
-      beforeEach(function() {
-        this.addon.parent.options.babel = { compileModules: true };
-      });
-
-      it('should return true', function() {
-        expect(this.addon.shouldCompileModules()).to.eql(true);
-      });
-
-      it('should print deprecation message exactly once', function() {
-        this.addon.shouldCompileModules();
-        this.addon.shouldCompileModules();
-        this.addon.shouldCompileModules();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(1);
-      });
-    });
-
-    describe('with babel.compileModules = false', function() {
-      beforeEach(function() {
-        this.addon.parent.options.babel = { compileModules: false };
-      });
-
-      it('should return false', function() {
-        expect(this.addon.shouldCompileModules()).to.eql(false);
-      });
-
-      it('should print deprecation message exactly once', function() {
-        this.addon.shouldCompileModules();
-        this.addon.shouldCompileModules();
-        this.addon.shouldCompileModules();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(1);
       });
     });
 
@@ -658,19 +544,6 @@ describe('ember-cli-babel', function() {
       let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
     });
-
-    it('includes options specified in parent.options.babel6', function() {
-      this.addon.parent = {
-        options: {
-          babel6: {
-            loose: true
-          },
-        },
-      };
-
-      let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
-      expect(result.options.loose).to.be.true;
-    });
   });
 
   describe('buildBabelOptions', function() {
@@ -720,6 +593,14 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon.buildBabelOptions(options);
       expect(result.sourceMaps).to.equal('inline');
+    });
+
+    it('disables reading `.babelrc`', function() {
+      let options = {};
+
+      let result = this.addon.buildBabelOptions(options);
+
+      expect(result.babelrc).to.be.false;
     });
 
     it('does not include all provided options', function() {
@@ -777,20 +658,6 @@ describe('ember-cli-babel', function() {
       expect(result.postTransformPlugins).to.be.undefined;
     });
 
-    it('includes user plugins in parent.options.babel6.plugins', function() {
-      let plugin = {};
-      this.addon.parent = {
-        options: {
-          babel6: {
-            plugins: [ plugin ]
-          },
-        },
-      };
-
-      let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.deep.include(plugin);
-    });
-
     it('sets `presets` to empty array if `disablePresetEnv` is true', function() {
       let options = {
         'ember-cli-babel': {
@@ -826,37 +693,28 @@ describe('ember-cli-babel', function() {
     it('includes resolveModuleSource if compiling modules', function() {
       this.addon._shouldCompileModules = () => true;
 
+      let expectedPlugin = require.resolve('babel-plugin-module-resolver');
+
       let result = this.addon.buildBabelOptions();
-      expect(result.resolveModuleSource).to.equal(require('amd-name-resolver').moduleResolve);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
+
+      expect(typeof found[1].resolvePath).to.equal('function');
     });
 
     it('does not include resolveModuleSource when not compiling modules', function() {
       this.addon._shouldCompileModules = () => false;
 
+      let expectedPlugin = require('babel-plugin-module-resolver').default;
+
       let result = this.addon.buildBabelOptions();
-      expect(result.resolveModuleSource).to.equal(undefined);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
+
+      expect(found).to.equal(undefined);
     });
   });
 
-  describe('_getPresetEnvPlugins', function() {
+  describe('_getPresetEnv', function() {
     this.timeout(5000);
-
-    function includesPlugin(haystack, needleName) {
-      let presetEnvBaseDir = path.dirname(require.resolve('babel-preset-env'));
-      let pluginPath = resolve.sync(needleName, { basedir: presetEnvBaseDir });
-      let PluginModule = require(pluginPath);
-      let Needle = PluginModule.__esModule ? PluginModule.default : PluginModule;
-
-      for (let i = 0; i < haystack.length; i++) {
-        let Plugin = haystack[i][0];
-
-        if (Plugin === Needle) {
-          return true;
-        }
-      }
-
-      return false;
-    }
 
     it('does nothing when disablePresetEnv is set', function() {
       let _presetEnvCalled = false;
@@ -882,76 +740,15 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let invokingOptions;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return [];
-      };
+      let options = this.addon.buildBabelOptions();
 
-      this.addon.buildBabelOptions();
-
-      expect(invokingOptions.loose).to.be.true;
-    });
-
-    it('passes options.babel6 through to preset-env', function() {
-      let babelOptions = { loose: true };
-      this.addon.parent = {
-        options: {
-          babel6: babelOptions,
-        },
-      };
-
-      let invokingOptions;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return [];
-      };
-
-      this.addon.buildBabelOptions();
-
-      expect(invokingOptions.loose).to.be.true;
-    });
-
-    it('includes class transform when targets require plugin', function() {
-      this.addon.project.targets = {
-        browsers: ['ie 9']
-      };
-
-      let invokingOptions;
-      let presetEnvOrig = this.addon._presetEnv;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return presetEnvOrig(options);
-      };
-      this.addon.buildBabelOptions();
-      this.addon._presetEnv = presetEnvOrig;
-
-      const presetEnv = require('babel-preset-env').default;
-      let plugins = presetEnv(null, invokingOptions).plugins;
-      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
-
-      expect(found).to.be.true;
-    });
-
-    it('does not include class transform when targets do not require plugin', function() {
-      this.addon.project.targets = {
-        browsers: ['last 2 chrome versions']
-      };
-
-      let invokingOptions;
-      let presetEnvOrig = this.addon._presetEnv;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return presetEnvOrig(options);
-      };
-      this.addon.buildBabelOptions();
-      this.addon._presetEnv = presetEnvOrig;
-
-      const presetEnv = require('babel-preset-env').default;
-      let plugins = presetEnv(null, invokingOptions).plugins;
-      let found = includesPlugin(plugins, 'babel-plugin-transform-es2015-classes');
-
-      expect(found).to.be.false;
+      expect(options.presets).to.deep.equal([
+        [require.resolve('@babel/preset-env'), {
+          loose: true,
+          modules: false,
+          targets: undefined,
+        }],
+      ]);
     });
   });
 
