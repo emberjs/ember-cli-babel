@@ -15,7 +15,11 @@ module.exports = {
     this._super.init && this._super.init.apply(this, arguments);
 
     let checker = new VersionChecker(this);
-    this.emberCLIChecker = checker.for('ember-cli', 'npm');
+    let dep = checker.for('ember-cli', 'npm');
+
+    if (dep.lt('2.13.0')) {
+      throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+    }
   },
 
   buildBabelOptions(_config) {
@@ -134,32 +138,10 @@ module.exports = {
   },
 
   _getAddonProvidedConfig(addonOptions) {
-    let babelOptions = clone(addonOptions.babel || {});
+    let options = clone(addonOptions.babel || {});
 
-    // used only to support using ember-cli-babel@6 at the
-    // top level (app or addon during development) on ember-cli
-    // older than 2.13
-    //
-    // without this, we mutate the same shared `options.babel.plugins`
-    // that is used to transpile internally (via `_prunedBabelOptions`
-    // in older ember-cli versions)
-    let babel6Options = clone(addonOptions.babel6 || {});
-
-    let options;
-    // options.modules is set only for things assuming babel@5 usage
-    if (babelOptions.modules) {
-      // using babel@5 configuration with babel@6
-      // without overriding here we would trigger
-      // an error
-      options = Object.assign({}, babel6Options);
-    } else {
-      // shallow merge both babelOptions and babel6Options
-      // (plugins/postTransformPlugins are handled separately)
-      options = Object.assign({}, babelOptions, babel6Options);
-    }
-
-    let plugins = [].concat(babelOptions.plugins, babel6Options.plugins).filter(Boolean);
-    let postTransformPlugins = [].concat(babelOptions.postTransformPlugins, babel6Options.postTransformPlugins).filter(Boolean);
+    let plugins = options.plugins || [];
+    let postTransformPlugins = options.postTransformPlugins || [];
 
     return {
       options,
