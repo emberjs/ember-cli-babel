@@ -253,6 +253,12 @@ module.exports = {
       targets
     });
 
+    // delete any properties added to `options.babel` that
+    // are invalid for @babel/preset-env
+    delete presetOptions.sourceMaps;
+    delete presetOptions.plugins;
+    delete presetOptions.postTransformPlugins;
+
     return [require.resolve('@babel/preset-env'), presetOptions];
   },
 
