@@ -666,7 +666,7 @@ describe('ember-cli-babel', function() {
       };
       this.addon.parent = {
         options: {
-          babel: {
+          babel6: {
             plugins: [ {} ]
           },
         },
