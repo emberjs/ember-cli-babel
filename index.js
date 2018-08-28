@@ -5,11 +5,7 @@ const clone = require('clone');
 const path = require('path');
 const semver = require('semver');
 
-// From https://github.com/babel/babel-preset-env/tree/v1.6.1#options (linked from our README)
-const PRESET_ENV_OPTIONS = ['spec', 'loose', 'modules', 'debug', 'include', 'exclude', 'useBuiltIns'];
-
 let count = 0;
-
 
 module.exports = {
   name: 'ember-cli-babel',
@@ -210,7 +206,7 @@ module.exports = {
     ).filter(Boolean);
 
     options.presets = [
-      shouldRunPresetEnv && this._getPresetEnvPlugins(addonProvidedConfig),
+      shouldRunPresetEnv && this._getPresetEnv(addonProvidedConfig),
     ].filter(Boolean);
 
     if (shouldCompileModules) {
@@ -266,27 +262,15 @@ module.exports = {
     }
   },
 
-  _getPresetEnvPlugins(config) {
+  _getPresetEnv(config) {
     let options = config.options;
 
     let targets = this.project && this.project.targets;
-    let presetOptions = {};
+    let presetOptions = Object.assign({}, options, {
+      modules: false,
+      targets
+    });
 
-    for (let key of PRESET_ENV_OPTIONS) {
-      if (key in options) {
-        presetOptions[key] = options[key];
-      }
-    }
-
-    presetOptions.modules = false;
-    presetOptions.targets = targets;
-
-    let presetEnvPlugins = this._presetEnv(presetOptions);
-
-    return presetEnvPlugins;
-  },
-
-  _presetEnv(presetOptions) {
     return [require.resolve('@babel/preset-env'), presetOptions];
   },
 

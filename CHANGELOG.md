@@ -1,5 +1,35 @@
 # Changelog
 
+## v6.17.0 (2018-08-27)
+
+#### :bug: Bug Fix
+* [#241](https://github.com/babel/ember-cli-babel/pull/241) Bumping broccoli-babel-transpiler to get the fix for parallelAPI ([@arthirm](https://github.com/arthirm))
+
+#### Committers: 1
+- Arthi ([@arthirm](https://github.com/arthirm))
+
+
+## v6.16.0 (2018-07-18)
+
+#### :rocket: Enhancement
+* [#232](https://github.com/babel/ember-cli-babel/pull/232) Upgrade deps ([@stefanpenner](https://github.com/stefanpenner))
+
+#### Committers: 1
+- Stefan Penner ([@stefanpenner](https://github.com/stefanpenner))
+
+
+## v6.15.0 (2018-07-17)
+
+#### :rocket: Enhancement
+* [#230](https://github.com/babel/ember-cli-babel/pull/230) update babel-plugin-debug-macros to 0.2.0-beta.6 ([@kellyselden](https://github.com/kellyselden))
+
+#### :memo: Documentation
+* [#225](https://github.com/babel/ember-cli-babel/pull/225) Update Changelog ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 2
+- Kelly Selden ([@kellyselden](https://github.com/kellyselden))
+- Tobias Bieniek ([@Turbo87](https://github.com/Turbo87))
+
 ## v6.14.1 (2018-05-26)
 
 #### :bug: Bug Fix

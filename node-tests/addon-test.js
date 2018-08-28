@@ -6,8 +6,6 @@ const expect = require('chai').expect;
 const MockUI = require('console-ui/mock');
 const CoreObject = require('core-object');
 const AddonMixin = require('../index');
-const path = require('path');
-const resolve = require('resolve');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
 const BroccoliTestHelper = require('broccoli-test-helper');
@@ -546,19 +544,6 @@ describe('ember-cli-babel', function() {
       let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
     });
-
-    it('includes options specified in parent.options.babel6', function() {
-      this.addon.parent = {
-        options: {
-          babel6: {
-            loose: true
-          },
-        },
-      };
-
-      let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
-      expect(result.options.loose).to.be.true;
-    });
   });
 
   describe('buildBabelOptions', function() {
@@ -673,20 +658,6 @@ describe('ember-cli-babel', function() {
       expect(result.postTransformPlugins).to.be.undefined;
     });
 
-    it('includes user plugins in parent.options.babel6.plugins', function() {
-      let plugin = {};
-      this.addon.parent = {
-        options: {
-          babel6: {
-            plugins: [ plugin ]
-          },
-        },
-      };
-
-      let result = this.addon.buildBabelOptions();
-      expect(result.plugins).to.deep.include(plugin);
-    });
-
     it('sets `presets` to empty array if `disablePresetEnv` is true', function() {
       let options = {
         'ember-cli-babel': {
@@ -742,7 +713,7 @@ describe('ember-cli-babel', function() {
     });
   });
 
-  describe('_getPresetEnvPlugins', function() {
+  describe('_getPresetEnv', function() {
     this.timeout(5000);
 
     it('does nothing when disablePresetEnv is set', function() {
@@ -769,34 +740,15 @@ describe('ember-cli-babel', function() {
         },
       };
 
-      let invokingOptions;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return [];
-      };
+      let options = this.addon.buildBabelOptions();
 
-      this.addon.buildBabelOptions();
-
-      expect(invokingOptions.loose).to.be.true;
-    });
-
-    it('passes options.babel6 through to preset-env', function() {
-      let babelOptions = { loose: true };
-      this.addon.parent = {
-        options: {
-          babel6: babelOptions,
-        },
-      };
-
-      let invokingOptions;
-      this.addon._presetEnv = function(options) {
-        invokingOptions = options;
-        return [];
-      };
-
-      this.addon.buildBabelOptions();
-
-      expect(invokingOptions.loose).to.be.true;
+      expect(options.presets).to.deep.equal([
+        [require.resolve('@babel/preset-env'), {
+          loose: true,
+          modules: false,
+          targets: undefined,
+        }],
+      ]);
     });
   });
 
