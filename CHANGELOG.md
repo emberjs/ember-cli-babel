@@ -1,5 +1,28 @@
 # Changelog
 
+## v7.1.0 (2018-08-29)
+
+#### :rocket: Enhancement
+* [#236](https://github.com/babel/ember-cli-babel/pull/236) feat: make processed file extensions configurable ([@buschtoens](https://github.com/buschtoens))
+
+#### Committers: 1
+- Jan Buschtöns ([@buschtoens](https://github.com/buschtoens))
+
+## v7.0.0 (2018-08-28)
+
+#### :boom: Breaking Change
+* [#140](https://github.com/babel/ember-cli-babel/pull/140) Update to use Babel 7 ([@rwjblue](https://github.com/rwjblue))
+  - Drops support for Node 4.
+  - Migrates to `@babel` scoped packages.
+  - Drops support for ember-cli versions prior to 2.13.
+
+#### :rocket: Enhancement
+* [#140](https://github.com/babel/ember-cli-babel/pull/140) Babel 7 ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Dan Freeman ([@dfreeman](https://github.com/dfreeman))
+
 ## v6.17.0 (2018-08-27)
 
 #### :bug: Bug Fix
