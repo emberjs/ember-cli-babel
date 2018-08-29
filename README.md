@@ -94,6 +94,7 @@ interface EmberCLIBabelConfig {
     disableDebugTooling?: boolean;
     disablePresetEnv?: boolean;
     disableEmberModulesAPIPolyfill?: boolean;
+    extensions?: string[];
   };
 }
 ```
