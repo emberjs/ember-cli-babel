@@ -14,6 +14,10 @@ use ES6 syntax with your Ember CLI project.
 ember install ember-cli-babel
 ```
 
+## Compatibility
+
+- ember-cli-babel 7.x requires ember-cli 2.13 or above
+
 ## Usage
 
 This plugin should work without any configuration after installing. By default
