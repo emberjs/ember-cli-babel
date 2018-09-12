@@ -1,5 +1,17 @@
 # Changelog
 
+## v7.1.1 (2018-09-12)
+
+#### :rocket: Enhancement
+* [#244](https://github.com/babel/ember-cli-babel/pull/244) Update to ember-rfc176-data@^0.3.4. ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#242](https://github.com/babel/ember-cli-babel/pull/242) README: Add "Compatibility" section ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 2
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Tobias Bieniek ([@Turbo87](https://github.com/Turbo87))
+
 ## v7.1.0 (2018-08-29)
 
 #### :rocket: Enhancement
