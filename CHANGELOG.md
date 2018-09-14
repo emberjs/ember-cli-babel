@@ -1,5 +1,13 @@
 # Changelog
 
+## v6.17.1 (2018-09-14)
+
+#### :rocket: Enhancement
+* [#244](https://github.com/babel/ember-cli-babel/pull/244) Update to ember-rfc176-data@^0.3.4. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v6.17.0 (2018-08-27)
 
 #### :bug: Bug Fix
