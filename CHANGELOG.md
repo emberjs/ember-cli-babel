@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.1.2 (2018-09-14)
+
+#### :rocket: Enhancement
+* [#244](https://github.com/babel/ember-cli-babel/pull/244) Update to ember-rfc176-data@^0.3.5. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.1.1 (2018-09-12)
 
 #### :rocket: Enhancement
@@ -34,6 +42,14 @@
 #### Committers: 2
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 - Dan Freeman ([@dfreeman](https://github.com/dfreeman))
+
+## v6.17.2 (2018-09-14)
+
+#### :rocket: Enhancement
+* [#244](https://github.com/babel/ember-cli-babel/pull/244) Update to ember-rfc176-data@^0.3.5. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 
 ## v6.17.0 (2018-08-27)
 
