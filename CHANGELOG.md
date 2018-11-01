@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.1.3 (2018-11-01)
+
+#### :rocket: Enhancement
+* [#249](https://github.com/babel/ember-cli-babel/pull/249) Bumping to broccoli-babel-transpiler@7.1.0 ([@arthirm](https://github.com/arthirm))
+
+#### Committers: 1
+- Arthi ([@arthirm](https://github.com/arthirm))
+
 ## v7.1.2 (2018-09-14)
 
 #### :rocket: Enhancement
