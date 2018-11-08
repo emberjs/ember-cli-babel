@@ -21,12 +21,19 @@ describe('ember-cli-babel', function() {
 
   beforeEach(function() {
     this.ui = new MockUI();
-    let project = { root: __dirname, emberCLIVersion: () => '2.16.2' };
+    let project = {
+      root: __dirname,
+      emberCLIVersion: () => '2.16.2',
+      addons: []
+    };
+
     this.addon = new Addon({
       project,
       parent: project,
       ui: this.ui,
     });
+
+    project.addons.push(this.addon);
   });
 
   afterEach(function() {
@@ -283,12 +290,19 @@ describe('ember-cli-babel', function() {
 
     describe('@ember/string detection', function() {
       beforeEach(function() {
-        let project = { root: input.path(), emberCLIVersion: () => '2.16.2' };
+        let project = {
+          root: input.path(),
+          emberCLIVersion: () => '2.16.2',
+          addons: []
+        };
+
         this.addon = new Addon({
           project,
           parent: project,
           ui: this.ui,
         });
+
+        project.addons.push(this.addon);
       });
 
       it('does not transpile the @ember/string imports when addon is present', co.wrap(function* () {
@@ -454,6 +468,81 @@ describe('ember-cli-babel', function() {
         expect(deprecationMessages).to.have.lengthOf(0);
       });
     });
+  });
+
+  describe('_shouldIncludeHelpers()', function() {
+    beforeEach(function() {
+      this.addon.app = {
+        options: {}
+      };
+    });
+
+    it('should return false without any includeExternalHelpers option set', function() {
+      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+    });
+
+    it('should throw an error with ember-cli-babel.includeExternalHelpers = true in parent', function() {
+      this.addon.parent.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
+
+      expect(this.addon._shouldIncludeHelpers).to.throw;
+    });
+
+    it('should return true with ember-cli-babel.includeExternalHelpers = true in app and ember-cli-version is high enough', function() {
+      this.addon.pkg = { version: '7.3.0-beta.1' };
+
+      this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
+
+      expect(this.addon._shouldIncludeHelpers()).to.be.true;
+    });
+
+    it('should return false with ember-cli-babel.includeExternalHelpers = true in app and write warn line if ember-cli-version is not high enough', function() {
+      this.addon.project.name = 'dummy';
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/dummy attempted to include external babel helpers/);
+        }
+      };
+
+      this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
+
+      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+    });
+
+    it('should return false with ember-cli-babel.includeExternalHelpers = false in host', function() {
+      this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: false } };
+
+      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+    });
+
+    describe('autodetection', function() {
+      it('should return true if @ember-decorators/babel-transforms exists and ember-cli-babel version is high enough', function() {
+        this.addon.pkg = { version: '7.3.0-beta.1' };
+        this.addon.project.addons.push({
+          pkg: {
+            name: '@ember-decorators/babel-transforms'
+          }
+        });
+
+        expect(this.addon._shouldIncludeHelpers()).to.be.true;
+      });
+
+      it('should return false if @ember-decorators/babel-transforms exists and write warn line if ember-cli-version is not high enough', function() {
+        this.addon.project.name = 'dummy';
+        this.addon.project.ui = {
+          writeWarnLine(message) {
+            expect(message).to.match(/dummy attempted to include external babel helpers/);
+          }
+        };
+
+        this.addon.project.addons.push({
+          pkg: {
+            name: '@ember-decorators/babel-transforms'
+          }
+        });
+
+        expect(this.addon._shouldIncludeHelpers()).to.be.false;
+      });
+    })
   });
 
   describe('_shouldCompileModules()', function() {

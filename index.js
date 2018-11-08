@@ -5,6 +5,11 @@ const clone = require('clone');
 const path = require('path');
 const semver = require('semver');
 
+const defaultShouldIncludeHelpers = require('./lib/default-should-include-helpers');
+const findApp = require('./lib/find-app');
+
+const APP_BABEL_RUNTIME_VERSION = new WeakMap();
+
 let count = 0;
 
 module.exports = {
@@ -84,8 +89,87 @@ module.exports = {
     }
   },
 
+  _shouldIncludeHelpers() {
+    let customAddonOptions = this.parent && this.parent.options && this.parent.options['ember-cli-babel'];
+
+    if (customAddonOptions && 'includeExternalHelpers' in customAddonOptions) {
+      throw new Error('includeExternalHelpers is not supported in addon configurations, it is an app-wide configuration option');
+    }
+
+    let appOptions = this._getAppOptions();
+    let customOptions = appOptions['ember-cli-babel'];
+
+    let shouldIncludeHelpers = false;
+
+    if (customOptions && 'includeExternalHelpers' in customOptions) {
+      shouldIncludeHelpers = customOptions.includeExternalHelpers === true;
+    } else {
+      // Check the project to see if we should include helpers based on heuristics.
+      shouldIncludeHelpers = defaultShouldIncludeHelpers(this.project);
+    }
+
+    let appEmberCliBabelPackage = this.project.addons.find(a => a.name === 'ember-cli-babel').pkg;
+    let appEmberCliBabelVersion = appEmberCliBabelPackage && appEmberCliBabelPackage.version;
+
+    if (appEmberCliBabelVersion && semver.gte(appEmberCliBabelVersion, '7.3.0-beta.1')) {
+      return shouldIncludeHelpers;
+    } else if (shouldIncludeHelpers) {
+      this.project.ui.writeWarnLine(
+        `${this._parentName()} attempted to include external babel helpers to make your build size smaller, but your root app's ember-cli-babel version is not high enough. Please update ember-cli-babel to v7.3.0-beta.1 or later.`
+      );
+    }
+
+    return false;
+  },
+
+  _getHelperVersion() {
+    if (!APP_BABEL_RUNTIME_VERSION.has(this.project)) {
+      let checker = new VersionChecker(this.project);
+      APP_BABEL_RUNTIME_VERSION.set(this.project, checker.for('@babel/runtime', 'npm').version);
+    }
+
+    return APP_BABEL_RUNTIME_VERSION.get(this.project);
+  },
+
+  _getHelpersPlugin() {
+    return [
+      [
+        require.resolve('@babel/plugin-transform-runtime'),
+        {
+          version: this._getHelperVersion(),
+          regenerator: false,
+          useESModules: true
+        }
+      ]
+    ]
+  },
+
+  treeForAddon() {
+    // Helpers are a global config, so only the root application should bother
+    // generating and including the file.
+    if (!(this.parent === this.project && this._shouldIncludeHelpers())) return;
+
+    const path = require('path');
+    const Funnel = require('broccoli-funnel');
+    const UnwatchedDir = require('broccoli-source').UnwatchedDir;
+
+    const babelHelpersPath = path.dirname(require.resolve('@babel/runtime/package.json'));
+
+    let babelHelpersTree = new Funnel(new UnwatchedDir(babelHelpersPath), {
+      srcDir: 'helpers/esm',
+      destDir: '@babel/runtime/helpers/esm'
+    });
+
+    return this.transpileTree(babelHelpersTree, {
+      'ember-cli-babel': {
+        // prevents the helpers from being double transpiled, and including themselves
+        disablePresetEnv: true
+      }
+    });
+  },
+
   treeForVendor() {
-    if (!this._shouldIncludePolyfill()) { return; }
+    if (!this._shouldIncludePolyfill()) return;
 
     const Funnel = require('broccoli-funnel');
     const UnwatchedDir = require('broccoli-source').UnwatchedDir;
@@ -93,9 +177,11 @@ module.exports = {
     // Find babel-core's browser polyfill and use its directory as our vendor tree
     let polyfillDir = path.dirname(require.resolve('@babel/polyfill/dist/polyfill'));
 
-    return new Funnel(new UnwatchedDir(polyfillDir), {
+    let polyfillTree = new Funnel(new UnwatchedDir(polyfillDir), {
       destDir: 'babel-polyfill'
     });
+
+    return polyfillTree;
   },
 
   included: function(app) {
@@ -121,6 +207,12 @@ module.exports = {
 
   _getAddonOptions() {
     return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
+  },
+
+  _getAppOptions() {
+    let app = findApp(this);
+
+    return (app && app.options) || {};
   },
 
   _parentName() {
@@ -158,6 +250,7 @@ module.exports = {
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
+    let shouldIncludeHelpers = this._shouldIncludeHelpers();
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
@@ -188,6 +281,7 @@ module.exports = {
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
     options.plugins = [].concat(
+      shouldIncludeHelpers && this._getHelpersPlugin(),
       userPlugins,
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),

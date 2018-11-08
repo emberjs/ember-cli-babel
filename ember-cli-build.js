@@ -19,10 +19,11 @@ module.exports = function(defaults) {
   let app = new EmberAddon(defaults, {
     'ember-cli-babel': {
       includePolyfill: true,
+      includeExternalHelpers: true,
       // ember-cli-babels defaults, should be parallelizable. If they are not,
       // it should fail to build. This flag being enabled ensure that to be the
       // case.
-      throwUnlessParallelizable: true
+      throwUnlessParallelizable: true,
     }
   });
 
