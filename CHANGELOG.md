@@ -1,5 +1,18 @@
 # Changelog
 
+## v7.1.4 (2018-12-06)
+
+#### :rocket: Enhancement
+* [#256](https://github.com/babel/ember-cli-babel/pull/256) Move `baseDir` definition into `relative-module-paths` module ([@Turbo87](https://github.com/Turbo87))
+* [#255](https://github.com/babel/ember-cli-babel/pull/255) Update `amd-name-resolver` to v1.2.1 ([@Turbo87](https://github.com/Turbo87))
+
+#### :house: Internal
+* [#254](https://github.com/babel/ember-cli-babel/pull/254) TravisCI: Remove deprecated `sudo: false` option ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 1
+- Tobias Bieniek ([@Turbo87](https://github.com/Turbo87))
+
+
 ## v7.1.3 (2018-11-01)
 
 #### :rocket: Enhancement
@@ -8,6 +21,7 @@
 #### Committers: 1
 - Arthi ([@arthirm](https://github.com/arthirm))
 
+
 ## v7.1.2 (2018-09-14)
 
 #### :rocket: Enhancement
@@ -15,6 +29,7 @@
 
 #### Committers: 1
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 
 ## v7.1.1 (2018-09-12)
 
@@ -28,6 +43,7 @@
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 - Tobias Bieniek ([@Turbo87](https://github.com/Turbo87))
 
+
 ## v7.1.0 (2018-08-29)
 
 #### :rocket: Enhancement
@@ -35,6 +51,7 @@
 
 #### Committers: 1
 - Jan Buschtöns ([@buschtoens](https://github.com/buschtoens))
+
 
 ## v7.0.0 (2018-08-28)
 
@@ -50,6 +67,7 @@
 #### Committers: 2
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 - Dan Freeman ([@dfreeman](https://github.com/dfreeman))
+
 
 ## v6.17.2 (2018-09-14)
 
