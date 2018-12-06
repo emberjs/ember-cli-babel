@@ -283,7 +283,6 @@ module.exports = {
 
   _getModulesPlugin() {
     const resolvePath = require('./lib/relative-module-paths').resolveRelativeModulePath;
-    resolvePath.baseDir = () => __dirname;
 
     return [
       [require.resolve('babel-plugin-module-resolver'), { resolvePath }],
