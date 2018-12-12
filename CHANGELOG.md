@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.2.0 (2018-12-12)
+
+#### :rocket: Enhancement
+* [#257](https://github.com/babel/ember-cli-babel/pull/257) Update babel-plugin-ember-modules-api-polyfill to 2.6.0. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.1.4 (2018-12-06)
 
 #### :rocket: Enhancement
