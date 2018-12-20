@@ -94,6 +94,7 @@ interface EmberCLIBabelConfig {
   */
   'ember-cli-babel'?: {
     includePolyfill?: boolean;
+    includeExternalHelpers?: boolean;
     compileModules?: boolean;
     disableDebugTooling?: boolean;
     disablePresetEnv?: boolean;
@@ -155,6 +156,36 @@ To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel
 let app = new EmberApp(defaults, {
   'ember-cli-babel': {
     includePolyfill: true
+  }
+});
+```
+
+#### External Helpers
+
+Babel often includes helper functions to handle some of the more complex logic
+in codemods. These functions are inlined by default, so they are duplicated in
+every file that they are used in, which adds some extra weight to final builds.
+
+Enabling `includeExternalHelpers` will cause Babel to import these helpers from
+a shared module, reducing app size overall. This option is available _only_ to
+the root application, because it is a global configuration value due to the fact
+that there can only be one version of helpers included.
+
+Note that there is currently no way to whitelist or blacklist helpers, so all
+helpers will be included, even ones which are not used. If your app is small,
+this could add to overall build size, so be sure to check.
+
+`ember-cli-babel` will attempt to include helpers if it believes that it will
+lower your build size, using a number of heuristics. You can override this to
+force inclusion or exclusion of helpers in your app by passing `true` or `false`
+to `includeExternalHelpers` in your `ember-cli-babel` options.
+
+```js
+// ember-cli-build.js
+
+let app = new EmberApp(defaults, {
+  'ember-cli-babel': {
+    includeExternalHelpers: true
   }
 });
 ```
