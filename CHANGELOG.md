@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.3.0-beta.1 (2018-12-20)
+
+#### :rocket: Enhancement
+* [#251](https://github.com/babel/ember-cli-babel/pull/251) Add ability to deduplicate babel helpers. ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v7.2.0 (2018-12-12)
 
 #### :rocket: Enhancement
