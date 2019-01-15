@@ -423,6 +423,7 @@ module.exports = {
         'fmt', 'loc', 'w',
         'decamelize', 'dasherize', 'camelize',
         'classify', 'underscore', 'capitalize',
+        'setStrings', 'getStrings', 'getString'
       ];
     }
 
@@ -430,6 +431,10 @@ module.exports = {
   },
 
   _emberStringDependencyPresent() {
+    if (this.project.name && this.project.name() === '@ember/string') {
+      return true;
+    }
+
     let checker = new VersionChecker(this.parent).for('@ember/string', 'npm');
 
     return checker.exists();
