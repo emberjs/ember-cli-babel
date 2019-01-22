@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.4.0 (2019-01-22)
+
+#### :house: Internal
+* [#261](https://github.com/babel/ember-cli-babel/pull/261) Avoid transpiling jquery module to Ember.$ if @ember/jquery is present ([@simonihmig](https://github.com/simonihmig))
+
+#### Committers: 1
+- Simon Ihmig ([@simonihmig](https://github.com/simonihmig))
+
 ## v7.3.0 (2019-01-22)
 
 #### :bug: Bug Fix
