@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.3.0 (2019-01-22)
+
+#### :bug: Bug Fix
+* [#260](https://github.com/babel/ember-cli-babel/pull/260) Update `@ember/string` detection to work on itself ([@locks](https://github.com/locks))
+
+#### Committers: 1
+- Ricardo Mendes ([@locks](https://github.com/locks))
+
 ## v7.3.0-beta.1 (2018-12-20)
 
 #### :rocket: Enhancement
