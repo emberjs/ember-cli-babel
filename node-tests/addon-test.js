@@ -361,6 +361,80 @@ describe('ember-cli-babel', function() {
 
     });
 
+    describe('@ember/jquery detection', function() {
+      beforeEach(function() {
+        let project = {
+          root: input.path(),
+          emberCLIVersion: () => '2.16.2',
+          addons: []
+        };
+
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+
+        project.addons.push(this.addon);
+      });
+
+      it('does not transpile the jquery imports when addon is present', co.wrap(function* () {
+        input.write({
+          node_modules: {
+            '@ember': {
+              'jquery': {
+                'package.json': JSON.stringify({ name: '@ember/jquery', version: '0.6.0' }),
+                'index.js': 'module.exports = {};',
+              },
+            },
+          },
+          app: {
+            "foo.js": stripIndent`
+              import $ from 'jquery';
+              $('.foo').click();
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define("foo", ["jquery"], function (_jquery) {\n  "use strict";\n\n  (0, _jquery.default)('.foo').click();\n});`
+        });
+      }));
+
+      it('transpiles the jquery imports when addon is missing', co.wrap(function* () {
+        input.write({
+          node_modules: {
+          },
+          app: {
+            "foo.js": stripIndent`
+              import $ from 'jquery';
+              $('.foo').click();
+            `,
+          },
+        });
+
+        subject = this.addon.transpileTree(input.path('app'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.$('.foo').click();\n});`
+        });
+      }));
+
+    });
+
+
     describe('_shouldDoNothing', function() {
       it("will no-op if nothing to do", co.wrap(function* () {
         input.write({

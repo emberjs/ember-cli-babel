@@ -427,6 +427,10 @@ module.exports = {
       ];
     }
 
+    if (this._emberJqueryDependencyPresent()) {
+      blacklist['jquery'] = ['default'];
+    }
+
     return blacklist;
   },
 
@@ -438,6 +442,16 @@ module.exports = {
     let checker = new VersionChecker(this.parent).for('@ember/string', 'npm');
 
     return checker.exists();
+  },
+
+  _emberJqueryDependencyPresent() {
+    if (this.project.name && this.project.name() === '@ember/jquery') {
+      return true;
+    }
+
+    let checker = new VersionChecker(this.parent).for('@ember/jquery', 'npm');
+
+    return checker.gte('0.6.0');
   },
 
   // detect if running babel would do nothing... and do nothing instead
