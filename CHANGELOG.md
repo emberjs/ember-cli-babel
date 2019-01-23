@@ -2,7 +2,7 @@
 
 ## v7.4.0 (2019-01-22)
 
-#### :house: Internal
+#### :rocket: Enhancement
 * [#261](https://github.com/babel/ember-cli-babel/pull/261) Avoid transpiling jquery module to Ember.$ if @ember/jquery is present ([@simonihmig](https://github.com/simonihmig))
 
 #### Committers: 1
@@ -10,19 +10,16 @@
 
 ## v7.3.0 (2019-01-22)
 
-#### :bug: Bug Fix
-* [#260](https://github.com/babel/ember-cli-babel/pull/260) Update `@ember/string` detection to work on itself ([@locks](https://github.com/locks))
-
-#### Committers: 1
-- Ricardo Mendes ([@locks](https://github.com/locks))
-
-## v7.3.0-beta.1 (2018-12-20)
-
 #### :rocket: Enhancement
 * [#251](https://github.com/babel/ember-cli-babel/pull/251) Add ability to deduplicate babel helpers. ([@pzuraq](https://github.com/pzuraq))
 
-#### Committers: 1
+#### :bug: Bug Fix
+* [#260](https://github.com/babel/ember-cli-babel/pull/260) Update `@ember/string` detection to work on itself ([@locks](https://github.com/locks))
+
+#### Committers: 2
 - Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Ricardo Mendes ([@locks](https://github.com/locks))
+
 
 ## v7.2.0 (2018-12-12)
 
@@ -31,6 +28,7 @@
 
 #### Committers: 1
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 
 ## v7.1.4 (2018-12-06)
 
