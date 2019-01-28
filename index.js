@@ -427,7 +427,7 @@ module.exports = {
       ];
     }
 
-    if (this._emberJqueryDependencyPresent()) {
+    if (this._shouldBlacklistJQuery()) {
       blacklist['jquery'] = ['default'];
     }
 
@@ -444,9 +444,13 @@ module.exports = {
     return checker.exists();
   },
 
-  _emberJqueryDependencyPresent() {
+  _shouldBlacklistJQuery() {
     if (this.project.name && this.project.name() === '@ember/jquery') {
       return true;
+    }
+
+    if (!('@ember/jquery' in this.parent.dependencies())) {
+      return false;
     }
 
     let checker = new VersionChecker(this.parent).for('@ember/jquery', 'npm');
