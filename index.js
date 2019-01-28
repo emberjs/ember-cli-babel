@@ -449,7 +449,10 @@ module.exports = {
       return true;
     }
 
-    if (!('@ember/jquery' in this.parent.dependencies())) {
+    if (
+      !('@ember/jquery' in this.parent.dependencies()) &&
+      !('@ember/jquery' in this.project.dependencies())
+    ) {
       return false;
     }
 
