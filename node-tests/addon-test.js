@@ -24,6 +24,7 @@ describe('ember-cli-babel', function() {
     let project = {
       root: __dirname,
       emberCLIVersion: () => '2.16.2',
+      dependencies() { return {}; },
       addons: []
     };
 
@@ -293,6 +294,7 @@ describe('ember-cli-babel', function() {
         let project = {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
+          dependencies() { return {}; },
           addons: []
         };
 
@@ -362,10 +364,26 @@ describe('ember-cli-babel', function() {
     });
 
     describe('@ember/jquery detection', function() {
+      function buildEmberJQueryFixture() {
+        return {
+          node_modules: {
+            '@ember': {
+              'jquery': {
+                'package.json': JSON.stringify({ name: '@ember/jquery', version: '0.6.0' }),
+                'index.js': 'module.exports = {};',
+              },
+            },
+          }
+        };
+      }
+
+      let dependencies;
       beforeEach(function() {
+        dependencies = {};
         let project = {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
+          dependencies() { return dependencies; },
           addons: []
         };
 
@@ -378,16 +396,9 @@ describe('ember-cli-babel', function() {
         project.addons.push(this.addon);
       });
 
-      it('does not transpile the jquery imports when addon is present', co.wrap(function* () {
+      it('does not transpile the jquery imports when addon is present in parent', co.wrap(function* () {
+        input.write(buildEmberJQueryFixture());
         input.write({
-          node_modules: {
-            '@ember': {
-              'jquery': {
-                'package.json': JSON.stringify({ name: '@ember/jquery', version: '0.6.0' }),
-                'index.js': 'module.exports = {};',
-              },
-            },
-          },
           app: {
             "foo.js": stripIndent`
               import $ from 'jquery';
@@ -395,6 +406,8 @@ describe('ember-cli-babel', function() {
             `,
           },
         });
+
+        dependencies['@ember/jquery'] = '0.6.0';
 
         subject = this.addon.transpileTree(input.path('app'));
         output = createBuilder(subject);
@@ -432,6 +445,64 @@ describe('ember-cli-babel', function() {
         });
       }));
 
+      it('transpiles the jquery imports when addon is not a dependency of the parent', co.wrap(function* () {
+        let project = {
+          root: input.path(),
+          emberCLIVersion: () => '2.16.2',
+          dependencies() { return dependencies; },
+          addons: [
+          ]
+        };
+        let projectsBabel = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+        project.addons.push(projectsBabel);
+
+        let parentAddon = {
+          root: input.path('node_modules/awesome-thang'),
+          dependencies() { return dependencies; },
+          project,
+          addons: []
+        };
+        project.addons.push(parentAddon);
+
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+        parentAddon.addons.push(this.addon);
+
+        input.write({
+          node_modules: {
+            'awesome-thang': {
+              addon: {
+                "foo.js": stripIndent`
+                  import $ from 'jquery';
+                  $('.foo').click();
+                `,
+              },
+              'package.json': JSON.stringify({ name: 'awesome-thang', private: true }),
+              'index.js': '',
+            }
+          }
+        });
+
+        input.write(buildEmberJQueryFixture());
+
+        subject = this.addon.transpileTree(input.path('node_modules/awesome-thang/addon'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.$('.foo').click();\n});`
+        });
+      }));
     });
 
 
@@ -622,6 +693,7 @@ describe('ember-cli-babel', function() {
   describe('_shouldCompileModules()', function() {
     beforeEach(function() {
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {}
       };
     });
@@ -673,6 +745,7 @@ describe('ember-cli-babel', function() {
     describe('with ember-cli-babel.compileModules = false', function() {
       beforeEach(function() {
         this.addon.parent = {
+        dependencies() { return {}; },
           options: {
             'ember-cli-babel': { compileModules: false }
           }
@@ -699,6 +772,7 @@ describe('ember-cli-babel', function() {
     it('does not mutate addonOptions.babel', function() {
       let babelOptions = { blah: true };
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
@@ -722,7 +796,8 @@ describe('ember-cli-babel', function() {
 
     it('provides an annotation including parent name - addon', function() {
       this.addon.parent = {
-        name: 'derpy-herpy'
+        name: 'derpy-herpy',
+        dependencies() { return {}; },
       };
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
@@ -730,7 +805,8 @@ describe('ember-cli-babel', function() {
 
     it('provides an annotation including parent name - project', function() {
       this.addon.parent = {
-        name() { return 'derpy-herpy'; }
+        name() { return 'derpy-herpy'; },
+        dependencies() { return {}; },
       };
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
@@ -779,6 +855,7 @@ describe('ember-cli-babel', function() {
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
@@ -791,6 +868,7 @@ describe('ember-cli-babel', function() {
     it('includes user plugins in parent.options.babel.plugins', function() {
       let plugin = {};
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
@@ -806,6 +884,7 @@ describe('ember-cli-babel', function() {
       let plugin = {};
       let pluginAfter = {};
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ],
@@ -828,6 +907,7 @@ describe('ember-cli-babel', function() {
         }
       };
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel6: {
             plugins: [ {} ]
@@ -842,6 +922,7 @@ describe('ember-cli-babel', function() {
     it('user plugins are before preset-env plugins', function() {
       let plugin = function Plugin() {};
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
@@ -898,6 +979,7 @@ describe('ember-cli-babel', function() {
     it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };
       this.addon.parent = {
+        dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
