@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.4.1 (2019-01-29)
+
+#### :bug: Bug Fix
+* [#264](https://github.com/babel/ember-cli-babel/pull/264) Only blacklist jQuery module when parent depends on @ember/jquery itself ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.4.0 (2019-01-22)
 
 #### :rocket: Enhancement
