@@ -418,7 +418,7 @@ module.exports = {
       '@ember/debug': ['assert', 'deprecate', 'warn'],
     };
 
-    if (this._emberStringDependencyPresent()) {
+    if (this._shouldBlacklistEmberString()) {
       blacklist['@ember/string'] = [
         'fmt', 'loc', 'w',
         'decamelize', 'dasherize', 'camelize',
@@ -434,29 +434,33 @@ module.exports = {
     return blacklist;
   },
 
-  _emberStringDependencyPresent() {
-    if (this.project.name && this.project.name() === '@ember/string') {
-      return true;
-    }
+  _isProjectName(dependency) {
+    return this.project.name && this.project.name() === dependency;
+  },
 
-    let checker = new VersionChecker(this.parent).for('@ember/string', 'npm');
+  _isTransitiveDependency(dependency) {
+    return (
+      !(dependency in this.parent.dependencies()) &&
+      !(dependency in this.project.dependencies())
+    )
+  },
+
+  _shouldBlacklistEmberString() {
+    let packageName = '@ember/string';
+    if (this._isProjectName(packageName)) { return true; }
+    if (this._isTransitiveDependency(packageName)) { return false; }
+
+    let checker = new VersionChecker(this.parent).for(packageName, 'npm');
 
     return checker.exists();
   },
 
   _shouldBlacklistJQuery() {
-    if (this.project.name && this.project.name() === '@ember/jquery') {
-      return true;
-    }
+    let packageName = '@ember/jquery';
+    if (this._isProjectName(packageName)) { return true; }
+    if (this._isTransitiveDependency(packageName)) { return false; }
 
-    if (
-      !('@ember/jquery' in this.parent.dependencies()) &&
-      !('@ember/jquery' in this.project.dependencies())
-    ) {
-      return false;
-    }
-
-    let checker = new VersionChecker(this.parent).for('@ember/jquery', 'npm');
+    let checker = new VersionChecker(this.parent).for(packageName, 'npm');
 
     return checker.gte('0.6.0');
   },

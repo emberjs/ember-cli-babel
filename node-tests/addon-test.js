@@ -290,11 +290,26 @@ describe('ember-cli-babel', function() {
     });
 
     describe('@ember/string detection', function() {
+      function buildEmberStringFixture() {
+        return {
+          node_modules: {
+            '@ember': {
+              'string': {
+                'package.json': JSON.stringify({ name: '@ember/string', version: '1.0.0' }),
+                'index.js': 'module.exports = {};',
+              },
+            },
+          }
+        };
+      }
+
+      let dependencies;
       beforeEach(function() {
+        dependencies = {};
         let project = {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
-          dependencies() { return {}; },
+          dependencies() { return dependencies; },
           addons: []
         };
 
@@ -307,16 +322,9 @@ describe('ember-cli-babel', function() {
         project.addons.push(this.addon);
       });
 
-      it('does not transpile the @ember/string imports when addon is present', co.wrap(function* () {
+      it('does not transpile the @ember/string imports when addon is present in parent', co.wrap(function* () {
+        input.write(buildEmberStringFixture())
         input.write({
-          node_modules: {
-            '@ember': {
-              'string': {
-                'package.json': JSON.stringify({ name: '@ember/string', version: '1.0.0' }),
-                'index.js': 'module.exports = {};',
-              },
-            },
-          },
           app: {
             "foo.js": stripIndent`
               import { camelize } from '@ember/string';
@@ -324,6 +332,8 @@ describe('ember-cli-babel', function() {
             `,
           },
         });
+
+        dependencies['@ember/string'] = '1.0.0';
 
         subject = this.addon.transpileTree(input.path('app'));
         output = createBuilder(subject);
@@ -361,6 +371,64 @@ describe('ember-cli-babel', function() {
         });
       }));
 
+      it('transpiles the @ember/string imports when addon is not a dependency of the parent', co.wrap(function* () {
+        let project = {
+          root: input.path(),
+          emberCLIVersion: () => '2.16.2',
+          dependencies() { return dependencies; },
+          addons: [
+          ]
+        };
+        let projectsBabel = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+        project.addons.push(projectsBabel);
+
+        let parentAddon = {
+          root: input.path('node_modules/awesome-thang'),
+          dependencies() { return dependencies; },
+          project,
+          addons: []
+        };
+        project.addons.push(parentAddon);
+
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+        parentAddon.addons.push(this.addon);
+
+        input.write({
+          node_modules: {
+            'awesome-thang': {
+              addon: {
+                "foo.js": stripIndent`
+                  import { camelize } from '@ember/string';
+                  camelize('stuff-here');
+                `,
+              },
+              'package.json': JSON.stringify({ name: 'awesome-thang', private: true }),
+              'index.js': '',
+            }
+          }
+        });
+
+        input.write(buildEmberStringFixture());
+
+        subject = this.addon.transpileTree(input.path('node_modules/awesome-thang/addon'));
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `define(\"foo\", [], function () {\n  \"use strict\";\n\n  Ember.String.camelize('stuff-here');\n});`
+        });
+      }));
     });
 
     describe('@ember/jquery detection', function() {
@@ -745,7 +813,7 @@ describe('ember-cli-babel', function() {
     describe('with ember-cli-babel.compileModules = false', function() {
       beforeEach(function() {
         this.addon.parent = {
-        dependencies() { return {}; },
+          dependencies() { return {}; },
           options: {
             'ember-cli-babel': { compileModules: false }
           }
