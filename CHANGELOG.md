@@ -1,5 +1,14 @@
 # Changelog
 
+## v7.4.2 (2019-02-12)
+
+#### :bug: Bug Fix
+* [#267](https://github.com/babel/ember-cli-babel/pull/267) Ensure external helpers are not used when modules are not transpiled. ([@rwjblue](https://github.com/rwjblue))
+* [#266](https://github.com/babel/ember-cli-babel/pull/266) Update to broccoli-babel-transpiler@7.1.2. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.4.1 (2019-01-29)
 
 #### :bug: Bug Fix
