@@ -623,13 +623,13 @@ describe('ember-cli-babel', function() {
     });
 
     it('should return false without any includeExternalHelpers option set', function() {
-      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
     });
 
     it('should throw an error with ember-cli-babel.includeExternalHelpers = true in parent', function() {
       this.addon.parent.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(this.addon._shouldIncludeHelpers).to.throw;
+      expect(() => this.addon._shouldIncludeHelpers({})).to.throw;
     });
 
     it('should return true with ember-cli-babel.includeExternalHelpers = true in app and ember-cli-version is high enough', function() {
@@ -637,7 +637,18 @@ describe('ember-cli-babel', function() {
 
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(this.addon._shouldIncludeHelpers()).to.be.true;
+      expect(this.addon._shouldIncludeHelpers({})).to.be.true;
+    });
+
+    it('should return false when compileModules is false', function() {
+      this.addon.pkg = { version: '7.3.0-beta.1' };
+
+      this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
+
+      // precond
+      expect(this.addon._shouldIncludeHelpers({})).to.be.true;
+
+      expect(this.addon._shouldIncludeHelpers({ 'ember-cli-babel': { compileModules: false } })).to.be.false;
     });
 
     it('should return false with ember-cli-babel.includeExternalHelpers = true in app and write warn line if ember-cli-version is not high enough', function() {
@@ -650,13 +661,13 @@ describe('ember-cli-babel', function() {
 
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
     });
 
     it('should return false with ember-cli-babel.includeExternalHelpers = false in host', function() {
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: false } };
 
-      expect(this.addon._shouldIncludeHelpers()).to.be.false;
+      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
     });
 
     describe('autodetection', function() {
@@ -668,7 +679,7 @@ describe('ember-cli-babel', function() {
           }
         });
 
-        expect(this.addon._shouldIncludeHelpers()).to.be.true;
+        expect(this.addon._shouldIncludeHelpers({})).to.be.true;
       });
 
       it('should return false if @ember-decorators/babel-transforms exists and write warn line if ember-cli-version is not high enough', function() {
@@ -685,7 +696,7 @@ describe('ember-cli-babel', function() {
           }
         });
 
-        expect(this.addon._shouldIncludeHelpers()).to.be.false;
+        expect(this.addon._shouldIncludeHelpers({})).to.be.false;
       });
     })
   });

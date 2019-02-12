@@ -89,19 +89,16 @@ module.exports = {
     }
   },
 
-  _shouldIncludeHelpers() {
-    let customAddonOptions = this.parent && this.parent.options && this.parent.options['ember-cli-babel'];
-
-    if (customAddonOptions && 'includeExternalHelpers' in customAddonOptions) {
-      throw new Error('includeExternalHelpers is not supported in addon configurations, it is an app-wide configuration option');
-    }
-
+  _shouldIncludeHelpers(options) {
     let appOptions = this._getAppOptions();
     let customOptions = appOptions['ember-cli-babel'];
 
     let shouldIncludeHelpers = false;
 
-    if (customOptions && 'includeExternalHelpers' in customOptions) {
+    if (!this._shouldCompileModules(options)) {
+      // we cannot use external helpers if we are not transpiling modules
+      return false;
+    } else if (customOptions && 'includeExternalHelpers' in customOptions) {
       shouldIncludeHelpers = customOptions.includeExternalHelpers === true;
     } else {
       // Check the project to see if we should include helpers based on heuristics.
@@ -147,7 +144,10 @@ module.exports = {
   treeForAddon() {
     // Helpers are a global config, so only the root application should bother
     // generating and including the file.
-    if (!(this.parent === this.project && this._shouldIncludeHelpers())) return;
+    let isRootBabel = this.parent === this.project;
+    let shouldIncludeHelpers = isRootBabel && this._shouldIncludeHelpers(this._getAppOptions());
+
+    if (!shouldIncludeHelpers) { return; }
 
     const path = require('path');
     const Funnel = require('broccoli-funnel');
@@ -206,7 +206,18 @@ module.exports = {
   },
 
   _getAddonOptions() {
-    return (this.parent && this.parent.options) || (this.app && this.app.options) || {};
+    let parentOptions = this.parent && this.parent.options;
+    let appOptions = this.app && this.app.options;
+
+    if (parentOptions) {
+      let customAddonOptions = parentOptions['ember-cli-babel'];
+
+      if (customAddonOptions && 'includeExternalHelpers' in customAddonOptions) {
+        throw new Error('includeExternalHelpers is not supported in addon configurations, it is an app-wide configuration option');
+      }
+    }
+
+    return parentOptions || appOptions || {};
   },
 
   _getAppOptions() {
@@ -250,7 +261,7 @@ module.exports = {
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
-    let shouldIncludeHelpers = this._shouldIncludeHelpers();
+    let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
