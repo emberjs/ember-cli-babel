@@ -1,5 +1,17 @@
 # Changelog
 
+## v7.4.3 (2019-02-19)
+
+#### :bug: Bug Fix
+* [#265](https://github.com/babel/ember-cli-babel/pull/265) Fix `@ember/string` detection ([@locks](https://github.com/locks))
+
+#### :house: Internal
+* [#268](https://github.com/babel/ember-cli-babel/pull/268) Update babel-plugin-debug-macros ([@jrjohnson](https://github.com/jrjohnson))
+
+#### Committers: 2
+- Jonathan Johnson ([@jrjohnson](https://github.com/jrjohnson))
+- Ricardo Mendes ([@locks](https://github.com/locks))
+
 ## v7.4.2 (2019-02-12)
 
 #### :bug: Bug Fix
