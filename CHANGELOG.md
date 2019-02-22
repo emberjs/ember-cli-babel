@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.5.0 (2019-02-22)
+
+#### :rocket: Enhancement
+* [#270](https://github.com/babel/ember-cli-babel/pull/270) Update Ember modules API to include @glimmer/tracked. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.4.3 (2019-02-19)
 
 #### :bug: Bug Fix
