@@ -10,6 +10,7 @@
     "transpile",
     "transpiler"
   ],
+  "homepage": "https://github.com/babel/ember-cli-babel",
   "bugs": {
     "url": "https://github.com/babel/ember-cli-babel/issues"
   },
