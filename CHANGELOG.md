@@ -1,5 +1,17 @@
 # Changelog
 
+## v7.6.0 (2019-03-14)
+
+#### :rocket: Enhancement
+* [#272](https://github.com/babel/ember-cli-babel/pull/272) Update babel-plugin-ember-modules-api-polyfill to add @action ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#271](https://github.com/babel/ember-cli-babel/pull/271) chore: adds homepage field to pkg.json ([@jasonmit](https://github.com/jasonmit))
+
+#### Committers: 2
+- Jason Mitchell ([@jasonmit](https://github.com/jasonmit))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.5.0 (2019-02-22)
 
 #### :rocket: Enhancement
