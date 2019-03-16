@@ -62,6 +62,7 @@
     "semver": "^5.5.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "broccoli-test-helper": "^1.4.0",
     "chai": "^4.1.2",
     "co": "^4.6.0",

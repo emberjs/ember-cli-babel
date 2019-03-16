@@ -11,6 +11,8 @@ module('Acceptance | ES6 features work correctly', function(hooks) {
     assert.equal('Test Value', this.element.querySelector('#test-input').value, 'Has arrow functions and template string as ES6 feature');
     assert.equal('one', this.element.querySelector('#first-value').textContent, 'Has generators as ES6 feature');
     assert.equal('two', this.element.querySelector('#last-value').textContent, 'Has generators as ES6 feature');
-    assert.equal('dog', this.element.querySelector('#animal-value').textContent, 'Has class and getters/setters as ES6 feature');
+    assert.equal('dog', this.element.querySelector('#animal-value').textContent, 'Has class and getters/setters and decorators as ES6 feature');
+    assert.equal('mammal', this.element.querySelector('#animal-type').textContent, 'Has class decorators as ES6 feature');
+    assert.equal('mammal', this.element.querySelector('#static-animal-type').textContent, 'static and fields as an ES6 class feature');
   });
 });
