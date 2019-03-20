@@ -262,6 +262,7 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
     let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
+    let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
@@ -294,7 +295,7 @@ module.exports = {
     options.plugins = [].concat(
       shouldIncludeHelpers && this._getHelpersPlugin(),
       userPlugins,
-      this._getDecoratorPlugins(config),
+      shouldIncludeDecoratorPlugins && this._getDecoratorPlugins(config),
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
@@ -314,6 +315,12 @@ module.exports = {
     options.babelrc = false;
 
     return options;
+  },
+
+  _shouldIncludeDecoratorPlugins(config) {
+    let customOptions = config['ember-cli-babel'] || {};
+
+    return customOptions.disableDecoratorTransforms !== true;
   },
 
   _getDecoratorPlugins(config) {

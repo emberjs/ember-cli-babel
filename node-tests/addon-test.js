@@ -585,7 +585,8 @@ describe('ember-cli-babel', function() {
             compileModules: false,
             disablePresetEnv: true,
             disableDebugTooling: true,
-            disableEmberModulesAPIPolyfill: true
+            disableEmberModulesAPIPolyfill: true,
+            disableDecoratorTransforms: true,
           }
         });
 
