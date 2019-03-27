@@ -1,5 +1,14 @@
 # Changelog
 
+## v7.7.0 (2019-03-27)
+
+#### :rocket: Enhancement
+* [#274](https://github.com/babel/ember-cli-babel/pull/274)  [FEAT] Decorator and Class Field Support ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 2
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Olle Jonsson ([@olleolleolle](https://github.com/olleolleolle))
+
 ## v7.6.0 (2019-03-14)
 
 #### :rocket: Enhancement
