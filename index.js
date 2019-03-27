@@ -262,6 +262,7 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
     let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
+    let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
     let shouldRunPresetEnv = true;
@@ -294,6 +295,7 @@ module.exports = {
     options.plugins = [].concat(
       shouldIncludeHelpers && this._getHelpersPlugin(),
       userPlugins,
+      shouldIncludeDecoratorPlugins && this._getDecoratorPlugins(config),
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
@@ -313,6 +315,37 @@ module.exports = {
     options.babelrc = false;
 
     return options;
+  },
+
+  _shouldIncludeDecoratorPlugins(config) {
+    let customOptions = config['ember-cli-babel'] || {};
+
+    return customOptions.disableDecoratorTransforms !== true;
+  },
+
+  _getDecoratorPlugins(config) {
+    const { hasPlugin } = require('ember-cli-babel-plugin-helpers');
+
+    // hasPlugin expects to receive a target with an options hash, which is the
+    // config. We should make it more generic upstream.
+    let target = { options: config };
+    let plugins = [];
+
+    if (
+      hasPlugin(target, '@babel/plugin-proposal-decorators')
+      || hasPlugin(target, '@babel/plugin-proposal-class-properties')
+    ) {
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the decorators and/or class properties plugins to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
+      }
+    } else {
+      plugins.push([require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }]);
+      plugins.push([require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }]);
+    }
+
+    return plugins;
   },
 
   _getDebugMacroPlugins(config) {

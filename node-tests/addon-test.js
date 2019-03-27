@@ -585,7 +585,8 @@ describe('ember-cli-babel', function() {
             compileModules: false,
             disablePresetEnv: true,
             disableDebugTooling: true,
-            disableEmberModulesAPIPolyfill: true
+            disableEmberModulesAPIPolyfill: true,
+            disableDecoratorTransforms: true,
           }
         });
 
@@ -680,6 +681,44 @@ describe('ember-cli-babel', function() {
 
         expect(deprecationMessages).to.have.lengthOf(0);
       });
+    });
+  });
+
+  describe('_getDecoratorPlugins', function() {
+    it('should include babel transforms by default', function() {
+      expect(this.addon._getDecoratorPlugins({}).length).to.equal(2, 'plugins added correctly');
+    });
+
+    it('should not include babel transforms if it detects decorators plugin', function() {
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the decorators and\/or class properties plugins to its build/);
+        }
+      };
+
+      expect(this.addon._getDecoratorPlugins({
+        babel: {
+          plugins: [
+            ['@babel/plugin-proposal-decorators']
+          ]
+        }
+      }).length).to.equal(0, 'plugins were not added');
+    });
+
+    it('should not include babel transforms if it detects class fields plugin', function() {
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the decorators and\/or class properties plugins to its build/);
+        }
+      };
+
+      expect(this.addon._getDecoratorPlugins({
+        babel: {
+          plugins: [
+            ['@babel/plugin-proposal-class-properties']
+          ]
+        }
+      }).length).to.equal(0, 'plugins were not added');
     });
   });
 
