@@ -335,9 +335,11 @@ module.exports = {
       hasPlugin(target, '@babel/plugin-proposal-decorators')
       || hasPlugin(target, '@babel/plugin-proposal-class-properties')
     ) {
-      this.project.ui.writeWarnLine(`${
-        this._parentName()
-      } has added the decorators and/or class properties plugins to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the decorators and/or class properties plugins to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
+      }
     } else {
       plugins.push([require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }]);
       plugins.push([require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }]);
