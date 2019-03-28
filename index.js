@@ -345,6 +345,14 @@ module.exports = {
       plugins.push([require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }]);
     }
 
+    if (hasPlugin(target, 'babel-plugin-filter-imports')) {
+      let checker = new VersionChecker(this.parent).for('babel-plugin-filter-imports', 'npm');
+
+      if (checker.lt('3.0.0')) {
+        plugins.push([require.resolve('./lib/dedupe-internal-decorators-plugin')]);
+      }
+    }
+
     return plugins;
   },
 
