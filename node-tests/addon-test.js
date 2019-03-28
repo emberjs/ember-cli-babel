@@ -684,41 +684,33 @@ describe('ember-cli-babel', function() {
     });
   });
 
-  describe('_getDecoratorPlugins', function() {
+  describe('_addDecoratorPlugins', function() {
     it('should include babel transforms by default', function() {
-      expect(this.addon._getDecoratorPlugins({}).length).to.equal(2, 'plugins added correctly');
+      expect(this.addon._addDecoratorPlugins([]).length).to.equal(2, 'plugins added correctly');
     });
 
-    it('should not include babel transforms if it detects decorators plugin', function() {
+    it('should include only fields if it detects decorators plugin', function() {
       this.addon.project.ui = {
         writeWarnLine(message) {
-          expect(message).to.match(/has added the decorators and\/or class properties plugins to its build/);
+          expect(message).to.match(/has added the decorators plugin to its build/);
         }
       };
 
-      expect(this.addon._getDecoratorPlugins({
-        babel: {
-          plugins: [
-            ['@babel/plugin-proposal-decorators']
-          ]
-        }
-      }).length).to.equal(0, 'plugins were not added');
+      expect(this.addon._addDecoratorPlugins([
+        ['@babel/plugin-proposal-decorators']
+      ]).length).to.equal(2, 'plugins were not added');
     });
 
-    it('should not include babel transforms if it detects class fields plugin', function() {
+    it('should include only decorators if it detects class fields plugin', function() {
       this.addon.project.ui = {
         writeWarnLine(message) {
-          expect(message).to.match(/has added the decorators and\/or class properties plugins to its build/);
+          expect(message).to.match(/has added the class-properties plugin to its build/);
         }
       };
 
-      expect(this.addon._getDecoratorPlugins({
-        babel: {
-          plugins: [
-            ['@babel/plugin-proposal-class-properties']
-          ]
-        }
-      }).length).to.equal(0, 'plugins were not added');
+      expect(this.addon._addDecoratorPlugins([
+        ['@babel/plugin-proposal-class-properties']
+      ]).length).to.equal(2, 'plugins were not added');
     });
   });
 
