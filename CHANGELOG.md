@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.7.1 (2019-03-28)
+
+#### :bug: Bug Fix
+* [#275](https://github.com/babel/ember-cli-babel/pull/275) Avoid interop issues with babel-plugin-filter-imports RE: decorators syntax ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v7.7.0 (2019-03-27)
 
 #### :rocket: Enhancement
