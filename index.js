@@ -292,10 +292,13 @@ module.exports = {
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
+    if (shouldIncludeDecoratorPlugins) {
+      userPlugins = this._addDecoratorPlugins(userPlugins.slice());
+    }
+
     options.plugins = [].concat(
       shouldIncludeHelpers && this._getHelpersPlugin(),
       userPlugins,
-      shouldIncludeDecoratorPlugins && this._getDecoratorPlugins(config),
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
@@ -323,33 +326,54 @@ module.exports = {
     return customOptions.disableDecoratorTransforms !== true;
   },
 
-  _getDecoratorPlugins(config) {
-    const { hasPlugin } = require('ember-cli-babel-plugin-helpers');
+  _addDecoratorPlugins(plugins) {
+    const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
 
-    // hasPlugin expects to receive a target with an options hash, which is the
-    // config. We should make it more generic upstream.
-    let target = { options: config };
-    let plugins = [];
-
-    if (
-      hasPlugin(target, '@babel/plugin-proposal-decorators')
-      || hasPlugin(target, '@babel/plugin-proposal-class-properties')
-    ) {
+    if (hasPlugin(plugins, '@babel/plugin-proposal-decorators')) {
       if (this.parent === this.project) {
         this.project.ui.writeWarnLine(`${
           this._parentName()
-        } has added the decorators and/or class properties plugins to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
+        } has added the decorators plugin to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
       }
     } else {
-      plugins.push([require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }]);
-      plugins.push([require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }]);
+      addPlugin(
+        plugins, 
+        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }], 
+        {
+          before: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-typescript']
+        }
+      );
     }
 
-    if (hasPlugin(target, 'babel-plugin-filter-imports')) {
+
+    if (hasPlugin(plugins, '@babel/plugin-proposal-class-properties')) {
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the class-properties plugin to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms.`);
+      }
+    } else {
+      addPlugin(
+        plugins, 
+        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }], 
+        {
+          after: ['@babel/plugin-proposal-decorators'],
+          before: ['@babel/plugin-transform-typescript']
+        }
+      );
+    }
+
+    if (hasPlugin(plugins, 'babel-plugin-filter-imports')) {
       let checker = new VersionChecker(this.parent).for('babel-plugin-filter-imports', 'npm');
 
       if (checker.lt('3.0.0')) {
-        plugins.push([require.resolve('./lib/dedupe-internal-decorators-plugin')]);
+        addPlugin(
+          plugins, 
+          require.resolve('./lib/dedupe-internal-decorators-plugin'),
+          {
+            after: 'babel-plugin-filter-imports'
+          }
+        );
       }
     }
 
