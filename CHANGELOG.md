@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.7.2 (2019-03-28)
+
+#### :bug: Bug Fix
+* [#276](https://github.com/babel/ember-cli-babel/pull/276) Ensure class properties/decorator plugins are added in correct order ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v7.7.1 (2019-03-28)
 
 #### :bug: Bug Fix
