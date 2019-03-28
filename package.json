@@ -56,7 +56,7 @@
     "broccoli-funnel": "^2.0.1",
     "broccoli-source": "^1.1.0",
     "clone": "^2.1.2",
-    "ember-cli-babel-plugin-helpers": "^1.0.2",
+    "ember-cli-babel-plugin-helpers": "^1.1.0",
     "ember-cli-version-checker": "^2.1.2",
     "ensure-posix-path": "^1.0.2",
     "semver": "^5.5.0"
