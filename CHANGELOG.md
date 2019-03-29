@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.7.3 (2019-03-28)
+
+#### :bug: Bug Fix
+* [4b9207aa3](https://github.com/babel/ember-cli-babel/commit/4b9207aa3) Fix errors when babel-plugin-filter-imports is present ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.7.2 (2019-03-28)
 
 #### :bug: Bug Fix
