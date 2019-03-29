@@ -371,7 +371,7 @@ module.exports = {
           plugins, 
           require.resolve('./lib/dedupe-internal-decorators-plugin'),
           {
-            after: 'babel-plugin-filter-imports'
+            after: ['babel-plugin-filter-imports']
           }
         );
       }
