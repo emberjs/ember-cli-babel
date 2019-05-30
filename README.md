@@ -8,6 +8,27 @@ This Ember-CLI plugin uses [Babel](https://babeljs.io/) and
 [babel-preset-env](https://github.com/babel/babel-preset-env) to allow you to
 use ES6 syntax with your Ember CLI project.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Compatibility](#compatibility)
+- [Usage](#usage)
+  * [Options](#options)
+    + [Polyfill](#polyfill)
+    + [External Helpers](#external-helpers)
+    + [Enabling Source Maps](#enabling-source-maps)
+    + [Modules](#modules)
+    + [Disabling Debug Tooling Support](#disabling-debug-tooling-support)
+  * [Addon usage](#addon-usage)
+    + [Adding Custom Plugins](#adding-custom-plugins)
+    + [Additional Trees](#additional-trees)
+    + [`buildBabelOptions` usage](#buildbabeloptions-usage)
+    + [`transpileTree` usage](#transpiletree-usage)
+  * [Debug Tooling](#debug-tooling)
+    + [Debug Macros](#debug-macros)
+    + [General Purpose Env Flags](#general-purpose-env-flags)
+    + [Parallel Builds](#parallel-builds)
+
 ## Installation
 
 ```
@@ -29,7 +50,7 @@ format change if it does).
 
 If you need to customize the way that `babel-preset-env` configures the plugins
 that transform your code, you can do it by passing in any of the
-[babel/babel-preset-env options](https://github.com/babel/babel-preset-env/tree/v1.6.1#options).
+[babel/babel-preset-env options](https://babeljs.io/docs/en/next/babel-preset-env.html#options).
 *Note: `.babelrc` files are ignored by default.*
 
 Example (configuring babel directly):
