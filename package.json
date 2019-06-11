@@ -45,7 +45,7 @@
     "@babel/plugin-transform-modules-amd": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "7.4.2",
     "@babel/runtime": "^7.2.0",
     "amd-name-resolver": "^1.2.1",
     "babel-plugin-debug-macros": "^0.3.0",
