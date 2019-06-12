@@ -25,7 +25,10 @@ describe('ember-cli-babel', function() {
       root: __dirname,
       emberCLIVersion: () => '2.16.2',
       dependencies() { return {}; },
-      addons: []
+      addons: [],
+      targets: {
+        browsers: ['ie 11'],
+      },
     };
 
     this.addon = new Addon({
@@ -310,7 +313,10 @@ describe('ember-cli-babel', function() {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
           dependencies() { return dependencies; },
-          addons: []
+          addons: [],
+          targets: {
+            browsers: ['ie 11'],
+          },
         };
 
         this.addon = new Addon({
@@ -376,8 +382,10 @@ describe('ember-cli-babel', function() {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
           dependencies() { return dependencies; },
-          addons: [
-          ]
+          addons: [ ],
+          targets: {
+            browsers: ['ie 11'],
+          },
         };
         let projectsBabel = new Addon({
           project,
@@ -452,7 +460,10 @@ describe('ember-cli-babel', function() {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
           dependencies() { return dependencies; },
-          addons: []
+          addons: [],
+          targets: {
+            browsers: ['ie 11'],
+          },
         };
 
         this.addon = new Addon({
@@ -518,8 +529,10 @@ describe('ember-cli-babel', function() {
           root: input.path(),
           emberCLIVersion: () => '2.16.2',
           dependencies() { return dependencies; },
-          addons: [
-          ]
+          addons: [ ],
+          targets: {
+            browsers: ['ie 11'],
+          },
         };
         let projectsBabel = new Addon({
           project,
@@ -1101,7 +1114,7 @@ describe('ember-cli-babel', function() {
         [require.resolve('@babel/preset-env'), {
           loose: true,
           modules: false,
-          targets: undefined,
+          targets: { browsers: ['ie 11'] },
         }],
       ]);
     });
