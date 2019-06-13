@@ -337,8 +337,8 @@ module.exports = {
       }
     } else {
       addPlugin(
-        plugins, 
-        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }], 
+        plugins,
+        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         {
           before: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-typescript']
         }
@@ -354,8 +354,8 @@ module.exports = {
       }
     } else {
       addPlugin(
-        plugins, 
-        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }], 
+        plugins,
+        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
         {
           after: ['@babel/plugin-proposal-decorators'],
           before: ['@babel/plugin-transform-typescript']
@@ -368,7 +368,7 @@ module.exports = {
 
       if (checker.lt('3.0.0')) {
         addPlugin(
-          plugins, 
+          plugins,
           require.resolve('./lib/dedupe-internal-decorators-plugin'),
           {
             after: ['babel-plugin-filter-imports']
@@ -388,7 +388,7 @@ module.exports = {
     const isProduction = process.env.EMBER_ENV === 'production';
     const isDebug = !isProduction;
 
-    let options = {
+    let options1 = {
       flags: [
         {
           source: '@glimmer/env',
@@ -407,7 +407,22 @@ module.exports = {
       }
     };
 
-    return [[require.resolve('babel-plugin-debug-macros'), options]];
+    let options2 = { // deprecated import path https://github.com/emberjs/ember.js/pull/17926#issuecomment-484987305
+      externalizeHelpers: {
+        global: 'Ember'
+      },
+
+      debugTools: {
+        isDebug,
+        source: '@ember/application/deprecations',
+        assertPredicateIndex: 1
+      }
+    };
+
+    return [
+      [require.resolve('babel-plugin-debug-macros'), options1],
+      [require.resolve('babel-plugin-debug-macros'), options2, 'remove deprecated debug']
+    ];
   },
 
   _getEmberModulesAPIPolyfill(config) {
