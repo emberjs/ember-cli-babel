@@ -421,7 +421,7 @@ module.exports = {
 
     return [
       [require.resolve('babel-plugin-debug-macros'), options1, '@ember/debug stripping'],
-      [require.resolve('babel-plugin-debug-macros'), options2, 'remove deprecated debug']
+      [require.resolve('babel-plugin-debug-macros'), options2, '@ember/application/deprecations stripping']
     ];
   },
 
