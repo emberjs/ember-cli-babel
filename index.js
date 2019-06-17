@@ -383,45 +383,52 @@ module.exports = {
   _getDebugMacroPlugins(config) {
     let addonOptions = config['ember-cli-babel'] || {};
 
-    if (addonOptions.disableDebugTooling) { return; }
+    if (addonOptions.disableDebugTooling) {
+      return;
+    }
 
     const isProduction = process.env.EMBER_ENV === 'production';
     const isDebug = !isProduction;
 
-    let options1 = {
-      flags: [
-        {
-          source: '@glimmer/env',
-          flags: { DEBUG: isDebug, CI: !!process.env.CI }
-        }
-      ],
-
-      externalizeHelpers: {
-        global: 'Ember'
-      },
-
-      debugTools: {
-        isDebug,
-        source: '@ember/debug',
-        assertPredicateIndex: 1
-      }
-    };
-
-    let options2 = { // deprecated import path https://github.com/emberjs/ember.js/pull/17926#issuecomment-484987305
-      externalizeHelpers: {
-        global: 'Ember'
-      },
-
-      debugTools: {
-        isDebug,
-        source: '@ember/application/deprecations',
-        assertPredicateIndex: 1
-      }
-    };
-
     return [
-      [require.resolve('babel-plugin-debug-macros'), options1, '@ember/debug stripping'],
-      [require.resolve('babel-plugin-debug-macros'), options2, '@ember/application/deprecations stripping']
+      [
+        require.resolve('babel-plugin-debug-macros'),
+        {
+          flags: [
+            {
+              source: '@glimmer/env',
+              flags: { DEBUG: isDebug, CI: !!process.env.CI },
+            },
+          ],
+
+          externalizeHelpers: {
+            global: 'Ember',
+          },
+
+          debugTools: {
+            isDebug,
+            source: '@ember/debug',
+            assertPredicateIndex: 1,
+          },
+        },
+        '@ember/debug stripping',
+      ],
+      [
+        require.resolve('babel-plugin-debug-macros'),
+        {
+          // deprecated import path https://github.com/emberjs/ember.js/pull/17926#issuecomment-484987305
+          externalizeHelpers: {
+            global: 'Ember',
+          },
+
+          debugTools: {
+            isDebug,
+            source: '@ember/application/deprecations',
+            assertPredicateIndex: 1,
+          },
+        },
+        '@ember/application/deprecations stripping',
+      ],
     ];
   },
 
