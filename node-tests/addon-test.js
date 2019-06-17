@@ -86,6 +86,31 @@ describe('ember-cli-babel', function() {
     }));
 
     describe('ember modules API polyfill', function() {
+      it("does not transpile deprecate debug tooling import paths", co.wrap(function* () {
+        input.write({
+          "foo.js": `import { deprecate } from '@ember/debug';\ndeprecate('some message', false, {\n  id: 'special-thing',\n  until: '1.0.0'\n});`,
+          "bar.js": `import { deprecate } from '@ember/application/deprecations';\ndeprecate('some message', false, {\n  id: 'special-thing',\n  until: '1.0.0'\n});`,
+        });
+
+        subject = this.addon.transpileTree(input.path(), {
+          'ember-cli-babel': {
+            compileModules: false,
+            disableDebugTooling: true,
+          }
+        });
+
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          "foo.js": `import { deprecate } from '@ember/debug';\ndeprecate('some message', false, {\n  id: 'special-thing',\n  until: '1.0.0'\n});`,
+          "bar.js": `import { deprecate } from '@ember/application/deprecations';\ndeprecate('some message', false, {\n  id: 'special-thing',\n  until: '1.0.0'\n});`,
+        });
+      }));
+
       it("can opt-out via ember-cli-babel.disableEmberModulesAPIPolyfill", co.wrap(function* () {
         input.write({
           "foo.js": `import Component from '@ember/component';`
@@ -229,7 +254,29 @@ describe('ember-cli-babel', function() {
             "foo.js": stripIndent`
               import { assert } from '@ember/debug';
               assert('stuff here', isNotBad());
-            `
+            `,
+            "bar.js": stripIndent`
+              import { deprecate } from '@ember/debug';
+              deprecate(
+                'foo bar baz',
+                false,
+                {
+                  id: 'some-id',
+                  until: '1.0.0',
+                }
+              );
+            `,
+            "baz.js": stripIndent`
+              import { deprecate } from '@ember/application/deprecations';
+              deprecate(
+                'foo bar baz',
+                false,
+                {
+                  id: 'some-id',
+                  until: '1.0.0',
+                }
+              );
+            `,
           });
 
           subject = this.addon.transpileTree(input.path());
@@ -240,7 +287,9 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "bar.js": `define("bar", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "baz.js": `define("baz", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`,
           });
         }));
       });

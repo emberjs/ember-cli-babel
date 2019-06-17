@@ -337,8 +337,8 @@ module.exports = {
       }
     } else {
       addPlugin(
-        plugins, 
-        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }], 
+        plugins,
+        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         {
           before: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-typescript']
         }
@@ -354,8 +354,8 @@ module.exports = {
       }
     } else {
       addPlugin(
-        plugins, 
-        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }], 
+        plugins,
+        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
         {
           after: ['@babel/plugin-proposal-decorators'],
           before: ['@babel/plugin-transform-typescript']
@@ -368,7 +368,7 @@ module.exports = {
 
       if (checker.lt('3.0.0')) {
         addPlugin(
-          plugins, 
+          plugins,
           require.resolve('./lib/dedupe-internal-decorators-plugin'),
           {
             after: ['babel-plugin-filter-imports']
@@ -383,31 +383,53 @@ module.exports = {
   _getDebugMacroPlugins(config) {
     let addonOptions = config['ember-cli-babel'] || {};
 
-    if (addonOptions.disableDebugTooling) { return; }
+    if (addonOptions.disableDebugTooling) {
+      return;
+    }
 
     const isProduction = process.env.EMBER_ENV === 'production';
     const isDebug = !isProduction;
 
-    let options = {
-      flags: [
+    return [
+      [
+        require.resolve('babel-plugin-debug-macros'),
         {
-          source: '@glimmer/env',
-          flags: { DEBUG: isDebug, CI: !!process.env.CI }
-        }
+          flags: [
+            {
+              source: '@glimmer/env',
+              flags: { DEBUG: isDebug, CI: !!process.env.CI },
+            },
+          ],
+
+          externalizeHelpers: {
+            global: 'Ember',
+          },
+
+          debugTools: {
+            isDebug,
+            source: '@ember/debug',
+            assertPredicateIndex: 1,
+          },
+        },
+        '@ember/debug stripping',
       ],
+      [
+        require.resolve('babel-plugin-debug-macros'),
+        {
+          // deprecated import path https://github.com/emberjs/ember.js/pull/17926#issuecomment-484987305
+          externalizeHelpers: {
+            global: 'Ember',
+          },
 
-      externalizeHelpers: {
-        global: 'Ember'
-      },
-
-      debugTools: {
-        isDebug,
-        source: '@ember/debug',
-        assertPredicateIndex: 1
-      }
-    };
-
-    return [[require.resolve('babel-plugin-debug-macros'), options]];
+          debugTools: {
+            isDebug,
+            source: '@ember/application/deprecations',
+            assertPredicateIndex: 1,
+          },
+        },
+        '@ember/application/deprecations stripping',
+      ],
+    ];
   },
 
   _getEmberModulesAPIPolyfill(config) {
@@ -492,6 +514,7 @@ module.exports = {
   _getEmberModulesAPIBlacklist() {
     const blacklist = {
       '@ember/debug': ['assert', 'deprecate', 'warn'],
+      '@ember/application/deprecations': ['deprecate'],
     };
 
     if (this._shouldBlacklistEmberString()) {
