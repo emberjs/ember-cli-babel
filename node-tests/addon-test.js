@@ -254,7 +254,29 @@ describe('ember-cli-babel', function() {
             "foo.js": stripIndent`
               import { assert } from '@ember/debug';
               assert('stuff here', isNotBad());
-            `
+            `,
+            "bar.js": stripIndent`
+              import { deprecate } from '@ember/debug';
+              deprecate(
+                'foo bar baz',
+                false,
+                {
+                  id: 'some-id',
+                  until: '1.0.0',
+                }
+              );
+            `,
+            "baz.js": stripIndent`
+              import { deprecate } from '@ember/application/deprecations';
+              deprecate(
+                'foo bar baz',
+                false,
+                {
+                  id: 'some-id',
+                  until: '1.0.0',
+                }
+              );
+            `,
           });
 
           subject = this.addon.transpileTree(input.path());
@@ -265,7 +287,9 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`
+            "bar.js": `define("bar", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "baz.js": `define("baz", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`,
           });
         }));
       });
