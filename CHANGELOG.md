@@ -1,4 +1,21 @@
-# Changelog
+## v7.8.0 (2019-06-17)
+
+#### :rocket: Enhancement
+* [#286](https://github.com/babel/ember-cli-babel/pull/286) Ensure `@ember/application/deprecations` is stripped in addition to `@ember/debug`. ([@bekzod](https://github.com/bekzod))
+* [#277](https://github.com/babel/ember-cli-babel/pull/277) Update modules-api-polyfill package to latest ([@jordpo](https://github.com/jordpo))
+
+#### :memo: Documentation
+* [#279](https://github.com/babel/ember-cli-babel/pull/279) Add table of contents to README.md. ([@vasind](https://github.com/vasind))
+
+#### :house: Internal
+* [#285](https://github.com/babel/ember-cli-babel/pull/285) Refactor CI to use stages. ([@rwjblue](https://github.com/rwjblue))
+* [#284](https://github.com/babel/ember-cli-babel/pull/284) Use default targets configuration for transpilation tests. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 4
+- Jordan Morano ([@jordpo](https://github.com/jordpo))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Vasanth ([@vasind](https://github.com/vasind))
+- bek ([@bekzod](https://github.com/bekzod))
 
 ## v7.7.3 (2019-03-28)
 
