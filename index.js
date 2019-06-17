@@ -514,6 +514,7 @@ module.exports = {
   _getEmberModulesAPIBlacklist() {
     const blacklist = {
       '@ember/debug': ['assert', 'deprecate', 'warn'],
+      '@ember/application/deprecations': ['deprecate'],
     };
 
     if (this._shouldBlacklistEmberString()) {
