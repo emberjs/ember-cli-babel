@@ -3,9 +3,9 @@
   "version": "7.8.0",
   "description": "Ember CLI addon for Babel",
   "keywords": [
-    "ember-addon",
     "babel",
     "ember",
+    "ember-addon",
     "ember-cli",
     "transpile",
     "transpiler"
@@ -13,6 +13,10 @@
   "homepage": "https://github.com/babel/ember-cli-babel",
   "bugs": {
     "url": "https://github.com/babel/ember-cli-babel/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/babel/ember-cli-babel.git"
   },
   "license": "MIT",
   "author": "Gordon Kristan",
@@ -24,19 +28,16 @@
     "doc": "doc",
     "test": "tests"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/babel/ember-cli-babel.git"
-  },
   "scripts": {
     "build": "ember build",
     "changelog": "lerna-changelog",
     "lint:js": "eslint ./*.js addon addon-test-support app blueprints config lib server test-support tests",
+    "release": "release-it",
     "start": "ember serve",
-    "test:node": "mocha node-tests",
-    "test:node:debug": "mocha debug node-tests",
     "test": "mocha node-tests && ember test",
-    "test:all": "mocha node-tests && ember try:each"
+    "test:all": "mocha node-tests && ember try:each",
+    "test:node": "mocha node-tests",
+    "test:node:debug": "mocha debug node-tests"
   },
   "dependencies": {
     "@babel/core": "^7.0.0",
@@ -86,10 +87,15 @@
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^5.2.0",
+    "release-it": "^12.2.1",
+    "release-it-lerna-changelog": "^1.0.3",
     "resolve": "^1.8.1"
   },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "changelog": {
     "repo": "babel/ember-cli-babel",
@@ -103,5 +109,18 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "release-it": {
+    "plugins": {
+      "release-it-lerna-changelog": {
+        "infile": "CHANGELOG.md"
+      }
+    },
+    "git": {
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true
+    }
   }
 }
