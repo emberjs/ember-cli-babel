@@ -1,3 +1,13 @@
+## v7.9.0 (2019-08-12)
+
+#### :rocket: Enhancement
+* [#295](https://github.com/babel/ember-cli-babel/pull/295) Update modules API for colocation support (emberjs/rfcs#481). ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 3
+- Eli Flanagan ([@efx](https://github.com/efx))
+- L. Preston Sego III ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.8.0 (2019-06-17)
 
 #### :rocket: Enhancement
