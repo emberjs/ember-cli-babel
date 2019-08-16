@@ -1,3 +1,11 @@
+## v7.10.0 (2019-08-16)
+
+#### :rocket: Enhancement
+* [#297](https://github.com/babel/ember-cli-babel/pull/297) Update Ember modules API polyfill for modifier manager capabilities. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.9.0 (2019-08-12)
 
 #### :rocket: Enhancement
