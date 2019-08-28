@@ -1,3 +1,11 @@
+## v7.11.0 (2019-08-28)
+
+#### :rocket: Enhancement
+* [#300](https://github.com/babel/ember-cli-babel/pull/300) Add support for `dependentKeyCompat` from `@ember/object/compat`. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.10.0 (2019-08-16)
 
 #### :rocket: Enhancement
