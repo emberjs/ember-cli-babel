@@ -1,3 +1,6 @@
+* Update minimum broccoli-babel-transpiler version to 7.3.0. (#301) (75c58d0)
+* Update minimum broccoli-babel-transpiler version to 7.3.0. (1f09dff)
+
 ## v7.11.0 (2019-08-28)
 
 #### :rocket: Enhancement
