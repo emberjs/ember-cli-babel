@@ -314,7 +314,7 @@ module.exports = {
       options.getModuleId = require('./lib/relative-module-paths').getRelativeModulePath;
     }
 
-    options.highlightCode = false;
+    options.highlightCode = this._shouldHighlightCode();
     options.babelrc = false;
 
     return options;
@@ -562,6 +562,11 @@ module.exports = {
     let checker = new VersionChecker(this.parent).for(packageName, 'npm');
 
     return checker.gte('0.6.0');
+  },
+
+  _shouldHighlightCode() {
+    let checker = new VersionChecker(this.parent).for('broccoli-middleware', 'npm');
+    return checker.gte('2.1.0');
   },
 
   // detect if running babel would do nothing... and do nothing instead
