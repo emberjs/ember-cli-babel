@@ -1,3 +1,13 @@
+##  v7.12.0 (2019-09-27)
+
+#### :rocket: Enhancement
+* [#294](https://github.com/babel/ember-cli-babel/pull/294) Toggle code highlighting for broccoli-middleware >= 2.1.0 ([@astronomersiva](https://github.com/astronomersiva))
+
+#### Committers: 1
+- Sivasubramanyam A ([@astronomersiva](https://github.com/astronomersiva))
+
+## v7.11.1
+
 * Update minimum broccoli-babel-transpiler version to 7.3.0. (#301) (75c58d0)
 * Update minimum broccoli-babel-transpiler version to 7.3.0. (1f09dff)
 
