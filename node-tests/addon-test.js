@@ -1006,6 +1006,17 @@ describe('ember-cli-babel', function() {
       expect(result.sourceMaps).to.equal('inline');
     });
 
+    it('uses provided ignore option if specified', function() {
+      let options = {
+        babel: {
+          ignore: ['file/pattern/a', '**/*-snapshot.js'],
+        }
+      };
+
+      let result = this.addon.buildBabelOptions(options);
+      expect(result.ignore).to.deep.equal(['file/pattern/a', '**/*-snapshot.js']);
+    });
+
     it('disables reading `.babelrc`', function() {
       let options = {};
 

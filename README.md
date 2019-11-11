@@ -107,6 +107,7 @@ interface EmberCLIBabelConfig {
     exclude?: string[];
     useBuiltIns?: boolean;
     sourceMaps?: boolean | "inline" | "both";
+    ignore?: MatchPattern[];
     plugins?: BabelPlugin[];
   };
 

@@ -280,11 +280,17 @@ module.exports = {
       sourceMaps = config.babel.sourceMaps;
     }
 
+    let ignore;
+    if (config.babel && 'ignore' in config.babel) {
+      ignore = config.babel.ignore;
+    }
+
     let filterExtensions = this._getExtensions(config);
 
     let options = {
       annotation: providedAnnotation || `Babel: ${this._parentName()}`,
       sourceMaps,
+      ignore,
       throwUnlessParallelizable,
       filterExtensions
     };
@@ -456,6 +462,7 @@ module.exports = {
     // delete any properties added to `options.babel` that
     // are invalid for @babel/preset-env
     delete presetOptions.sourceMaps;
+    delete presetOptions.ignore;
     delete presetOptions.plugins;
     delete presetOptions.postTransformPlugins;
 
