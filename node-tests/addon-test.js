@@ -152,7 +152,7 @@ describe('ember-cli-babel', function() {
         });
       }));
 
-      it("does not remove _asyncToGenerator helper function when used together with debug-macros", co.wrap(function* () {
+      it("does not remove regeneratorRuntime.async helper function when used together with debug-macros", co.wrap(function* () {
         input.write({
           "foo.js": stripIndent`
             import { assert } from '@ember/debug';
@@ -167,7 +167,7 @@ describe('ember-cli-babel', function() {
 
         let contents = output.read()['foo.js'];
 
-        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('regeneratorRuntime.async');
       }));
 
       it("allows @ember/debug to be consumed via both debug-macros and ember-modules-api-polyfill", co.wrap(function* () {
@@ -186,7 +186,7 @@ describe('ember-cli-babel', function() {
         let contents = output.read()['foo.js'];
 
         expect(contents).to.not.include('@ember/debug');
-        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('regeneratorRuntime.async');
         expect(contents).to.include('Ember.inspect;');
         expect(contents).to.not.include('assert');
       }));
