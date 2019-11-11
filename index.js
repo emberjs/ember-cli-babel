@@ -293,7 +293,7 @@ module.exports = {
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
     if (shouldIncludeDecoratorPlugins) {
-      userPlugins = this._addDecoratorPlugins(userPlugins.slice());
+      userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options);
     }
 
     options.plugins = [].concat(
@@ -326,7 +326,7 @@ module.exports = {
     return customOptions.disableDecoratorTransforms !== true;
   },
 
-  _addDecoratorPlugins(plugins) {
+  _addDecoratorPlugins(plugins, options) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
 
     if (hasPlugin(plugins, '@babel/plugin-proposal-decorators')) {
@@ -355,7 +355,7 @@ module.exports = {
     } else {
       addPlugin(
         plugins,
-        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
+        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: options.loose || false }],
         {
           after: ['@babel/plugin-proposal-decorators'],
           before: ['@babel/plugin-transform-typescript']
