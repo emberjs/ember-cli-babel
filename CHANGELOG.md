@@ -1,3 +1,10 @@
+* Fixup yarn.lock (3343ca7)
+* [BUGFIX] Make loose mode in class properties transform respect B… (#307) (b750535)
+* update to yarn in appveyor (42997b1)
+* pin engine.io (f9ccaa3)
+* Update async generator tests (b31980e)
+* [BUGFIX] Make loose mode in class properties transform respect Babel settings (31a7586)
+
 ##  v7.12.0 (2019-09-27)
 
 #### :rocket: Enhancement
