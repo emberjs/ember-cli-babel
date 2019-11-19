@@ -12,9 +12,6 @@ environment:
     - nodejs_version: "8"
     - nodejs_version: "10"
 
-cache:
-  - '%APPDATA%\npm-cache'
-
 # Install scripts. (runs after repo cloning)
 install:
   - git rev-parse HEAD
@@ -22,17 +19,15 @@ install:
   - ps: Install-Product node $env:nodejs_version
   # Typical npm stuff.
   - md C:\nc
-  - npm config set cache C:\nc
-  - npm version
-  - npm install phantomjs-prebuilt
-  - npm install mocha-appveyor-reporter
-  - npm install --no-optional
+  - yarn config set cache C:\nc
+  - yarn add phantomjs-prebuilt --ignore-engines
+  - yarn add mocha-appveyor-reporter --ignore-engines
+  - yarn install --ignore-engines
 
 # Post-install test scripts.
 test_script:
   # Output useful info for debugging.
-  - npm version
-  - cmd: npm test
+  - cmd: yarn test
 
 # Don't actually build.
 build: off

@@ -152,7 +152,7 @@ describe('ember-cli-babel', function() {
         });
       }));
 
-      it("does not remove _asyncToGenerator helper function when used together with debug-macros", co.wrap(function* () {
+      it("does not remove regeneratorRuntime.async helper function when used together with debug-macros", co.wrap(function* () {
         input.write({
           "foo.js": stripIndent`
             import { assert } from '@ember/debug';
@@ -167,7 +167,7 @@ describe('ember-cli-babel', function() {
 
         let contents = output.read()['foo.js'];
 
-        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('regeneratorRuntime.async');
       }));
 
       it("allows @ember/debug to be consumed via both debug-macros and ember-modules-api-polyfill", co.wrap(function* () {
@@ -186,7 +186,7 @@ describe('ember-cli-babel', function() {
         let contents = output.read()['foo.js'];
 
         expect(contents).to.not.include('@ember/debug');
-        expect(contents).to.include('function _asyncToGenerator');
+        expect(contents).to.include('regeneratorRuntime.async');
         expect(contents).to.include('Ember.inspect;');
         expect(contents).to.not.include('assert');
       }));
@@ -748,7 +748,7 @@ describe('ember-cli-babel', function() {
 
   describe('_addDecoratorPlugins', function() {
     it('should include babel transforms by default', function() {
-      expect(this.addon._addDecoratorPlugins([]).length).to.equal(2, 'plugins added correctly');
+      expect(this.addon._addDecoratorPlugins([], {}).length).to.equal(2, 'plugins added correctly');
     });
 
     it('should include only fields if it detects decorators plugin', function() {
@@ -758,9 +758,12 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      expect(this.addon._addDecoratorPlugins([
-        ['@babel/plugin-proposal-decorators']
-      ]).length).to.equal(2, 'plugins were not added');
+      expect(
+        this.addon._addDecoratorPlugins([
+          ['@babel/plugin-proposal-decorators']
+        ],
+        {}
+      ).length).to.equal(2, 'plugins were not added');
     });
 
     it('should include only decorators if it detects class fields plugin', function() {
@@ -770,9 +773,24 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      expect(this.addon._addDecoratorPlugins([
-        ['@babel/plugin-proposal-class-properties']
-      ]).length).to.equal(2, 'plugins were not added');
+      expect(
+        this.addon._addDecoratorPlugins(
+          [
+            ['@babel/plugin-proposal-class-properties']
+          ],
+          {}
+        ).length
+      ).to.equal(2, 'plugins were not added');
+    });
+
+    it('should use babel options loose mode for class properties', function() {
+      let strictPlugins = this.addon._addDecoratorPlugins([], {});
+
+      expect(strictPlugins[1][1].loose).to.equal(false, 'loose is false if no option is provided');
+
+      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true });
+
+      expect(loosePlugins[1][1].loose).to.equal(true, 'loose setting added correctly');
     });
   });
 
