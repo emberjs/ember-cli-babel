@@ -5,8 +5,8 @@
 
 
 This Ember-CLI plugin uses [Babel](https://babeljs.io/) and
-[babel-preset-env](https://github.com/babel/babel-preset-env) to allow you to
-use ES6 syntax with your Ember CLI project.
+[@babel/preset-env](https://babeljs.io/docs/en/next/babel-preset-env.html) to
+allow you to use latest Javascript in your Ember CLI project.
 
 ## Table of Contents
 
