@@ -1,3 +1,15 @@
+## v7.13.1 (2019-12-12)
+
+#### :bug: Bug Fix
+* [#311](https://github.com/babel/ember-cli-babel/pull/311) Include decorator and class field plugins after TypeScript, if present ([@dfreeman](https://github.com/dfreeman))
+
+#### :memo: Documentation
+* [#309](https://github.com/babel/ember-cli-babel/pull/309) README: Update an outdated link ([@dcyriller](https://github.com/dcyriller))
+
+#### Committers: 2
+- Cyrille David ([@dcyriller](https://github.com/dcyriller))
+- Dan Freeman ([@dfreeman](https://github.com/dfreeman))
+
 * Fixup yarn.lock (3343ca7)
 * [BUGFIX] Make loose mode in class properties transform respect B… (#307) (b750535)
 * update to yarn in appveyor (42997b1)
