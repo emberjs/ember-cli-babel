@@ -1,4 +1,10 @@
-* Revert "Include decorator and class field plugins after TypeScript, if present" (eeed4fa)
+## v7.13.2 (2019-12-12)
+
+#### :bug: Bug Fix
+* [eeed4fa8](https://github.com/babel/ember-cli-babel/commit/eeed4fa8384c4a3037070abf0b8ee1c32affb43e) Revert changes from [#311](https://github.com/babel/ember-cli-babel/pull/311) to avoid errors RE: `Unable to satisfy placement constraints for @babel/plugin-proposal-decorators` ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 
 ## v7.13.1 (2019-12-12)
 
