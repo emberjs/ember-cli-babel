@@ -1,3 +1,5 @@
+* Revert "Include decorator and class field plugins after TypeScript, if present" (eeed4fa)
+
 ## v7.13.1 (2019-12-12)
 
 #### :bug: Bug Fix
