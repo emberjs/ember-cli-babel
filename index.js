@@ -340,7 +340,8 @@ module.exports = {
         plugins,
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         {
-          before: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-typescript']
+          before: ['@babel/plugin-proposal-class-properties'],
+          after: ['@babel/plugin-transform-typescript']
         }
       );
     }
@@ -357,8 +358,7 @@ module.exports = {
         plugins,
         [require.resolve('@babel/plugin-proposal-class-properties'), { loose: options.loose || false }],
         {
-          after: ['@babel/plugin-proposal-decorators'],
-          before: ['@babel/plugin-transform-typescript']
+          after: ['@babel/plugin-proposal-decorators', '@babel/plugin-transform-typescript']
         }
       );
     }
