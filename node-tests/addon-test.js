@@ -746,6 +746,58 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_addTypeScriptPlugins', function() {
+    it('should add only the TypeScript plugin by default', function() {
+      expect(this.addon._addTypeScriptPlugins([], {}).length).to.equal(1, 'plugin added correctly');
+    });
+
+    it('should warn and not add the TypeScript plugin if already added', function() {
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the TypeScript transform plugin to its build/);
+        }
+      };
+
+      expect(
+        this.addon._addTypeScriptPlugins([
+          ['@babel/plugin-transform-typescript']
+        ],
+        {}
+      ).length).to.equal(1, 'plugin was not added');
+    });
+
+    it('should add optional chaining and nullish coalescing operator when told to', function() {
+      this.addon._shouldIncludeOptionalChainingNullishCoalescingPlugins = function() { return true; }
+      expect(this.addon._addTypeScriptPlugins([], {}).length).to.equal(3, 'plugins added correctly');
+    });
+
+    it('should warn and not add optional chaining if already added', function() {
+      this.addon._shouldIncludeOptionalChainingNullishCoalescingPlugins = function() { return true; }
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the optional chaining plugin to its build/);
+        }
+      };
+
+      expect(this.addon._addTypeScriptPlugins([
+        ['@babel/plugin-proposal-optional-chaining']
+      ], {}).length).to.equal(3, 'plugin was not added');
+    });
+
+    it('should warn and not add nullish coalescing operator if already added', function() {
+      this.addon._shouldIncludeOptionalChainingNullishCoalescingPlugins = function() { return true; }
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the nullish coalescing operator plugin to its build/);
+        }
+      };
+
+      expect(this.addon._addTypeScriptPlugins([
+        ['@babel/plugin-proposal-nullish-coalescing-operator']
+      ], {}).length).to.equal(3, 'plugin was not added');
+    });
+  });
+
   describe('_addDecoratorPlugins', function() {
     it('should include babel transforms by default', function() {
       expect(this.addon._addDecoratorPlugins([], {}).length).to.equal(2, 'plugins added correctly');
