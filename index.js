@@ -256,11 +256,7 @@ module.exports = {
   _getExtensions(config) {
     let shouldIncludeTypeScriptPlugins = this._shouldIncludeTypeScriptPlugins();
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-    let defaultExtensions = ['js'];
-    if (shouldIncludeTypeScriptPlugins) {
-      defaultExtensions.push('ts');
-    }
-    return emberCLIBabelConfig.extensions || defaultExtensions;
+    return emberCLIBabelConfig.extensions || (shouldIncludeTypeScriptPlugins ? ['js', 'ts'] : ['js']);
   },
 
   _getBabelOptions(config) {
