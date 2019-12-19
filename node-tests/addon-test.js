@@ -1031,6 +1031,23 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_getExtensions', function() {
+    it('defaults to js only', function() {
+      expect(this.addon._getExtensions({})).to.have.members(['js']);
+    });
+    it('adds ts automatically', function() {
+      this.addon._shouldIncludeTypeScriptPlugins = function() { return true; }
+      expect(this.addon._getExtensions({})).to.have.members(['js', 'ts']);
+    });
+    it('respects user-configured extensions', function() {
+      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
+    });
+    it('respects user-configured extensions even when adding TS plugin', function() {
+      this.addon._shouldIncludeTypeScriptPlugins = function() { return true; }
+      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
+    });
+  });
+
   describe('buildBabelOptions', function() {
     this.timeout(0);
 
