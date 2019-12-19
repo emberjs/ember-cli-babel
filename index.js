@@ -338,12 +338,6 @@ module.exports = {
     return this._cachedShouldHandleTypescript;
   },
 
-  _shouldIncludeOptionalChainingNullishCoalescingPlugins() {
-    let checker = new VersionChecker(this.parent).for('typescript', 'npm');
-
-    return checker.gte('3.7.0');
-  },
-
 	_buildClassFeaturePluginConstraints(constraints) {
     // With older versions of ember-cli-typescript, class feature plugins like
     // @babel/plugin-proposal-class-properties were run before the TS transform.
@@ -363,38 +357,35 @@ module.exports = {
 
   _addTypeScriptPlugins(plugins) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
-    const shouldIncludeOptionalChainingNullishCoalescingPlugins = this._shouldIncludeOptionalChainingNullishCoalescingPlugins();
 
-    if (shouldIncludeOptionalChainingNullishCoalescingPlugins) {
-      if (hasPlugin(plugins, '@babel/plugin-proposal-optional-chaining')) {
-        if (this.parent === this.project) {
-          this.project.ui.writeWarnLine(`${
-            this._parentName()
-          } has added the optional chaining plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
-        }
-      } else {
-        addPlugin(
-          plugins,
-          [
-            require.resolve('@babel/plugin-proposal-optional-chaining'),
-          ]
-        );
+    if (hasPlugin(plugins, '@babel/plugin-proposal-optional-chaining')) {
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the optional chaining plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
       }
+    } else {
+      addPlugin(
+        plugins,
+        [
+          require.resolve('@babel/plugin-proposal-optional-chaining'),
+        ]
+      );
+    }
 
-      if (hasPlugin(plugins, '@babel/plugin-proposal-nullish-coalescing-operator')) {
-        if (this.parent === this.project) {
-          this.project.ui.writeWarnLine(`${
-            this._parentName()
-          } has added the nullish coalescing operator plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
-        }
-      } else {
-        addPlugin(
-          plugins,
-          [
-            require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-          ]
-        );
+    if (hasPlugin(plugins, '@babel/plugin-proposal-nullish-coalescing-operator')) {
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the nullish coalescing operator plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
       }
+    } else {
+      addPlugin(
+        plugins,
+        [
+          require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
+        ]
+      );
     }
 
     if (hasPlugin(plugins, '@babel/plugin-transform-typescript')) {
