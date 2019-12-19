@@ -254,16 +254,16 @@ module.exports = {
   },
 
   _getExtensions(config) {
-    let shouldIncludeTypeScriptPlugins = this._shouldIncludeTypeScriptPlugins();
+    let shouldHandleTypeScript = this._shouldHandleTypeScript();
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-    return emberCLIBabelConfig.extensions || (shouldIncludeTypeScriptPlugins ? ['js', 'ts'] : ['js']);
+    return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
   },
 
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
     let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
-    let shouldIncludeTypeScriptPlugins = this._shouldIncludeTypeScriptPlugins();
+    let shouldHandleTypeScript = this._shouldHandleTypeScript();
     let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
@@ -294,7 +294,7 @@ module.exports = {
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
-    if (shouldIncludeTypeScriptPlugins) {
+    if (shouldHandleTypeScript) {
       userPlugins = this._addTypeScriptPlugins(userPlugins.slice(), addonProvidedConfig.options);
     }
 
@@ -326,10 +326,16 @@ module.exports = {
     return options;
   },
 
-  _shouldIncludeTypeScriptPlugins() {
-    let checker = new VersionChecker(this.parent).for('ember-cli-typescript', 'npm');
+  _shouldHandleTypeScript() {
+    if (this._cachedShouldHandleTypescript === undefined) {
+      // TODO: this doesn't account for things like in-repo addons and other
+      // weird inclusion structures
+      let checker = new VersionChecker(this.parent).for('ember-cli-typescript', 'npm');
 
-    return checker.gte('4.0.0-alpha');
+      this._cachedShouldHandleTypescript = checker.gte('4.0.0-alpha.0');
+    }
+
+    return this._cachedShouldHandleTypescript;
   },
 
   _shouldIncludeOptionalChainingNullishCoalescingPlugins() {
