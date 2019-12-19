@@ -344,6 +344,23 @@ module.exports = {
     return checker.gte('3.7.0');
   },
 
+	_buildClassFeaturePluginConstraints(constraints) {
+    // With older versions of ember-cli-typescript, class feature plugins like
+    // @babel/plugin-proposal-class-properties were run before the TS transform.
+    // With more recent language features like `declare` field modifiers, Babel
+    // now has assertions requiring that the TS transform runs first, so if we
+    // know we're responsible for setting that transform up, we follow those rules.
+    if (this._shouldHandleTypeScript()) {
+      constraints.after = constraints.after || [];
+      constraints.after.push('@babel/plugin-transform-typescript');
+    } else {
+      constraints.before = constraints.before || [];
+      constraints.before.push('@babel/plugin-transform-typescript');
+    }
+
+    return constraints;
+  },
+
   _addTypeScriptPlugins(plugins) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
     const shouldIncludeOptionalChainingNullishCoalescingPlugins = this._shouldIncludeOptionalChainingNullishCoalescingPlugins();
@@ -424,10 +441,9 @@ module.exports = {
       addPlugin(
         plugins,
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-        {
-          before: ['@babel/plugin-proposal-class-properties'],
-          after: ['@babel/plugin-transform-typescript']
-        }
+        this._buildClassFeaturePluginConstraints({
+          before: ['@babel/plugin-proposal-class-properties']
+        })
       );
     }
 
@@ -442,9 +458,9 @@ module.exports = {
       addPlugin(
         plugins,
         [require.resolve('@babel/plugin-proposal-class-properties'), { loose: options.loose || false }],
-        {
-          after: ['@babel/plugin-proposal-decorators', '@babel/plugin-transform-typescript']
-        }
+        this._buildClassFeaturePluginConstraints({
+          after: ['@babel/plugin-proposal-decorators']
+        })
       );
     }
 
