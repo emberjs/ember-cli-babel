@@ -254,14 +254,20 @@ module.exports = {
   },
 
   _getExtensions(config) {
+    let shouldIncludeTypeScriptPlugins = this._shouldIncludeTypeScriptPlugins();
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-    return emberCLIBabelConfig.extensions || ['js'];
+    let extensions = emberCLIBabelConfig.extensions || ['js'];
+    if (shouldIncludeTypeScriptPlugins && !extensions.includes('ts')) {
+      extensions.push('ts');
+    }
+    return extensions;
   },
 
   _getBabelOptions(config) {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
     let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
+    let shouldIncludeTypeScriptPlugins = this._shouldIncludeTypeScriptPlugins();
     let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
@@ -292,6 +298,10 @@ module.exports = {
     let userPlugins = addonProvidedConfig.plugins;
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
+    if (shouldIncludeTypeScriptPlugins) {
+      userPlugins = this._addTypeScriptPlugins(userPlugins.slice(), addonProvidedConfig.options);
+    }
+
     if (shouldIncludeDecoratorPlugins) {
       userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options);
     }
@@ -318,6 +328,79 @@ module.exports = {
     options.babelrc = false;
 
     return options;
+  },
+
+  _shouldIncludeTypeScriptPlugins() {
+    let checker = new VersionChecker(this.parent).for('ember-cli-typescript', 'npm');
+
+    return checker.gte('4.0.0-alpha');
+  },
+
+  _shouldIncludeOptionalChainingNullishCoalescingPlugins() {
+    let checker = new VersionChecker(this.parent).for('typescript', 'npm');
+
+    return checker.gte('3.7.0');
+  },
+
+  _addTypeScriptPlugins(plugins) {
+    const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
+    const shouldIncludeOptionalChainingNullishCoalescingPlugins = this._shouldIncludeOptionalChainingNullishCoalescingPlugins();
+
+    if (shouldIncludeOptionalChainingNullishCoalescingPlugins) {
+      if (hasPlugin(plugins, '@babel/plugin-proposal-optional-chaining')) {
+        if (this.parent === this.project) {
+          this.project.ui.writeWarnLine(`${
+            this._parentName()
+          } has added the optional chaining plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
+        }
+      } else {
+        addPlugin(
+          plugins,
+          [
+            require.resolve('@babel/plugin-proposal-optional-chaining'),
+          ]
+        );
+      }
+
+      if (hasPlugin(plugins, '@babel/plugin-proposal-nullish-coalescing-operator')) {
+        if (this.parent === this.project) {
+          this.project.ui.writeWarnLine(`${
+            this._parentName()
+          } has added the nullish coalescing operator plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
+        }
+      } else {
+        addPlugin(
+          plugins,
+          [
+            require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
+          ]
+        );
+      }
+    }
+
+    if (hasPlugin(plugins, '@babel/plugin-transform-typescript')) {
+      if (this.parent === this.project) {
+        this.project.ui.writeWarnLine(`${
+          this._parentName()
+        } has added the TypeScript transform plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 is installed! You can remove the transform, or the addon that provided it.`);
+      }
+    } else {
+      addPlugin(
+        plugins,
+        [
+          require.resolve('@babel/plugin-transform-typescript'),
+          { allowDeclareFields: true },
+        ],
+        {
+          before: [
+            '@babel/plugin-proposal-class-properties',
+            '@babel/plugin-proposal-private-methods',
+            '@babel/plugin-proposal-decorators',
+          ]
+        }
+      );
+    }
+    return plugins;
   },
 
   _shouldIncludeDecoratorPlugins(config) {
