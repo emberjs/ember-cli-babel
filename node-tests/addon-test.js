@@ -845,10 +845,18 @@ describe('ember-cli-babel', function() {
       expect(loosePlugins[1][1].loose).to.equal(true, 'loose setting added correctly');
     });
 
-    it('should include class fields and decorators after typescript if detected', function() {
+    it('should include class fields and decorators after typescript if handling typescript', function() {
+      this.addon._shouldHandleTypeScript = function() { return true; }
       let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {});
       expect(plugins[0]).to.equal('@babel/plugin-transform-typescript', 'typescript still first');
       expect(plugins.length).to.equal(3, 'class fields and decorators added');
+    });
+
+    it('should include class fields and decorators before typescript if not handling typescript', function() {
+      this.addon._shouldHandleTypeScript = function() { return false; }
+      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {});
+      expect(plugins.length).to.equal(3, 'class fields and decorators added');
+      expect(plugins[2]).to.equal('@babel/plugin-transform-typescript', 'typescript is now last');
     });
   });
 
