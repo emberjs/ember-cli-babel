@@ -254,7 +254,7 @@ module.exports = {
   },
 
   _getExtensions(config) {
-    let shouldHandleTypeScript = this._shouldHandleTypeScript();
+    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
     return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
   },
@@ -263,7 +263,7 @@ module.exports = {
     let addonProvidedConfig = this._getAddonProvidedConfig(config);
     let shouldCompileModules = this._shouldCompileModules(config);
     let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
-    let shouldHandleTypeScript = this._shouldHandleTypeScript();
+    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
     let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
 
     let emberCLIBabelConfig = config['ember-cli-babel'];
@@ -299,7 +299,7 @@ module.exports = {
     }
 
     if (shouldIncludeDecoratorPlugins) {
-      userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options);
+      userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options, config);
     }
 
     options.plugins = [].concat(
@@ -326,19 +326,24 @@ module.exports = {
     return options;
   },
 
-  _shouldHandleTypeScript() {
-      let typeScriptAddon = this.parent.addons.find(a => a.name === 'ember-cli-typescript');
+  _shouldHandleTypeScript(config) {
+      let emberCLIBabelConfig = config['ember-cli-babel'] || {};
+      if (typeof emberCLIBabelConfig.enableTypeScriptTransforms === 'boolean') {
+        return emberCLIBabelConfig.enableTypeScriptTransforms;
+      }
+      let typeScriptAddon = this.parent.addons
+        && this.parent.addons.find(a => a.name === 'ember-cli-typescript');
       return typeof typeScriptAddon !== 'undefined'
         && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.0');
   },
 
-	_buildClassFeaturePluginConstraints(constraints) {
+	_buildClassFeaturePluginConstraints(constraints, config) {
     // With older versions of ember-cli-typescript, class feature plugins like
     // @babel/plugin-proposal-class-properties were run before the TS transform.
     // With more recent language features like `declare` field modifiers, Babel
     // now has assertions requiring that the TS transform runs first, so if we
     // know we're responsible for setting that transform up, we follow those rules.
-    if (this._shouldHandleTypeScript()) {
+    if (this._shouldHandleTypeScript(config)) {
       constraints.after = constraints.after || [];
       constraints.after.push('@babel/plugin-transform-typescript');
     } else {
@@ -413,7 +418,7 @@ module.exports = {
     return customOptions.disableDecoratorTransforms !== true;
   },
 
-  _addDecoratorPlugins(plugins, options) {
+  _addDecoratorPlugins(plugins, options, config) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
 
     if (hasPlugin(plugins, '@babel/plugin-proposal-decorators')) {
@@ -428,7 +433,7 @@ module.exports = {
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         this._buildClassFeaturePluginConstraints({
           before: ['@babel/plugin-proposal-class-properties']
-        })
+        }, config)
       );
     }
 
@@ -445,7 +450,7 @@ module.exports = {
         [require.resolve('@babel/plugin-proposal-class-properties'), { loose: options.loose || false }],
         this._buildClassFeaturePluginConstraints({
           after: ['@babel/plugin-proposal-decorators']
-        })
+        }, config)
       );
     }
 

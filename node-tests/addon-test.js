@@ -768,6 +768,21 @@ describe('ember-cli-babel', function() {
       });
       expect(this.addon._shouldHandleTypeScript({})).to.be.false;
     });
+    it('should return true when TypeScript transforms are manually enabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: true } })).to.be.true;
+    });
+    it('should return false when TypeScript transforms are manually disabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;
+    });
+    it('should return false when TypeScript transforms are manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.0 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '4.0.0-alpha.0',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;
+    });
   });
 
   describe('_addTypeScriptPlugins', function() {
@@ -817,7 +832,7 @@ describe('ember-cli-babel', function() {
 
   describe('_addDecoratorPlugins', function() {
     it('should include babel transforms by default', function() {
-      expect(this.addon._addDecoratorPlugins([], {}).length).to.equal(2, 'plugins added correctly');
+      expect(this.addon._addDecoratorPlugins([], {}, {}).length).to.equal(2, 'plugins added correctly');
     });
 
     it('should include only fields if it detects decorators plugin', function() {
@@ -831,6 +846,7 @@ describe('ember-cli-babel', function() {
         this.addon._addDecoratorPlugins([
           ['@babel/plugin-proposal-decorators']
         ],
+        {},
         {}
       ).length).to.equal(2, 'plugins were not added');
     });
@@ -847,31 +863,32 @@ describe('ember-cli-babel', function() {
           [
             ['@babel/plugin-proposal-class-properties']
           ],
+          {},
           {}
         ).length
       ).to.equal(2, 'plugins were not added');
     });
 
     it('should use babel options loose mode for class properties', function() {
-      let strictPlugins = this.addon._addDecoratorPlugins([], {});
+      let strictPlugins = this.addon._addDecoratorPlugins([], {}, {});
 
       expect(strictPlugins[1][1].loose).to.equal(false, 'loose is false if no option is provided');
 
-      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true });
+      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true }, {});
 
       expect(loosePlugins[1][1].loose).to.equal(true, 'loose setting added correctly');
     });
 
     it('should include class fields and decorators after typescript if handling typescript', function() {
       this.addon._shouldHandleTypeScript = function() { return true; }
-      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {});
+      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
       expect(plugins[0]).to.equal('@babel/plugin-transform-typescript', 'typescript still first');
       expect(plugins.length).to.equal(3, 'class fields and decorators added');
     });
 
     it('should include class fields and decorators before typescript if not handling typescript', function() {
       this.addon._shouldHandleTypeScript = function() { return false; }
-      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {});
+      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
       expect(plugins.length).to.equal(3, 'class fields and decorators added');
       expect(plugins[2]).to.equal('@babel/plugin-transform-typescript', 'typescript is now last');
     });
