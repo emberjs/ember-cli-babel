@@ -327,15 +327,9 @@ module.exports = {
   },
 
   _shouldHandleTypeScript() {
-    if (this._cachedShouldHandleTypescript === undefined) {
-      // TODO: this doesn't account for things like in-repo addons and other
-      // weird inclusion structures
-      let checker = new VersionChecker(this.parent).for('ember-cli-typescript', 'npm');
-
-      this._cachedShouldHandleTypescript = checker.gte('4.0.0-alpha.0');
-    }
-
-    return this._cachedShouldHandleTypescript;
+      let typeScriptAddon = this.parent.addons.find(a => a.name === 'ember-cli-typescript');
+      return typeof typeScriptAddon !== 'undefined'
+        && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.0');
   },
 
 	_buildClassFeaturePluginConstraints(constraints) {
