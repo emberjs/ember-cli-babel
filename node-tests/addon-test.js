@@ -746,6 +746,30 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_shouldHandleTypeScript', function() {
+    it('should return false by default', function() {
+      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+    });
+    it('should return true when ember-cli-typescript >= 4.0.0-alpha.0 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '4.0.0-alpha.0',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({})).to.be.true;
+    });
+    it('should return false when ember-cli-typescript < 4.0.0-alpha.0 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '3.0.0',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+    });
+  });
+
   describe('_addTypeScriptPlugins', function() {
     it('should add TypeScript, optional chaining, and nullish coalescing operator plugins', function() {
       expect(this.addon._addTypeScriptPlugins([], {}).length).to.equal(3, 'plugins added correctly');
