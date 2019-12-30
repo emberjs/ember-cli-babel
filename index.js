@@ -340,13 +340,7 @@ module.exports = {
 	_buildClassFeaturePluginConstraints(constraints, config) {
     // With older versions of ember-cli-typescript, class feature plugins like
     // @babel/plugin-proposal-class-properties were run before the TS transform.
-    // With more recent language features like `declare` field modifiers, Babel
-    // now has assertions requiring that the TS transform runs first, so if we
-    // know we're responsible for setting that transform up, we follow those rules.
-    if (this._shouldHandleTypeScript(config)) {
-      constraints.after = constraints.after || [];
-      constraints.after.push('@babel/plugin-transform-typescript');
-    } else {
+    if (!this._shouldHandleTypeScript(config)) {
       constraints.before = constraints.before || [];
       constraints.before.push('@babel/plugin-transform-typescript');
     }
