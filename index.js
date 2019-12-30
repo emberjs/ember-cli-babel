@@ -254,9 +254,8 @@ module.exports = {
   },
 
   _getExtensions(config) {
-    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-    return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
+    return emberCLIBabelConfig.extensions || ['js', 'ts'];
   },
 
   _getBabelOptions(config) {
