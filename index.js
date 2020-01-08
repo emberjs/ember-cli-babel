@@ -337,7 +337,7 @@ module.exports = {
   },
 
   _buildClassFeaturePluginConstraints(constraints, config) {
-    // With older versions of ember-cli-typescript, class feature plugins like
+    // With versions of ember-cli-typescript < 4.0, class feature plugins like
     // @babel/plugin-proposal-class-properties were run before the TS transform.
     if (!this._shouldHandleTypeScript(config)) {
       constraints.before = constraints.before || [];
