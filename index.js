@@ -336,7 +336,7 @@ module.exports = {
         && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.0');
   },
 
-	_buildClassFeaturePluginConstraints(constraints, config) {
+  _buildClassFeaturePluginConstraints(constraints, config) {
     // With older versions of ember-cli-typescript, class feature plugins like
     // @babel/plugin-proposal-class-properties were run before the TS transform.
     if (!this._shouldHandleTypeScript(config)) {
