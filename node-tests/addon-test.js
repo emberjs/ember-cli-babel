@@ -8,10 +8,23 @@ const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
+const FixturifyProject = require('fixturify-project');
+const EmberProject = require('ember-cli/lib/models/project');
+const MockCLI = require('ember-cli/tests/helpers/mock-cli');
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
 const terminateWorkerPool = require('./utils/terminate-workers');
+const path = require('path');
+const fs = require('fs');
+
+function prepareAddon(addon) {
+  addon.pkg.keywords.push('ember-addon');
+  addon.pkg['ember-addon'] = {};
+  addon.files['index.js'] = 'module.exports = { name: require("./package").name };';
+
+  return addon;
+}
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -22,6 +35,8 @@ describe('ember-cli-babel', function() {
   beforeEach(function() {
     this.ui = new MockUI();
     let project = {
+      isEmberCLIProject: () => true,
+      _addonsInitialized: true,
       root: __dirname,
       emberCLIVersion: () => '2.16.2',
       dependencies() { return {}; },
@@ -1211,6 +1226,137 @@ describe('ember-cli-babel', function() {
 
       let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
       expect(pluginRequired).to.be.false;
+    });
+  });
+});
+
+describe('EmberData Packages Polyfill', function() {
+  this.timeout(0);
+
+  let input;
+  let output;
+  let subject;
+  let setupForVersion;
+  let project;
+  let unlink;
+
+  beforeEach(function() {
+    setupForVersion = async (v) => {
+      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+      fixturifyProject.addDependency('ember-data', v, addon => {
+        return prepareAddon(addon);
+      });
+      fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+      fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
+        return prepareAddon(addon);
+      });
+      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+      fixturifyProject.writeSync();
+
+      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
+      let addonPath = path.resolve(__dirname, '../');
+      fs.rmdirSync(linkPath, { recursive: true });
+      fs.symlinkSync(addonPath, linkPath);
+      unlink = () => {
+        fs.unlinkSync(linkPath);
+      };
+
+      let cli = new MockCLI();
+      let root = path.join(fixturifyProject.root, 'whatever');
+      project = new EmberProject(root, pkg, cli.ui, cli);
+      project.initializeAddons();
+
+      this.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+
+      input = await createTempDir();
+    };
+  });
+
+  afterEach(async function() {
+    unlink();
+    await input.dispose();
+    await output.dispose();
+    // shut down workers after the tests are run so that mocha doesn't hang
+    await terminateWorkerPool();
+  });
+
+  it("does not convert when _emberDataVersionRequiresPackagesPolyfill returns false", async function() {
+    await setupForVersion('3.12.0-alpha.0');
+    input.write({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+    });
+
+    subject = this.addon.transpileTree(input.path(), {
+      'ember-cli-babel': {
+        compileModules: false,
+        disableDebugTooling: true,
+        disableEmberDataPackagesPolyfill: true
+      }
+    });
+
+    output = createBuilder(subject);
+
+    await output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+    });
+  });
+
+  it("does not convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true and disableEmberDataPackagesPolyfill is true", async function() {
+    await setupForVersion('3.11.0');
+    input.write({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+    });
+
+    subject = this.addon.transpileTree(input.path(), {
+      'ember-cli-babel': {
+        compileModules: false,
+        disableDebugTooling: true,
+        disableEmberDataPackagesPolyfill: true
+      }
+    });
+
+    output = createBuilder(subject);
+
+    await output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+    });
+  });
+
+  it("it does convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true", async function() {
+    await setupForVersion('3.11.99');
+    input.write({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;export var name = attr;`,
+    });
+
+    subject = this.addon.transpileTree(input.path(), {
+      'ember-cli-babel': {
+        compileModules: false,
+        disableDebugTooling: true,
+      }
+    });
+
+    output = createBuilder(subject);
+
+    await output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": `import DS from "ember-data";\nexport default DS.Store;`,
+      "bar.js": `import DS from "ember-data";\nexport var User = DS.Model;\nexport var name = DS.attr;`,
     });
   });
 });
