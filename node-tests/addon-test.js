@@ -750,16 +750,16 @@ describe('ember-cli-babel', function() {
     it('should return false by default', function() {
       expect(this.addon._shouldHandleTypeScript({})).to.be.false;
     });
-    it('should return true when ember-cli-typescript >= 4.0.0-alpha.0 is installed', function() {
+    it('should return true when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
         name: 'ember-cli-typescript',
         pkg: {
-          version: '4.0.0-alpha.0',
+          version: '4.0.0-alpha.1',
         },
       });
       expect(this.addon._shouldHandleTypeScript({})).to.be.true;
     });
-    it('should return false when ember-cli-typescript < 4.0.0-alpha.0 is installed', function() {
+    it('should return false when ember-cli-typescript < 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
         name: 'ember-cli-typescript',
         pkg: {
@@ -774,11 +774,11 @@ describe('ember-cli-babel', function() {
     it('should return false when TypeScript transforms are manually disabled', function() {
       expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;
     });
-    it('should return false when TypeScript transforms are manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.0 is installed', function() {
+    it('should return false when TypeScript transforms are manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
         name: 'ember-cli-typescript',
         pkg: {
-          version: '4.0.0-alpha.0',
+          version: '4.0.0-alpha.1',
         },
       });
       expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;

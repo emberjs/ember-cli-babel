@@ -334,7 +334,7 @@ module.exports = {
       let typeScriptAddon = this.parent.addons
         && this.parent.addons.find(a => a.name === 'ember-cli-typescript');
       return typeof typeScriptAddon !== 'undefined'
-        && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.0');
+        && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.1');
   },
 
   _buildClassFeaturePluginConstraints(constraints, config) {
