@@ -41,7 +41,8 @@ module.exports = {
     return this._cachedDebugTree.apply(null, arguments);
   },
 
-  transpileTree(inputTree, config) {
+  transpileTree(inputTree, _config) {
+    let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
 
@@ -51,7 +52,15 @@ module.exports = {
       output = postDebugTree;
     } else {
       let BabelTranspiler = require('broccoli-babel-transpiler');
-      output = new BabelTranspiler(postDebugTree, options);
+      let transpilationInput = postDebugTree;
+
+      if (this._shouldHandleTypeScript(config)) {
+        let Funnel = require('broccoli-funnel');
+        let inputWithoutDeclarations = new Funnel(transpilationInput, { exclude: ['**/*.d.ts'] });
+        transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
+      }
+
+      output = new BabelTranspiler(transpilationInput, options);
     }
 
     return this._debugTree(output, `${description}:output`);

@@ -635,6 +635,42 @@ describe('ember-cli-babel', function() {
       }));
     });
 
+    describe('TypeScript transpilation', function() {
+      beforeEach(function() {
+        this.addon.parent.addons.push({
+          name: 'ember-cli-typescript',
+          pkg: {
+            version: '4.0.0-alpha.1'
+          }
+        });
+      });
+
+      it('should transpile .ts files', co.wrap(function*() {
+        input.write({ 'foo.ts': `let foo: string = "hi";` });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  var foo = "hi";\n});`
+        });
+      }));
+
+      it('should exclude .d.ts files', co.wrap(function*() {
+        input.write({ 'foo.d.ts': `declare let foo: string;` });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(output.read()).to.deep.equal({});
+      }))
+    });
 
     describe('_shouldDoNothing', function() {
       it("will no-op if nothing to do", co.wrap(function* () {
