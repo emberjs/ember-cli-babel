@@ -19,7 +19,7 @@ allow you to use latest Javascript in your Ember CLI project.
     + [Enabling Source Maps](#enabling-source-maps)
     + [Modules](#modules)
     + [Disabling Debug Tooling Support](#disabling-debug-tooling-support)
-    + [Enabling TypeScript Transforms](#enabling-typescript-transforms)
+    + [Enabling TypeScript Transpilation](#enabling-typescript-transpilation)
   * [Addon usage](#addon-usage)
     + [Adding Custom Plugins](#adding-custom-plugins)
     + [Additional Trees](#additional-trees)
@@ -122,7 +122,7 @@ interface EmberCLIBabelConfig {
     disablePresetEnv?: boolean;
     disableEmberModulesAPIPolyfill?: boolean;
     disableDecoratorTransforms?: boolean;
-    enableTypeScriptTransforms?: boolean;
+    enableTypeScriptTransform?: boolean;
     extensions?: string[];
   };
 }
@@ -261,33 +261,31 @@ module.exports = function(defaults) {
 }
 ```
 
-#### Enabling TypeScript Transforms
+#### Enabling TypeScript Transpilation
 
-The transform plugins required for Babel to transpile TypeScript (including
-transforms required for all valid TypeScript features such as optional
-chaining and nullish coalescing) will automatically be enabled when
-`ember-cli-typescript` >= 4.0 is installed.
+The transform plugin required for Babel to transpile TypeScript will
+automatically be enabled when `ember-cli-typescript` >= 4.0 is installed.
 
-You can enable the TypeScript Babel transforms manually *without*
-`ember-cli-typescript` by setting the `enableTypeScriptTransforms`to `true`.
+You can enable the TypeScript Babel transform manually *without*
+`ember-cli-typescript` by setting the `enableTypeScriptTransform` to `true`.
 
 NOTE: Setting this option to `true` is not compatible with
 `ember-cli-typescript` < 4.0 because of conflicting Babel plugin ordering
 constraints and is unnecessary because `ember-cli-typescript` < 4.0 adds the
-TypeScript Babel transforms itself.
+TypeScript Babel transform itself.
 
 NOTE: Setting this option to `true` does *not* enable type-checking. For
 integrated type-checking, you will need
 [`ember-cli-typescript`](https://ember-cli-typescript.com).
 
-In an app, manually enabling the TypeScript transforms would look like:
+In an app, manually enabling the TypeScript transform would look like:
 
 ```js
 // ember-cli-build.js
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
     'ember-cli-babel': {
-      enableTypeScriptTransforms: true
+      enableTypeScriptTransform: true
     }
   });
 

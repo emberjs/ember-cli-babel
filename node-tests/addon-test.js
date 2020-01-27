@@ -804,28 +804,24 @@ describe('ember-cli-babel', function() {
       });
       expect(this.addon._shouldHandleTypeScript({})).to.be.false;
     });
-    it('should return true when TypeScript transforms are manually enabled', function() {
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: true } })).to.be.true;
+    it('should return true when the TypeScript transform is manually enabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } })).to.be.true;
     });
-    it('should return false when TypeScript transforms are manually disabled', function() {
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;
+    it('should return false when the TypeScript transforms is manually disabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
     });
-    it('should return false when TypeScript transforms are manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
+    it('should return false when the TypeScript transform is manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
         name: 'ember-cli-typescript',
         pkg: {
           version: '4.0.0-alpha.1',
         },
       });
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransforms: false } })).to.be.false;
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
     });
   });
 
-  describe('_addTypeScriptPlugins', function() {
-    it('should add TypeScript, optional chaining, and nullish coalescing operator plugins', function() {
-      expect(this.addon._addTypeScriptPlugins([], {}).length).to.equal(3, 'plugins added correctly');
-    });
-
+  describe('_addTypeScriptPlugin', function() {
     it('should warn and not add the TypeScript plugin if already added', function() {
       this.addon.project.ui = {
         writeWarnLine(message) {
@@ -834,35 +830,11 @@ describe('ember-cli-babel', function() {
       };
 
       expect(
-        this.addon._addTypeScriptPlugins([
+        this.addon._addTypeScriptPlugin([
           ['@babel/plugin-transform-typescript']
         ],
         {}
-      ).length).to.equal(3, 'plugin was not added');
-    });
-
-    it('should warn and not add optional chaining if already added', function() {
-      this.addon.project.ui = {
-        writeWarnLine(message) {
-          expect(message).to.match(/has added the optional chaining plugin to its build/);
-        }
-      };
-
-      expect(this.addon._addTypeScriptPlugins([
-        ['@babel/plugin-proposal-optional-chaining']
-      ], {}).length).to.equal(3, 'plugin was not added');
-    });
-
-    it('should warn and not add nullish coalescing operator if already added', function() {
-      this.addon.project.ui = {
-        writeWarnLine(message) {
-          expect(message).to.match(/has added the nullish coalescing operator plugin to its build/);
-        }
-      };
-
-      expect(this.addon._addTypeScriptPlugins([
-        ['@babel/plugin-proposal-nullish-coalescing-operator']
-      ], {}).length).to.equal(3, 'plugin was not added');
+      ).length).to.equal(1, 'plugin was not added');
     });
   });
 

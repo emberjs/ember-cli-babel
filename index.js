@@ -304,7 +304,7 @@ module.exports = {
     let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
 
     if (shouldHandleTypeScript) {
-      userPlugins = this._addTypeScriptPlugins(userPlugins.slice(), addonProvidedConfig.options);
+      userPlugins = this._addTypeScriptPlugin(userPlugins.slice(), addonProvidedConfig.options);
     }
 
     if (shouldIncludeDecoratorPlugins) {
@@ -337,8 +337,8 @@ module.exports = {
 
   _shouldHandleTypeScript(config) {
       let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-      if (typeof emberCLIBabelConfig.enableTypeScriptTransforms === 'boolean') {
-        return emberCLIBabelConfig.enableTypeScriptTransforms;
+      if (typeof emberCLIBabelConfig.enableTypeScriptTransform === 'boolean') {
+        return emberCLIBabelConfig.enableTypeScriptTransform;
       }
       let typeScriptAddon = this.parent.addons
         && this.parent.addons.find(a => a.name === 'ember-cli-typescript');
@@ -357,38 +357,8 @@ module.exports = {
     return constraints;
   },
 
-  _addTypeScriptPlugins(plugins) {
+  _addTypeScriptPlugin(plugins) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
-
-    if (hasPlugin(plugins, '@babel/plugin-proposal-optional-chaining')) {
-      if (this.parent === this.project) {
-        this.project.ui.writeWarnLine(`${
-          this._parentName()
-        } has added the optional chaining plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
-      }
-    } else {
-      addPlugin(
-        plugins,
-        [
-          require.resolve('@babel/plugin-proposal-optional-chaining'),
-        ]
-      );
-    }
-
-    if (hasPlugin(plugins, '@babel/plugin-proposal-nullish-coalescing-operator')) {
-      if (this.parent === this.project) {
-        this.project.ui.writeWarnLine(`${
-          this._parentName()
-        } has added the nullish coalescing operator plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 and typescript >= 3.7 are installed! You can remove the transform, or the addon that provided it.`);
-      }
-    } else {
-      addPlugin(
-        plugins,
-        [
-          require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-        ]
-      );
-    }
 
     if (hasPlugin(plugins, '@babel/plugin-transform-typescript')) {
       if (this.parent === this.project) {
