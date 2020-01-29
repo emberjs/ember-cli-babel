@@ -1,7 +1,7 @@
 ---
 language: node_js
 node_js:
-  - "10"
+  - "13"
 
 dist: trusty
 
@@ -30,11 +30,11 @@ jobs:
         - yarn test
 
     - stage: "Additional Tests"
-      name: 'Node 6'
-      node_js: 6
+      name: 'Node 10'
+      node_js: 10
 
-    - name: 'Node 8'
-      node_js: 8
+    - name: 'Node 12'
+      node_js: 12
 
     - name: 'Floating Dependencies'
       install: yarn install --no-lockfile --non-interactive --ignore-engines

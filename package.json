@@ -92,7 +92,7 @@
     "resolve": "^1.8.1"
   },
   "engines": {
-    "node": "6.* || 8.* || >= 10.*"
+    "node": "10.* || >= 12.*"
   },
   "resolutions": {
     "**/engine.io": "~3.3.0"
