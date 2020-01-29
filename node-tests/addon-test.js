@@ -17,6 +17,7 @@ const createTempDir = BroccoliTestHelper.createTempDir;
 const terminateWorkerPool = require('./utils/terminate-workers');
 const path = require('path');
 const fs = require('fs');
+const rimraf = require('rimraf');
 
 function prepareAddon(addon) {
   addon.pkg.keywords.push('ember-addon');
@@ -1255,7 +1256,7 @@ describe('EmberData Packages Polyfill', function() {
 
       let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
-      fs.rmdirSync(linkPath, { recursive: true });
+      rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath);
       unlink = () => {
         fs.unlinkSync(linkPath);
