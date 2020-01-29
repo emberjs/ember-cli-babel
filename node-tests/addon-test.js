@@ -1242,6 +1242,7 @@ describe('EmberData Packages Polyfill', function() {
   let unlink;
 
   beforeEach(function() {
+    let self = this;
     setupForVersion = co.wrap(function*(v) {
       let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
       fixturifyProject.addDependency('ember-data', v, addon => {
@@ -1267,7 +1268,7 @@ describe('EmberData Packages Polyfill', function() {
       project = new EmberProject(root, pkg, cli.ui, cli);
       project.initializeAddons();
 
-      this.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+      self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
 
       input = yield createTempDir();
     });
