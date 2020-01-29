@@ -1000,19 +1000,19 @@ describe('ember-cli-babel', function() {
     });
 
     it('provides an annotation including parent name - addon', function() {
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         name: 'derpy-herpy',
         dependencies() { return {}; },
-      };
+      });
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
     it('provides an annotation including parent name - project', function() {
-      this.addon.parent = {
-        name() { return 'derpy-herpy'; },
+      this.addon.parent = Object.assign({}, this.addon.parent, {
+        name: 'derpy-herpy',
         dependencies() { return {}; },
-      };
+      });
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
@@ -1059,12 +1059,12 @@ describe('ember-cli-babel', function() {
 
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
-      };
+      });
 
       let result = this.addon.buildBabelOptions();
       expect(result.blah).to.be.undefined;
@@ -1072,14 +1072,14 @@ describe('ember-cli-babel', function() {
 
     it('includes user plugins in parent.options.babel.plugins', function() {
       let plugin = {};
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
           },
         },
-      };
+      });
 
       let result = this.addon.buildBabelOptions();
       expect(result.plugins).to.deep.include(plugin);
@@ -1088,7 +1088,7 @@ describe('ember-cli-babel', function() {
     it('includes postTransformPlugins after preset-env plugins', function() {
       let plugin = {};
       let pluginAfter = {};
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel: {
@@ -1096,7 +1096,7 @@ describe('ember-cli-babel', function() {
             postTransformPlugins: [ pluginAfter ]
           },
         },
-      };
+      });
 
       let result = this.addon.buildBabelOptions();
 
@@ -1111,14 +1111,14 @@ describe('ember-cli-babel', function() {
           disablePresetEnv: true,
         }
       };
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel6: {
             plugins: [ {} ]
           },
         },
-      };
+      });
 
       let result = this.addon.buildBabelOptions(options);
       expect(result.presets).to.deep.equal([]);
@@ -1126,14 +1126,14 @@ describe('ember-cli-babel', function() {
 
     it('user plugins are before preset-env plugins', function() {
       let plugin = function Plugin() {};
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
           },
         },
-      };
+      });
 
       let result = this.addon.buildBabelOptions();
       expect(result.plugins[0]).to.equal(plugin);
@@ -1183,12 +1183,12 @@ describe('ember-cli-babel', function() {
 
     it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };
-      this.addon.parent = {
+      this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
-      };
+      });
 
       let options = this.addon.buildBabelOptions();
 
