@@ -1242,7 +1242,7 @@ describe('EmberData Packages Polyfill', function() {
   let unlink;
 
   beforeEach(function() {
-    setupForVersion = async (v) => {
+    setupForVersion = co.wrap(function*(v) {
       let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
       fixturifyProject.addDependency('ember-data', v, addon => {
         return prepareAddon(addon);
@@ -1269,20 +1269,20 @@ describe('EmberData Packages Polyfill', function() {
 
       this.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
 
-      input = await createTempDir();
-    };
+      input = yield createTempDir();
+    });
   });
 
-  afterEach(async function() {
+  afterEach(co.wrap(function*() {
     unlink();
-    await input.dispose();
-    await output.dispose();
+    yield input.dispose();
+    yield output.dispose();
     // shut down workers after the tests are run so that mocha doesn't hang
-    await terminateWorkerPool();
-  });
+    yield terminateWorkerPool();
+  }));
 
-  it("does not convert when _emberDataVersionRequiresPackagesPolyfill returns false", async function() {
-    await setupForVersion('3.12.0-alpha.0');
+  it("does not convert when _emberDataVersionRequiresPackagesPolyfill returns false", co.wrap(function*() {
+    yield setupForVersion('3.12.0-alpha.0');
     input.write({
       "foo.js": `export { default } from '@ember-data/store';`,
       "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
@@ -1298,7 +1298,7 @@ describe('EmberData Packages Polyfill', function() {
 
     output = createBuilder(subject);
 
-    await output.build();
+    yield output.build();
 
     expect(
       output.read()
@@ -1306,10 +1306,10 @@ describe('EmberData Packages Polyfill', function() {
       "foo.js": `export { default } from '@ember-data/store';`,
       "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
     });
-  });
+  }));
 
-  it("does not convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true and disableEmberDataPackagesPolyfill is true", async function() {
-    await setupForVersion('3.11.0');
+  it("does not convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true and disableEmberDataPackagesPolyfill is true", co.wrap(function*() {
+    yield setupForVersion('3.11.0');
     input.write({
       "foo.js": `export { default } from '@ember-data/store';`,
       "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
@@ -1325,7 +1325,7 @@ describe('EmberData Packages Polyfill', function() {
 
     output = createBuilder(subject);
 
-    await output.build();
+    yield output.build();
 
     expect(
       output.read()
@@ -1333,10 +1333,10 @@ describe('EmberData Packages Polyfill', function() {
       "foo.js": `export { default } from '@ember-data/store';`,
       "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
     });
-  });
+  }));
 
-  it("it does convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true", async function() {
-    await setupForVersion('3.11.99');
+  it("it does convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true", co.wrap(function*() {
+    yield setupForVersion('3.11.99');
     input.write({
       "foo.js": `export { default } from '@ember-data/store';`,
       "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;export var name = attr;`,
@@ -1351,7 +1351,7 @@ describe('EmberData Packages Polyfill', function() {
 
     output = createBuilder(subject);
 
-    await output.build();
+    yield output.build();
 
     expect(
       output.read()
@@ -1359,5 +1359,5 @@ describe('EmberData Packages Polyfill', function() {
       "foo.js": `import DS from "ember-data";\nexport default DS.Store;`,
       "bar.js": `import DS from "ember-data";\nexport var User = DS.Model;\nexport var name = DS.attr;`,
     });
-  });
+  }));
 });
