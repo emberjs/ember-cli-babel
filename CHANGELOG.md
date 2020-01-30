@@ -1,3 +1,19 @@
+## v7.14.0 (2020-01-30)
+
+#### :rocket: Enhancement
+* [#318](https://github.com/babel/ember-cli-babel/pull/318) Add polyfill that allows apps and addons to use `@ember-data` related packages regardless of `ember-data` version ([@runspired](https://github.com/runspired))
+* [#320](https://github.com/babel/ember-cli-babel/pull/320) Update Babel to v7.8.3 ([@Turbo87](https://github.com/Turbo87))
+* [#315](https://github.com/babel/ember-cli-babel/pull/315) Update Babel dependencies to latest and fix CI. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#313](https://github.com/babel/ember-cli-babel/pull/313) Replace deprecated ember-cli-qunit with ember-qunit ([@dmzza](https://github.com/dmzza))
+
+#### Committers: 4
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+- David Mazza ([@dmzza](https://github.com/dmzza))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Tobias Bieniek ([@Turbo87](https://github.com/Turbo87))
+
 ## v7.13.2 (2019-12-12)
 
 #### :bug: Bug Fix
