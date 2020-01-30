@@ -8,24 +8,10 @@ const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
-const FixturifyProject = require('fixturify-project');
-const EmberProject = require('ember-cli/lib/models/project');
-const MockCLI = require('ember-cli/tests/helpers/mock-cli');
 const BroccoliTestHelper = require('broccoli-test-helper');
 const createBuilder = BroccoliTestHelper.createBuilder;
 const createTempDir = BroccoliTestHelper.createTempDir;
 const terminateWorkerPool = require('./utils/terminate-workers');
-const path = require('path');
-const fs = require('fs');
-const rimraf = require('rimraf');
-
-function prepareAddon(addon) {
-  addon.pkg.keywords.push('ember-addon');
-  addon.pkg['ember-addon'] = {};
-  addon.files['index.js'] = 'module.exports = { name: require("./package").name };';
-
-  return addon;
-}
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -36,8 +22,6 @@ describe('ember-cli-babel', function() {
   beforeEach(function() {
     this.ui = new MockUI();
     let project = {
-      isEmberCLIProject: () => true,
-      _addonsInitialized: true,
       root: __dirname,
       emberCLIVersion: () => '2.16.2',
       dependencies() { return {}; },
@@ -1001,19 +985,19 @@ describe('ember-cli-babel', function() {
     });
 
     it('provides an annotation including parent name - addon', function() {
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         name: 'derpy-herpy',
         dependencies() { return {}; },
-      });
+      };
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
     it('provides an annotation including parent name - project', function() {
-      this.addon.parent = Object.assign({}, this.addon.parent, {
-        name: 'derpy-herpy',
+      this.addon.parent = {
+        name() { return 'derpy-herpy'; },
         dependencies() { return {}; },
-      });
+      };
       let result = this.addon.buildBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
@@ -1060,12 +1044,12 @@ describe('ember-cli-babel', function() {
 
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
-      });
+      };
 
       let result = this.addon.buildBabelOptions();
       expect(result.blah).to.be.undefined;
@@ -1073,14 +1057,14 @@ describe('ember-cli-babel', function() {
 
     it('includes user plugins in parent.options.babel.plugins', function() {
       let plugin = {};
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
           },
         },
-      });
+      };
 
       let result = this.addon.buildBabelOptions();
       expect(result.plugins).to.deep.include(plugin);
@@ -1089,7 +1073,7 @@ describe('ember-cli-babel', function() {
     it('includes postTransformPlugins after preset-env plugins', function() {
       let plugin = {};
       let pluginAfter = {};
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel: {
@@ -1097,7 +1081,7 @@ describe('ember-cli-babel', function() {
             postTransformPlugins: [ pluginAfter ]
           },
         },
-      });
+      };
 
       let result = this.addon.buildBabelOptions();
 
@@ -1112,14 +1096,14 @@ describe('ember-cli-babel', function() {
           disablePresetEnv: true,
         }
       };
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel6: {
             plugins: [ {} ]
           },
         },
-      });
+      };
 
       let result = this.addon.buildBabelOptions(options);
       expect(result.presets).to.deep.equal([]);
@@ -1127,14 +1111,14 @@ describe('ember-cli-babel', function() {
 
     it('user plugins are before preset-env plugins', function() {
       let plugin = function Plugin() {};
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel: {
             plugins: [ plugin ]
           },
         },
-      });
+      };
 
       let result = this.addon.buildBabelOptions();
       expect(result.plugins[0]).to.equal(plugin);
@@ -1184,12 +1168,12 @@ describe('ember-cli-babel', function() {
 
     it('passes options.babel through to preset-env', function() {
       let babelOptions = { loose: true };
-      this.addon.parent = Object.assign({}, this.addon.parent, {
+      this.addon.parent = {
         dependencies() { return {}; },
         options: {
           babel: babelOptions,
         },
-      });
+      };
 
       let options = this.addon.buildBabelOptions();
 
@@ -1229,136 +1213,4 @@ describe('ember-cli-babel', function() {
       expect(pluginRequired).to.be.false;
     });
   });
-});
-
-describe('EmberData Packages Polyfill', function() {
-  this.timeout(0);
-
-  let input;
-  let output;
-  let subject;
-  let setupForVersion;
-  let project;
-  let unlink;
-
-  beforeEach(function() {
-    let self = this;
-    setupForVersion = co.wrap(function*(v) {
-      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
-      fixturifyProject.addDependency('ember-data', v, addon => {
-        return prepareAddon(addon);
-      });
-      fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
-      fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
-        return prepareAddon(addon);
-      });
-      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.writeSync();
-
-      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
-      let addonPath = path.resolve(__dirname, '../');
-      rimraf.sync(linkPath);
-      fs.symlinkSync(addonPath, linkPath);
-      unlink = () => {
-        fs.unlinkSync(linkPath);
-      };
-
-      let cli = new MockCLI();
-      let root = path.join(fixturifyProject.root, 'whatever');
-      project = new EmberProject(root, pkg, cli.ui, cli);
-      project.initializeAddons();
-
-      self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
-
-      input = yield createTempDir();
-    });
-  });
-
-  afterEach(co.wrap(function*() {
-    unlink();
-    yield input.dispose();
-    yield output.dispose();
-    // shut down workers after the tests are run so that mocha doesn't hang
-    yield terminateWorkerPool();
-  }));
-
-  it("does not convert when _emberDataVersionRequiresPackagesPolyfill returns false", co.wrap(function*() {
-    yield setupForVersion('3.12.0-alpha.0');
-    input.write({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-    });
-
-    subject = this.addon.transpileTree(input.path(), {
-      'ember-cli-babel': {
-        compileModules: false,
-        disableDebugTooling: true,
-        disableEmberDataPackagesPolyfill: true
-      }
-    });
-
-    output = createBuilder(subject);
-
-    yield output.build();
-
-    expect(
-      output.read()
-    ).to.deep.equal({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-    });
-  }));
-
-  it("does not convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true and disableEmberDataPackagesPolyfill is true", co.wrap(function*() {
-    yield setupForVersion('3.11.0');
-    input.write({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-    });
-
-    subject = this.addon.transpileTree(input.path(), {
-      'ember-cli-babel': {
-        compileModules: false,
-        disableDebugTooling: true,
-        disableEmberDataPackagesPolyfill: true
-      }
-    });
-
-    output = createBuilder(subject);
-
-    yield output.build();
-
-    expect(
-      output.read()
-    ).to.deep.equal({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-    });
-  }));
-
-  it("it does convert for EmberData when _emberDataVersionRequiresPackagesPolyfill returns true", co.wrap(function*() {
-    yield setupForVersion('3.11.99');
-    input.write({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;export var name = attr;`,
-    });
-
-    subject = this.addon.transpileTree(input.path(), {
-      'ember-cli-babel': {
-        compileModules: false,
-        disableDebugTooling: true,
-      }
-    });
-
-    output = createBuilder(subject);
-
-    yield output.build();
-
-    expect(
-      output.read()
-    ).to.deep.equal({
-      "foo.js": `import DS from "ember-data";\nexport default DS.Store;`,
-      "bar.js": `import DS from "ember-data";\nexport var User = DS.Model;\nexport var name = DS.attr;`,
-    });
-  }));
 });

@@ -120,7 +120,6 @@ interface EmberCLIBabelConfig {
     disableDebugTooling?: boolean;
     disablePresetEnv?: boolean;
     disableEmberModulesAPIPolyfill?: boolean;
-    disableEmberDataPackagesPolyfill?: boolean;
     disableDecoratorTransforms?: boolean;
     extensions?: string[];
   };
