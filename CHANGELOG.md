@@ -1,3 +1,11 @@
+## v7.14.1 (2020-01-30)
+
+#### :bug: Bug Fix
+* [f9de09f](https://github.com/babel/ember-cli-babel/commit/f9de09f3154d318cab24dde7b20e596f84ff173a) Revert changes from [#318](https://github.com/babel/ember-cli-babel/pull/318)
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.14.0 (2020-01-30)
 
 #### :rocket: Enhancement
