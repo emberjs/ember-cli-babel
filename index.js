@@ -301,6 +301,7 @@ module.exports = {
       userPlugins,
       this._getDebugMacroPlugins(config),
       this._getEmberModulesAPIPolyfill(config),
+      this._getEmberDataPackagesPolyfill(config),
       shouldCompileModules && this._getModulesPlugin(),
       userPostTransformPlugins
     ).filter(Boolean);
@@ -444,6 +445,16 @@ module.exports = {
     }
   },
 
+  _getEmberDataPackagesPolyfill(config) {
+    let addonOptions = config['ember-cli-babel'] || {};
+
+    if (addonOptions.disableEmberDataPackagesPolyfill) { return; }
+
+    if (this._emberDataVersionRequiresPackagesPolyfill()) {
+      return [[require.resolve('babel-plugin-ember-data-packages-polyfill')]];
+    }
+  },
+
   _getPresetEnv(config) {
     let options = config.options;
 
@@ -509,6 +520,20 @@ module.exports = {
     // emberjs/rfcs#176 modules natively this will
     // be updated to detect that and return false
     return true;
+  },
+
+  _emberDataVersionRequiresPackagesPolyfill() {
+    let checker = new VersionChecker(this.project);
+    let dep = checker.for('ember-data');
+    let hasEmberData = dep.exists();
+
+    if (hasEmberData) {
+      if (!dep.version) {
+        throw new Error('EmberData missing version');
+      }
+      return semver.lt(dep.version, '3.12.0-alpha.0');
+    }
+    return false;
   },
 
   _getEmberModulesAPIBlacklist() {
