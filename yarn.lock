@@ -1569,10 +1569,10 @@ babel-plugin-dynamic-import-node@^2.3.0:
   dependencies:
     object.assign "^4.1.0"
 
-babel-plugin-ember-data-packages-polyfill@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-ember-data-packages-polyfill/-/babel-plugin-ember-data-packages-polyfill-0.1.0.tgz#fa63867de4a717df572776ba528d270ff74db125"
-  integrity sha512-MZBdY+i1aZuShfTDq2RIcuE8usGFsqle0+ziV0kZjf6nTzZjEILYRkiaXG6om6I7qKYYoS1Lcs8zsQA9ZJ1Xkw==
+babel-plugin-ember-data-packages-polyfill@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-ember-data-packages-polyfill/-/babel-plugin-ember-data-packages-polyfill-0.1.1.tgz#428217228bedb95215bcaac6da83f59488b40edd"
+  integrity sha512-WQlevWS8RNNVCm4SNI6PogUMhH4Eu2ectRd/SVcKVnLnzaOHJjN9W1eaoQ9dwBidDgHhtXUbvkBSdLExaW+MYA==
   dependencies:
     "@ember-data/rfc395-data" "^0.0.4"
 

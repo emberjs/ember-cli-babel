@@ -1358,7 +1358,89 @@ describe('EmberData Packages Polyfill', function() {
       output.read()
     ).to.deep.equal({
       "foo.js": `import DS from "ember-data";\nexport default DS.Store;`,
-      "bar.js": `import DS from "ember-data";\nexport var User = DS.Model;\nexport var name = DS.attr;`,
+      "bar.js": `import DS from "ember-data";\nvar Model = DS.Model;\nvar attr = DS.attr;\nexport var User = Model;\nexport var name = attr;`,
     });
   }));
+
+  it("conversion works with compilation to AMD modules", co.wrap(function*() {
+    yield setupForVersion('3.11.99');
+    input.write({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bem.js": `export { default } from 'ember-data';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;export var name = attr;`,
+      "baz.js": `import EmberData from 'ember-data';\nexport var User = EmberData.Model;`,
+    });
+
+    subject = this.addon.transpileTree(input.path(), {
+      'ember-cli-babel': {
+        compileModules: true,
+        disableDebugTooling: true,
+      }
+    });
+
+    output = createBuilder(subject);
+
+    yield output.build();
+
+   function moduleOutput(moduleName, transpiledModuleBodyCode) {
+     return `define("${moduleName}", ["exports", "ember-data"], function (_exports, _emberData) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n${transpiledModuleBodyCode}\n});`
+   }
+
+   let fooOutput = moduleOutput(
+     'foo',
+      assembleLines([
+        `_exports.default = void 0;`,
+        `var _default = _emberData.default.Store;`,
+        `_exports.default = _default;`
+      ])
+    );
+   let bemOutput = moduleOutput(
+     'bem',
+     assembleLines([
+       `Object.defineProperty(_exports, "default", {`,
+       `  enumerable: true,`,
+       `  get: function get() {`,
+       `    return _emberData.default;`,
+       `  }`,
+       `});`
+     ])
+   );
+   let barOutput = moduleOutput(
+     'bar',
+     assembleLines([
+      `_exports.name = _exports.User = void 0;`,
+      `var Model = _emberData.default.Model;`,
+      `var attr = _emberData.default.attr;`,
+      `var User = Model;`,
+      `_exports.User = User;`,
+      `var name = attr;`,
+      `_exports.name = name;`
+     ])
+    );
+   let bazOutput = moduleOutput(
+     'baz',
+     assembleLines([
+       `_exports.User = void 0;`,
+       `var EmberData = _emberData.default;`,
+       `var User = EmberData.Model;`,
+       `_exports.User = User;`
+     ])
+   );
+
+   let transpiled = output.read();
+    expect(transpiled['foo.js']).to.equal(fooOutput);
+    expect(transpiled['bem.js']).to.equal(bemOutput);
+    expect(transpiled['bar.js']).to.equal(barOutput);
+    expect(transpiled['baz.js']).to.equal(bazOutput);
+  }));
 });
+
+function leftPad(str, num) {
+  while (num-- > 0) {
+    str = ` ${str}`;
+  }
+  return str;
+}
+function assembleLines(lines, indent = 2) {
+  return lines.map(l => leftPad(l, indent)).join('\n');
+}
