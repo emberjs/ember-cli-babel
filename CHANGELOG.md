@@ -1,3 +1,11 @@
+## v7.16.0 (2020-02-05)
+
+#### :rocket: Enhancement
+* [#319](https://github.com/babel/ember-cli-babel/pull/319) Use helpers from @babel/helper-compilation-targets ([@existentialism](https://github.com/existentialism))
+
+#### Committers: 1
+- Brian Ng ([@existentialism](https://github.com/existentialism))
+
 ## v7.15.0 (2020-02-05)
 
 #### :rocket: Enhancement
