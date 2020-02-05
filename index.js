@@ -511,6 +511,8 @@ module.exports = {
     let addonOptions = config['ember-cli-babel'] || {};
 
     if (addonOptions.disableEmberDataPackagesPolyfill) { return; }
+    // Don't convert ember-data itself!
+    if (this.parent.name === 'ember-data') { return; }
 
     if (this._emberDataVersionRequiresPackagesPolyfill()) {
       return [[require.resolve('babel-plugin-ember-data-packages-polyfill')]];
