@@ -1,3 +1,12 @@
+## v7.17.0 (2020-02-05)
+
+#### :rocket: Enhancement
+* [#314](https://github.com/babel/ember-cli-babel/pull/314) Provide TypeScript compilation support when using ember-cli-typescript@4 or higher. ([@jamescdavis](https://github.com/jamescdavis))
+
+#### Committers: 2
+- James C. Davis ([@jamescdavis](https://github.com/jamescdavis))
+- Stefan Penner ([@stefanpenner](https://github.com/stefanpenner))
+
 ## v7.16.0 (2020-02-05)
 
 #### :rocket: Enhancement
