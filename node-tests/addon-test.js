@@ -1560,6 +1560,89 @@ describe('EmberData Packages Polyfill', function() {
   }));
 });
 
+describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', function() {
+  this.timeout(0);
+
+  let input;
+  let output;
+  let subject;
+  let setupForVersion;
+  let project;
+  let unlink;
+
+  beforeEach(function() {
+    let self = this;
+    setupForVersion = co.wrap(function*(v) {
+      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+      let emberDataFixture = fixturifyProject.addDependency('ember-data', v, addon => {
+        return prepareAddon(addon);
+      });
+      emberDataFixture.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+      fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
+        return prepareAddon(addon);
+      });
+      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+      fixturifyProject.writeSync();
+
+      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-data/node_modules/ember-cli-babel');
+      let addonPath = path.resolve(__dirname, '../');
+      rimraf.sync(linkPath);
+      fs.symlinkSync(addonPath, linkPath);
+      unlink = () => {
+        fs.unlinkSync(linkPath);
+      };
+
+      let cli = new MockCLI();
+      let root = path.join(fixturifyProject.root, 'whatever');
+      project = new EmberProject(root, pkg, cli.ui, cli);
+      project.initializeAddons();
+
+      self.emberDataAddon = project.addons.find(a => { return a.name === 'ember-data'; });
+      self.emberDataAddon.initializeAddons();
+      self.addon = self.emberDataAddon.addons.find(a => { return a.name === 'ember-cli-babel'; });
+
+      input = yield createTempDir();
+    });
+  });
+
+  afterEach(co.wrap(function*() {
+    unlink();
+    yield input.dispose();
+    yield output.dispose();
+    // shut down workers after the tests are run so that mocha doesn't hang
+    yield terminateWorkerPool();
+  }));
+
+  it("does not convert when compiling ember-data itself", co.wrap(function*() {
+    yield setupForVersion('3.10.0');
+
+    input.write({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+      "bem.js": `export { AdapterError } from 'ember-data/-private';`,
+    });
+
+    subject = this.addon.transpileTree(input.path(), {
+      'ember-cli-babel': {
+        compileModules: false,
+        disableDebugTooling: true,
+      }
+    });
+
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": `export { default } from '@ember-data/store';`,
+      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+      "bem.js": `export { AdapterError } from 'ember-data/-private';`,
+    });
+  }));
+});
+
 function leftPad(str, num) {
   while (num-- > 0) {
     str = ` ${str}`;
