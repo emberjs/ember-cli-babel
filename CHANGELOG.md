@@ -1,3 +1,11 @@
+## v7.17.1 (2020-02-05)
+
+#### :bug: Bug Fix
+* [#324](https://github.com/babel/ember-cli-babel/pull/324) Ensure ember-data modules polyfill does not apply to ember-data itself. ([@runspired](https://github.com/runspired))
+
+#### Committers: 1
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+
 ## v7.17.0 (2020-02-05)
 
 #### :rocket: Enhancement
