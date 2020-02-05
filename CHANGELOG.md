@@ -1,3 +1,11 @@
+## v7.15.0 (2020-02-05)
+
+#### :rocket: Enhancement
+* [#318](https://github.com/babel/ember-cli-babel/pull/318) Add polyfill that allows apps and addons to use `@ember-data` related packages regardless of `ember-data` version ([@runspired](https://github.com/runspired))
+
+#### Committers: 1
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+
 ## v7.14.1 (2020-01-30)
 
 #### :bug: Bug Fix
