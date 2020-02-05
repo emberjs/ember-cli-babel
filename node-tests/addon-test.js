@@ -651,6 +651,42 @@ describe('ember-cli-babel', function() {
       }));
     });
 
+    describe('TypeScript transpilation', function() {
+      beforeEach(function() {
+        this.addon.parent.addons.push({
+          name: 'ember-cli-typescript',
+          pkg: {
+            version: '4.0.0-alpha.1'
+          }
+        });
+      });
+
+      it('should transpile .ts files', co.wrap(function*() {
+        input.write({ 'foo.ts': `let foo: string = "hi";` });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(
+          output.read()
+        ).to.deep.equal({
+          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  var foo = "hi";\n});`
+        });
+      }));
+
+      it('should exclude .d.ts files', co.wrap(function*() {
+        input.write({ 'foo.d.ts': `declare let foo: string;` });
+
+        subject = this.addon.transpileTree(input.path());
+        output = createBuilder(subject);
+
+        yield output.build();
+
+        expect(output.read()).to.deep.equal({});
+      }))
+    });
 
     describe('_shouldDoNothing', function() {
       it("will no-op if nothing to do", co.wrap(function* () {
@@ -762,9 +798,65 @@ describe('ember-cli-babel', function() {
     });
   });
 
+  describe('_shouldHandleTypeScript', function() {
+    it('should return false by default', function() {
+      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+    });
+    it('should return true when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '4.0.0-alpha.1',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({})).to.be.true;
+    });
+    it('should return false when ember-cli-typescript < 4.0.0-alpha.1 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '3.0.0',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+    });
+    it('should return true when the TypeScript transform is manually enabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } })).to.be.true;
+    });
+    it('should return false when the TypeScript transforms is manually disabled', function() {
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
+    });
+    it('should return false when the TypeScript transform is manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
+      this.addon.parent.addons.push({
+        name: 'ember-cli-typescript',
+        pkg: {
+          version: '4.0.0-alpha.1',
+        },
+      });
+      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
+    });
+  });
+
+  describe('_addTypeScriptPlugin', function() {
+    it('should warn and not add the TypeScript plugin if already added', function() {
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(/has added the TypeScript transform plugin to its build/);
+        }
+      };
+
+      expect(
+        this.addon._addTypeScriptPlugin([
+          ['@babel/plugin-transform-typescript']
+        ],
+        {}
+      ).length).to.equal(1, 'plugin was not added');
+    });
+  });
+
   describe('_addDecoratorPlugins', function() {
     it('should include babel transforms by default', function() {
-      expect(this.addon._addDecoratorPlugins([], {}).length).to.equal(2, 'plugins added correctly');
+      expect(this.addon._addDecoratorPlugins([], {}, {}).length).to.equal(2, 'plugins added correctly');
     });
 
     it('should include only fields if it detects decorators plugin', function() {
@@ -778,6 +870,7 @@ describe('ember-cli-babel', function() {
         this.addon._addDecoratorPlugins([
           ['@babel/plugin-proposal-decorators']
         ],
+        {},
         {}
       ).length).to.equal(2, 'plugins were not added');
     });
@@ -794,19 +887,34 @@ describe('ember-cli-babel', function() {
           [
             ['@babel/plugin-proposal-class-properties']
           ],
+          {},
           {}
         ).length
       ).to.equal(2, 'plugins were not added');
     });
 
     it('should use babel options loose mode for class properties', function() {
-      let strictPlugins = this.addon._addDecoratorPlugins([], {});
+      let strictPlugins = this.addon._addDecoratorPlugins([], {}, {});
 
       expect(strictPlugins[1][1].loose).to.equal(false, 'loose is false if no option is provided');
 
-      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true });
+      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true }, {});
 
       expect(loosePlugins[1][1].loose).to.equal(true, 'loose setting added correctly');
+    });
+
+    it('should include class fields and decorators after typescript if handling typescript', function() {
+      this.addon._shouldHandleTypeScript = function() { return true; }
+      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
+      expect(plugins[0]).to.equal('@babel/plugin-transform-typescript', 'typescript still first');
+      expect(plugins.length).to.equal(3, 'class fields and decorators added');
+    });
+
+    it('should include class fields and decorators before typescript if not handling typescript', function() {
+      this.addon._shouldHandleTypeScript = function() { return false; }
+      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
+      expect(plugins.length).to.equal(3, 'class fields and decorators added');
+      expect(plugins[2]).to.equal('@babel/plugin-transform-typescript', 'typescript is now last');
     });
   });
 
@@ -986,6 +1094,23 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
+    });
+  });
+
+  describe('_getExtensions', function() {
+    it('defaults to js only', function() {
+      expect(this.addon._getExtensions({})).to.have.members(['js']);
+    });
+    it('adds ts automatically', function() {
+      this.addon._shouldHandleTypeScript = function() { return true; }
+      expect(this.addon._getExtensions({})).to.have.members(['js', 'ts']);
+    });
+    it('respects user-configured extensions', function() {
+      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
+    });
+    it('respects user-configured extensions even when adding TS plugin', function() {
+      this.addon._shouldHandleTypeScript = function() { return true; }
+      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
     });
   });
 
