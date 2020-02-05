@@ -199,10 +199,8 @@ module.exports = {
     // if no targets are setup, assume that all plugins are required
     if (!targets) { return true; }
 
-    const isPluginRequired = require('@babel/preset-env').isPluginRequired;
-    const pluginList = require('@babel/preset-env/data/plugins');
-
-    return isPluginRequired(targets, pluginList[pluginName]);
+    const isPluginRequired = require('@babel/helper-compilation-targets').isRequired;
+    return isPluginRequired(pluginName, targets);
   },
 
   _getAddonOptions() {
@@ -476,7 +474,7 @@ module.exports = {
   _getTargets() {
     let targets = this.project && this.project.targets;
 
-    let parser = require('@babel/preset-env/lib/targets-parser').default;
+    let parser = require('@babel/helper-compilation-targets').default;
     if (typeof targets === 'object' && targets !== null) {
       return parser(targets);
     } else {
