@@ -1,3 +1,11 @@
+## v7.17.2 (2020-02-06)
+
+#### :bug: Bug Fix
+* [#325](https://github.com/babel/ember-cli-babel/pull/325) Ensure `ember-data` modules polyfill does not apply to any `@ember-data` packages. ([@runspired](https://github.com/runspired))
+
+#### Committers: 1
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+
 ## v7.17.1 (2020-02-05)
 
 #### :bug: Bug Fix
