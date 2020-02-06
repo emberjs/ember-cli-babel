@@ -1572,9 +1572,9 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
 
   beforeEach(function() {
     let self = this;
-    setupForVersion = co.wrap(function*(v) {
+    setupForVersion = co.wrap(function*(p, v) {
       let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
-      let emberDataFixture = fixturifyProject.addDependency('ember-data', v, addon => {
+      let emberDataFixture = fixturifyProject.addDependency(p, v, addon => {
         return prepareAddon(addon);
       });
       emberDataFixture.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
@@ -1584,7 +1584,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
       fixturifyProject.writeSync();
 
-      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-data/node_modules/ember-cli-babel');
+      let linkPath = path.join(fixturifyProject.root, `/whatever/node_modules/${p}/node_modules/ember-cli-babel`);
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath);
@@ -1597,7 +1597,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       project = new EmberProject(root, pkg, cli.ui, cli);
       project.initializeAddons();
 
-      self.emberDataAddon = project.addons.find(a => { return a.name === 'ember-data'; });
+      self.emberDataAddon = project.addons.find(a => { return a.name === p; });
       self.emberDataAddon.initializeAddons();
       self.addon = self.emberDataAddon.addons.find(a => { return a.name === 'ember-cli-babel'; });
 
@@ -1613,34 +1613,36 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
     yield terminateWorkerPool();
   }));
 
-  it("does not convert when compiling ember-data itself", co.wrap(function*() {
-    yield setupForVersion('3.10.0');
+  ['ember-data', '@ember-data/store'].forEach(parentDep => {
+    it(`does not convert when compiling ${parentDep} itself`, co.wrap(function*() {
+      yield setupForVersion(parentDep, '3.10.0');
 
-    input.write({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-      "bem.js": `export { AdapterError } from 'ember-data/-private';`,
-    });
+      input.write({
+        "foo.js": `export { default } from '@ember-data/store';`,
+        "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+        "bem.js": `export { AdapterError } from 'ember-data/-private';`,
+      });
 
-    subject = this.addon.transpileTree(input.path(), {
-      'ember-cli-babel': {
-        compileModules: false,
-        disableDebugTooling: true,
-      }
-    });
+      subject = this.addon.transpileTree(input.path(), {
+        'ember-cli-babel': {
+          compileModules: false,
+          disableDebugTooling: true,
+        }
+      });
 
-    output = createBuilder(subject);
+      output = createBuilder(subject);
 
-    yield output.build();
+      yield output.build();
 
-    expect(
-      output.read()
-    ).to.deep.equal({
-      "foo.js": `export { default } from '@ember-data/store';`,
-      "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
-      "bem.js": `export { AdapterError } from 'ember-data/-private';`,
-    });
-  }));
+      expect(
+        output.read()
+      ).to.deep.equal({
+        "foo.js": `export { default } from '@ember-data/store';`,
+        "bar.js": `import Model, { attr } from '@ember-data/model';\nexport var User = Model;\nexport var name = attr;`,
+        "bem.js": `export { AdapterError } from 'ember-data/-private';`,
+      });
+    }));
+  });
 });
 
 function leftPad(str, num) {
