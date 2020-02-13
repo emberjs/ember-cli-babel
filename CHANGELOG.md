@@ -1,3 +1,11 @@
+##  v7.18.0 (2020-02-13)
+
+#### :rocket: Enhancement
+* [#328](https://github.com/babel/ember-cli-babel/pull/328) bump plugin to resolve node 6/8x compat ([@runspired](https://github.com/runspired))
+
+#### Committers: 1
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+
 ## v7.17.2 (2020-02-06)
 
 #### :bug: Bug Fix
