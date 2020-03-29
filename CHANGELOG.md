@@ -1,3 +1,11 @@
+## v7.19.0 (2020-03-29)
+
+#### :rocket: Enhancement
+* [#330](https://github.com/babel/ember-cli-babel/pull/330) Update @babel package to latest (generally 7.9.0) ([@jamescdavis](https://github.com/jamescdavis))
+
+#### Committers: 1
+- James C. Davis ([@jamescdavis](https://github.com/jamescdavis))
+
 ##  v7.18.0 (2020-02-13)
 
 #### :rocket: Enhancement
