@@ -1,3 +1,11 @@
+## v7.20.0 (2020-05-19)
+
+#### :rocket: Enhancement
+* [#337](https://github.com/babel/ember-cli-babel/pull/337) Add support for `@glimmer/tracking/primitives/cache` on supported Ember versions. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.19.0 (2020-03-29)
 
 #### :rocket: Enhancement
