@@ -1383,7 +1383,7 @@ describe('EmberData Packages Polyfill', function() {
       let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
-      fs.symlinkSync(addonPath, linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
       unlink = () => {
         fs.unlinkSync(linkPath);
       };
@@ -1594,7 +1594,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       let linkPath = path.join(fixturifyProject.root, `/whatever/node_modules/${p}/node_modules/ember-cli-babel`);
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
-      fs.symlinkSync(addonPath, linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
       unlink = () => {
         fs.unlinkSync(linkPath);
       };
