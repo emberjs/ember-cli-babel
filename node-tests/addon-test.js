@@ -203,7 +203,7 @@ describe('ember-cli-babel', function() {
 
         expect(contents).to.not.include('@ember/debug');
         expect(contents).to.include('function _asyncToGenerator');
-        expect(contents).to.include('Ember.inspect;');
+        expect(contents).to.include('inspect.call');
         expect(contents).to.not.include('assert');
       }));
     });
