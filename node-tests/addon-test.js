@@ -1401,8 +1401,15 @@ describe('EmberData Packages Polyfill', function() {
 
   afterEach(co.wrap(function*() {
     unlink();
-    yield input.dispose();
-    yield output.dispose();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
     // shut down workers after the tests are run so that mocha doesn't hang
     yield terminateWorkerPool();
   }));
@@ -1607,8 +1614,15 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
 
   afterEach(co.wrap(function*() {
     unlink();
-    yield input.dispose();
-    yield output.dispose();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
     // shut down workers after the tests are run so that mocha doesn't hang
     yield terminateWorkerPool();
   }));
