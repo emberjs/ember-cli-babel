@@ -1,3 +1,11 @@
+## v7.20.2 (2020-05-29)
+
+#### :bug: Bug Fix
+* [#340](https://github.com/babel/ember-cli-babel/pull/340) Update modules API polyfill to avoid TypeScript related errors. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.20.1 (2020-05-29)
 
 #### :bug: Bug Fix
