@@ -1,3 +1,11 @@
+## v7.20.1 (2020-05-29)
+
+#### :bug: Bug Fix
+* [#338](https://github.com/babel/ember-cli-babel/pull/338) Update babel-plugin-ember-modules-api-polyfill to fix issues with invalid identifiers. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.20.0 (2020-05-19)
 
 #### :rocket: Enhancement
