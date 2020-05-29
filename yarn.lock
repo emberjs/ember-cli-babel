@@ -1574,10 +1574,10 @@ babel-plugin-ember-modules-api-polyfill@^2.12.0, babel-plugin-ember-modules-api-
   dependencies:
     ember-rfc176-data "^0.3.12"
 
-babel-plugin-ember-modules-api-polyfill@^2.13.2:
-  version "2.13.2"
-  resolved "https://registry.yarnpkg.com/babel-plugin-ember-modules-api-polyfill/-/babel-plugin-ember-modules-api-polyfill-2.13.2.tgz#635c58120fe85caa842febb321ef173ce8528ffb"
-  integrity sha512-OHXf1pV3uiUNyc/agAofkZiA3MPQLmv4OpZ6Se8cGP1NbsvGaM5j5DdJ/nOl5y9us5/iDJGHFKq2yN1heOcUoQ==
+babel-plugin-ember-modules-api-polyfill@^2.13.3:
+  version "2.13.3"
+  resolved "https://registry.yarnpkg.com/babel-plugin-ember-modules-api-polyfill/-/babel-plugin-ember-modules-api-polyfill-2.13.3.tgz#f076c655e9f17cd19d1a92e62f1e9118a0e383e8"
+  integrity sha512-p108ELYtaLyPkGUoLzx7S0BR4QcWwgpJGSv68C93nvldH8o87eegwPhomNfLLYyfhbpQ23DWTTE3dX6DJGKInw==
   dependencies:
     ember-rfc176-data "^0.3.13"
 
