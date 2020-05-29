@@ -542,7 +542,14 @@ module.exports = {
 
     let parser = require('@babel/helper-compilation-targets').default;
     if (typeof targets === 'object' && targets !== null) {
-      return parser(targets);
+      // babel version 7.10.0 introduced a change that mutates the input:
+      // https://github.com/babel/babel/pull/11500
+      // copy the object to guard against it, otherwise subsequent calls to
+      // _getTargets() will only have a mutated copy and lose all config from `config/targets.js`
+      // in the host application.
+      // PR to fix this upstream in babel: https://github.com/babel/babel/pull/11648
+      const copy = clone(targets);
+      return parser(copy);
     } else {
       return targets;
     }
