@@ -1383,7 +1383,7 @@ describe('EmberData Packages Polyfill', function() {
       let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
-      fs.symlinkSync(addonPath, linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
       unlink = () => {
         fs.unlinkSync(linkPath);
       };
@@ -1401,8 +1401,15 @@ describe('EmberData Packages Polyfill', function() {
 
   afterEach(co.wrap(function*() {
     unlink();
-    yield input.dispose();
-    yield output.dispose();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
     // shut down workers after the tests are run so that mocha doesn't hang
     yield terminateWorkerPool();
   }));
@@ -1587,7 +1594,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       let linkPath = path.join(fixturifyProject.root, `/whatever/node_modules/${p}/node_modules/ember-cli-babel`);
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
-      fs.symlinkSync(addonPath, linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
       unlink = () => {
         fs.unlinkSync(linkPath);
       };
@@ -1607,8 +1614,15 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
 
   afterEach(co.wrap(function*() {
     unlink();
-    yield input.dispose();
-    yield output.dispose();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
     // shut down workers after the tests are run so that mocha doesn't hang
     yield terminateWorkerPool();
   }));
