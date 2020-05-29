@@ -1,3 +1,11 @@
+## v7.20.3 (2020-05-29)
+
+#### :bug: Bug Fix
+* [#343](https://github.com/babel/ember-cli-babel/pull/343) Fix type casting and type assertion with Ember modules APIs ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.20.2 (2020-05-29)
 
 #### :bug: Bug Fix
