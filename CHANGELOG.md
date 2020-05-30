@@ -1,3 +1,15 @@
+## v7.20.4 (2020-05-30)
+
+#### :bug: Bug Fix
+* [#345](https://github.com/babel/ember-cli-babel/pull/345) Prevent `regeneratorRuntime is not defined` errors by defensively copying `targets` (preventing `@babel/helper-compilation-targets` from mutating `targets`) ([@fivetanley](https://github.com/fivetanley))
+
+#### :house: Internal
+* [#339](https://github.com/babel/ember-cli-babel/pull/339) Migrate to GitHub Actions CI ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Stanley Stuart ([@fivetanley](https://github.com/fivetanley))
+
 ## v7.20.3 (2020-05-29)
 
 #### :bug: Bug Fix
