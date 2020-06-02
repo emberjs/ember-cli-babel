@@ -1,3 +1,14 @@
+## v7.20.5 (2020-06-02)
+
+#### :bug: Bug Fix
+* [#348](https://github.com/babel/ember-cli-babel/pull/348) Ensure Ember modules API related globals do not share AST Nodes ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#344](https://github.com/babel/ember-cli-babel/pull/344) Remove Travis & AppVeyor ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.20.4 (2020-05-30)
 
 #### :bug: Bug Fix
