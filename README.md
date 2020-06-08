@@ -1,8 +1,6 @@
 # ember-cli-babel
 
-[![Build Status](https://travis-ci.org/babel/ember-cli-babel.svg?branch=master)](https://travis-ci.org/babel/ember-cli-babel)
-[![Build status](https://ci.appveyor.com/api/projects/status/2a6pspve1wrwwyj5/branch/master?svg=true)](https://ci.appveyor.com/project/embercli/ember-cli-babel/branch/master)
-
+[![CI Status](https://github.com/babel/ember-cli-babel/workflows/CI/badge.svg)](https://github.com/babel/ember-cli-babel/actions?query=workflow%3ACI+branch%3Amaster)
 
 This Ember-CLI plugin uses [Babel](https://babeljs.io/) and
 [@babel/preset-env](https://babeljs.io/docs/en/next/babel-preset-env.html) to
