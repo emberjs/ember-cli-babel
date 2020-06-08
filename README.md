@@ -68,7 +68,7 @@ let app = new EmberApp({
       'transform-regenerator',
     ],
     plugins: [
-      'transform-object-rest-spread'
+      require.resolve('transform-object-rest-spread')
     ]
   }
 });
@@ -138,7 +138,7 @@ rest/spread syntax, you would do something like this in an app:
 // ember-cli-build.js
 let app = new EmberApp(defaults, {
   babel: {
-    plugins: ['transform-object-rest-spread']
+    plugins: [require.resolve('transform-object-rest-spread')]
   }
 });
 ```
@@ -148,7 +148,7 @@ In an engine:
 // index.js
 module.exports = EngineAddon.extend({
   babel: {
-    plugins: ['transform-object-rest-spread']
+    plugins: [require.resolve('transform-object-rest-spread')]
   }
 });
 ```
@@ -159,7 +159,7 @@ In an addon:
 module.exports = {
   options: {
     babel: {
-      plugins: ['transform-object-rest-spread']
+      plugins: [require.resolve('transform-object-rest-spread')]
     }
   }
 };
