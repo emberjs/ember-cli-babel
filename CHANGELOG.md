@@ -1,3 +1,15 @@
+## v7.21.0 (2020-06-12)
+
+#### :rocket: Enhancement
+* [#354](https://github.com/babel/ember-cli-babel/pull/354) Update Babel related dependencies to 7.10 ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#353](https://github.com/babel/ember-cli-babel/pull/353) Ensure docs use `require.resolve` for custom plugins ([@rwjblue](https://github.com/rwjblue))
+* [#352](https://github.com/babel/ember-cli-babel/pull/352) Fix README badges ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.20.5 (2020-06-02)
 
 #### :bug: Bug Fix
