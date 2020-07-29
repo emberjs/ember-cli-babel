@@ -194,7 +194,7 @@ a shared module, reducing app size overall. This option is available _only_ to
 the root application, because it is a global configuration value due to the fact
 that there can only be one version of helpers included.
 
-Note that there is currently no way to whitelist or blacklist helpers, so all
+Note that there is currently no way to allow or ignore helpers, so all
 helpers will be included, even ones which are not used. If your app is small,
 this could add to overall build size, so be sure to check.
 
@@ -233,7 +233,7 @@ let app = new EmberApp(defaults, {
 #### Modules
 
 Older versions of Ember CLI (`< 2.12`) use its own ES6 module transpiler.
-Because of that, this plugin disables Babel module compilation by blacklisting
+Because of that, this plugin disables Babel module compilation by ignoring
 that transform when running under affected ember-cli versions. If you find that
 you want to use the Babel module transform instead of the Ember CLI one, you'll
 have to explicitly set `compileModules` to `true` in your configuration. If
