@@ -53,7 +53,7 @@
     "amd-name-resolver": "^1.2.1",
     "babel-plugin-debug-macros": "^0.3.3",
     "babel-plugin-ember-data-packages-polyfill": "^0.1.2",
-    "babel-plugin-ember-modules-api-polyfill": "^2.13.4",
+    "babel-plugin-ember-modules-api-polyfill": "^3.0.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "broccoli-babel-transpiler": "^7.5.0",
     "broccoli-debug": "^0.6.4",

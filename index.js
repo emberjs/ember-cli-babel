@@ -501,9 +501,9 @@ module.exports = {
     if (addonOptions.disableEmberModulesAPIPolyfill) { return; }
 
     if (this._emberVersionRequiresModulesAPIPolyfill()) {
-      const blacklist = this._getEmberModulesAPIBlacklist();
+      const ignore = this._getEmberModulesAPIIgnore();
 
-      return [[require.resolve('babel-plugin-ember-modules-api-polyfill'), { blacklist }]];
+      return [[require.resolve('babel-plugin-ember-modules-api-polyfill'), { ignore }]];
     }
   },
 
@@ -607,14 +607,14 @@ module.exports = {
     return false;
   },
 
-  _getEmberModulesAPIBlacklist() {
-    const blacklist = {
+  _getEmberModulesAPIIgnore() {
+    const ignore = {
       '@ember/debug': ['assert', 'deprecate', 'warn'],
       '@ember/application/deprecations': ['deprecate'],
     };
 
-    if (this._shouldBlacklistEmberString()) {
-      blacklist['@ember/string'] = [
+    if (this._shouldIgnoreEmberString()) {
+      ignore['@ember/string'] = [
         'fmt', 'loc', 'w',
         'decamelize', 'dasherize', 'camelize',
         'classify', 'underscore', 'capitalize',
@@ -622,11 +622,11 @@ module.exports = {
       ];
     }
 
-    if (this._shouldBlacklistJQuery()) {
-      blacklist['jquery'] = ['default'];
+    if (this._shouldIgnoreJQuery()) {
+      ignore['jquery'] = ['default'];
     }
 
-    return blacklist;
+    return ignore;
   },
 
   _isProjectName(dependency) {
@@ -640,7 +640,7 @@ module.exports = {
     )
   },
 
-  _shouldBlacklistEmberString() {
+  _shouldIgnoreEmberString() {
     let packageName = '@ember/string';
     if (this._isProjectName(packageName)) { return true; }
     if (this._isTransitiveDependency(packageName)) { return false; }
@@ -650,7 +650,7 @@ module.exports = {
     return checker.exists();
   },
 
-  _shouldBlacklistJQuery() {
+  _shouldIgnoreJQuery() {
     let packageName = '@ember/jquery';
     if (this._isProjectName(packageName)) { return true; }
     if (this._isTransitiveDependency(packageName)) { return false; }
