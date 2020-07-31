@@ -1,3 +1,16 @@
+## v7.22.0 (2020-07-31)
+
+#### :rocket: Enhancement
+* [#359](https://github.com/babel/ember-cli-babel/pull/359) Add @ember/destroyable support (via babel-plugin-ember-modules-api-polyfill) ([@rwjblue](https://github.com/rwjblue))
+* [#358](https://github.com/babel/ember-cli-babel/pull/358) Update babel related dependencies (for Babel 7.11.0). ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#357](https://github.com/babel/ember-cli-babel/pull/357) Update babel-plugin-ember-modules-api-polyfill from 2.13.4 to 3.0.0 ([@mydea](https://github.com/mydea))
+
+#### Committers: 2
+- Francesco Novy ([@mydea](https://github.com/mydea))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.21.0 (2020-06-12)
 
 #### :rocket: Enhancement
