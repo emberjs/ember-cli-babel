@@ -2411,12 +2411,12 @@ babel-plugin-ember-modules-api-polyfill@^2.12.0, babel-plugin-ember-modules-api-
   dependencies:
     ember-rfc176-data "^0.3.13"
 
-babel-plugin-ember-modules-api-polyfill@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-ember-modules-api-polyfill/-/babel-plugin-ember-modules-api-polyfill-3.0.0.tgz#570e5992fda2516a933b8a512925e36a1ce1908c"
-  integrity sha512-enuGb9M4XYX2+OwfhoergyHqyYMj9btcWgX7f7Mq2k23ULGmj7wWU76AxwbhhT0dodjL6j5mju41Kh3Hm18uZA==
+babel-plugin-ember-modules-api-polyfill@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-ember-modules-api-polyfill/-/babel-plugin-ember-modules-api-polyfill-3.1.0.tgz#02e2e6ab4220b28692a4bc08a5eb81ff96313a5f"
+  integrity sha512-TfyzenLPEZPorhO0omUUVpdQS+iKGehF4refqxP9znQN6MnjtxjSiGfRNnWY1syjK2/zCEuxIB91TmqrR/9bCg==
   dependencies:
-    ember-rfc176-data "^0.3.13"
+    ember-rfc176-data "^0.3.14"
 
 babel-plugin-htmlbars-inline-precompile@^0.2.5:
   version "0.2.6"
@@ -4668,6 +4668,11 @@ ember-rfc176-data@^0.3.1, ember-rfc176-data@^0.3.13, ember-rfc176-data@^0.3.5:
   version "0.3.13"
   resolved "https://registry.yarnpkg.com/ember-rfc176-data/-/ember-rfc176-data-0.3.13.tgz#ed1712a26e65fec703655f35410414aa1982cf3b"
   integrity sha512-m9JbwQlT6PjY7x/T8HslnXP7Sz9bx/pz3FrNfNi2NesJnbNISly0Lix6NV1fhfo46572cpq4jrM+/6yYlMefTQ==
+
+ember-rfc176-data@^0.3.14:
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/ember-rfc176-data/-/ember-rfc176-data-0.3.14.tgz#308808aa4bfdb655e6c3624fbe774699906c59ed"
+  integrity sha512-C4so9WmmDpRiAZYEzmFwgOSGyFCOL53vKkDuC3YXmbHF+fwDgBl18wt/N6D6pgHF9xXjt+WjHX0QTQzg3tOCyw==
 
 ember-router-generator@^1.2.3:
   version "1.2.3"
