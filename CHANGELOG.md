@@ -1,3 +1,5 @@
+* Fix issues with `destroy` from `@ember/destroyable`. (8012224)
+
 ## v7.22.0 (2020-07-31)
 
 #### :rocket: Enhancement
