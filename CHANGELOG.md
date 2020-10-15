@@ -1,3 +1,11 @@
+## v7.23.0 (2020-10-15)
+
+#### :rocket: Enhancement
+* [#365](https://github.com/babel/ember-cli-babel/pull/365) Update @babel packages for 7.12.0. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 * Fix issues with `destroy` from `@ember/destroyable`. (8012224)
 
 ## v7.22.0 (2020-07-31)
