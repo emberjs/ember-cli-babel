@@ -316,12 +316,6 @@ module.exports = {
     return plugins;
   },
 
-  _shouldIncludeDecoratorPlugins(config) {
-    let customOptions = config['ember-cli-babel'] || {};
-
-    return customOptions.disableDecoratorTransforms !== true;
-  },
-
   _addDecoratorPlugins(plugins, options, config) {
     const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
 
@@ -487,15 +481,6 @@ module.exports = {
     }
   },
 
-  _getModulesPlugin() {
-    const resolvePath = require('./lib/relative-module-paths').resolveRelativeModulePath;
-
-    return [
-      [require.resolve('babel-plugin-module-resolver'), { resolvePath }],
-      [require.resolve('@babel/plugin-transform-modules-amd'), { noInterop: true }],
-    ];
-  },
-
   /*
    * Used to discover if the addon's current configuration will compile modules
    * or not.
@@ -516,49 +501,6 @@ module.exports = {
     } else {
       return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
     }
-  },
-
-  _emberVersionRequiresModulesAPIPolyfill() {
-    // once a version of Ember ships with the
-    // emberjs/rfcs#176 modules natively this will
-    // be updated to detect that and return false
-    return true;
-  },
-
-  _emberDataVersionRequiresPackagesPolyfill() {
-    let checker = new VersionChecker(this.project);
-    let dep = checker.for('ember-data');
-    let hasEmberData = dep.exists();
-
-    if (hasEmberData) {
-      if (!dep.version) {
-        throw new Error('EmberData missing version');
-      }
-      return semver.lt(dep.version, '3.12.0-alpha.0');
-    }
-    return false;
-  },
-
-  _getEmberModulesAPIIgnore() {
-    const ignore = {
-      '@ember/debug': ['assert', 'deprecate', 'warn'],
-      '@ember/application/deprecations': ['deprecate'],
-    };
-
-    if (this._shouldIgnoreEmberString()) {
-      ignore['@ember/string'] = [
-        'fmt', 'loc', 'w',
-        'decamelize', 'dasherize', 'camelize',
-        'classify', 'underscore', 'capitalize',
-        'setStrings', 'getStrings', 'getString'
-      ];
-    }
-
-    if (this._shouldIgnoreJQuery()) {
-      ignore['jquery'] = ['default'];
-    }
-
-    return ignore;
   },
 
   _isProjectName(dependency) {
@@ -590,11 +532,6 @@ module.exports = {
     let checker = new VersionChecker(this.parent).for(packageName, 'npm');
 
     return checker.gte('0.6.0');
-  },
-
-  _shouldHighlightCode() {
-    let checker = new VersionChecker(this.parent).for('broccoli-middleware', 'npm');
-    return checker.gte('2.1.0');
   },
 
   // detect if running babel would do nothing... and do nothing instead
