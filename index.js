@@ -6,6 +6,7 @@ const path = require('path');
 const semver = require('semver');
 
 const defaultShouldIncludeHelpers = require('./lib/default-should-include-helpers');
+const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
@@ -29,8 +30,7 @@ module.exports = {
 
   buildBabelOptions(_config) {
     let config = _config || this._getAddonOptions();
-
-    return this._getBabelOptions(config);
+    return getBabelOptions(config, this);
   },
 
   _debugTree() {
@@ -264,74 +264,6 @@ module.exports = {
     let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
     return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
-  },
-
-  _getBabelOptions(config) {
-    let addonProvidedConfig = this._getAddonProvidedConfig(config);
-    let shouldCompileModules = this._shouldCompileModules(config);
-    let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
-    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
-    let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
-
-    let emberCLIBabelConfig = config['ember-cli-babel'];
-    let shouldRunPresetEnv = true;
-    let providedAnnotation;
-    let throwUnlessParallelizable;
-
-    if (emberCLIBabelConfig) {
-      providedAnnotation = emberCLIBabelConfig.annotation;
-      shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
-      throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
-    }
-
-    let sourceMaps = false;
-    if (config.babel && 'sourceMaps' in config.babel) {
-      sourceMaps = config.babel.sourceMaps;
-    }
-
-    let filterExtensions = this._getExtensions(config);
-
-    let options = {
-      annotation: providedAnnotation || `Babel: ${this._parentName()}`,
-      sourceMaps,
-      throwUnlessParallelizable,
-      filterExtensions
-    };
-
-    let userPlugins = addonProvidedConfig.plugins;
-    let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
-
-    if (shouldHandleTypeScript) {
-      userPlugins = this._addTypeScriptPlugin(userPlugins.slice(), addonProvidedConfig.options);
-    }
-
-    if (shouldIncludeDecoratorPlugins) {
-      userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options, config);
-    }
-
-    options.plugins = [].concat(
-      shouldIncludeHelpers && this._getHelpersPlugin(),
-      userPlugins,
-      this._getDebugMacroPlugins(config),
-      this._getEmberModulesAPIPolyfill(config),
-      this._getEmberDataPackagesPolyfill(config),
-      shouldCompileModules && this._getModulesPlugin(),
-      userPostTransformPlugins
-    ).filter(Boolean);
-
-    options.presets = [
-      shouldRunPresetEnv && this._getPresetEnv(addonProvidedConfig),
-    ].filter(Boolean);
-
-    if (shouldCompileModules) {
-      options.moduleIds = true;
-      options.getModuleId = require('./lib/relative-module-paths').getRelativeModulePath;
-    }
-
-    options.highlightCode = this._shouldHighlightCode();
-    options.babelrc = false;
-
-    return options;
   },
 
   _shouldHandleTypeScript(config) {
