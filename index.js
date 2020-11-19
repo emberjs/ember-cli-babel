@@ -6,6 +6,7 @@ const path = require('path');
 const semver = require('semver');
 
 const defaultShouldIncludeHelpers = require('./lib/default-should-include-helpers');
+const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
@@ -29,8 +30,7 @@ module.exports = {
 
   buildBabelOptions(_config) {
     let config = _config || this._getAddonOptions();
-
-    return this._getBabelOptions(config);
+    return getBabelOptions(config, this);
   },
 
   _debugTree() {
@@ -247,91 +247,10 @@ module.exports = {
     return parentName;
   },
 
-  _getAddonProvidedConfig(addonOptions) {
-    let options = clone(addonOptions.babel || {});
-
-    let plugins = options.plugins || [];
-    let postTransformPlugins = options.postTransformPlugins || [];
-
-    return {
-      options,
-      plugins,
-      postTransformPlugins
-    };
-  },
-
   _getExtensions(config) {
     let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
     let emberCLIBabelConfig = config['ember-cli-babel'] || {};
     return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
-  },
-
-  _getBabelOptions(config) {
-    let addonProvidedConfig = this._getAddonProvidedConfig(config);
-    let shouldCompileModules = this._shouldCompileModules(config);
-    let shouldIncludeHelpers = this._shouldIncludeHelpers(config);
-    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
-    let shouldIncludeDecoratorPlugins = this._shouldIncludeDecoratorPlugins(config);
-
-    let emberCLIBabelConfig = config['ember-cli-babel'];
-    let shouldRunPresetEnv = true;
-    let providedAnnotation;
-    let throwUnlessParallelizable;
-
-    if (emberCLIBabelConfig) {
-      providedAnnotation = emberCLIBabelConfig.annotation;
-      shouldRunPresetEnv = !emberCLIBabelConfig.disablePresetEnv;
-      throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
-    }
-
-    let sourceMaps = false;
-    if (config.babel && 'sourceMaps' in config.babel) {
-      sourceMaps = config.babel.sourceMaps;
-    }
-
-    let filterExtensions = this._getExtensions(config);
-
-    let options = {
-      annotation: providedAnnotation || `Babel: ${this._parentName()}`,
-      sourceMaps,
-      throwUnlessParallelizable,
-      filterExtensions
-    };
-
-    let userPlugins = addonProvidedConfig.plugins;
-    let userPostTransformPlugins = addonProvidedConfig.postTransformPlugins;
-
-    if (shouldHandleTypeScript) {
-      userPlugins = this._addTypeScriptPlugin(userPlugins.slice(), addonProvidedConfig.options);
-    }
-
-    if (shouldIncludeDecoratorPlugins) {
-      userPlugins = this._addDecoratorPlugins(userPlugins.slice(), addonProvidedConfig.options, config);
-    }
-
-    options.plugins = [].concat(
-      shouldIncludeHelpers && this._getHelpersPlugin(),
-      userPlugins,
-      this._getDebugMacroPlugins(config),
-      this._getEmberModulesAPIPolyfill(config),
-      this._getEmberDataPackagesPolyfill(config),
-      shouldCompileModules && this._getModulesPlugin(),
-      userPostTransformPlugins
-    ).filter(Boolean);
-
-    options.presets = [
-      shouldRunPresetEnv && this._getPresetEnv(addonProvidedConfig),
-    ].filter(Boolean);
-
-    if (shouldCompileModules) {
-      options.moduleIds = true;
-      options.getModuleId = require('./lib/relative-module-paths').getRelativeModulePath;
-    }
-
-    options.highlightCode = this._shouldHighlightCode();
-    options.babelrc = false;
-
-    return options;
   },
 
   _shouldHandleTypeScript(config) {
@@ -343,198 +262,6 @@ module.exports = {
         && this.parent.addons.find(a => a.name === 'ember-cli-typescript');
       return typeof typeScriptAddon !== 'undefined'
         && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.1');
-  },
-
-  _buildClassFeaturePluginConstraints(constraints, config) {
-    // With versions of ember-cli-typescript < 4.0, class feature plugins like
-    // @babel/plugin-proposal-class-properties were run before the TS transform.
-    if (!this._shouldHandleTypeScript(config)) {
-      constraints.before = constraints.before || [];
-      constraints.before.push('@babel/plugin-transform-typescript');
-    }
-
-    return constraints;
-  },
-
-  _addTypeScriptPlugin(plugins) {
-    const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
-
-    if (hasPlugin(plugins, '@babel/plugin-transform-typescript')) {
-      if (this.parent === this.project) {
-        this.project.ui.writeWarnLine(`${
-          this._parentName()
-        } has added the TypeScript transform plugin to its build, but ember-cli-babel provides this by default now when ember-cli-typescript >= 4.0 is installed! You can remove the transform, or the addon that provided it.`);
-      }
-    } else {
-      addPlugin(
-        plugins,
-        [
-          require.resolve('@babel/plugin-transform-typescript'),
-          { allowDeclareFields: true },
-        ],
-        {
-          before: [
-            '@babel/plugin-proposal-class-properties',
-            '@babel/plugin-proposal-private-methods',
-            '@babel/plugin-proposal-decorators',
-          ]
-        }
-      );
-    }
-    return plugins;
-  },
-
-  _shouldIncludeDecoratorPlugins(config) {
-    let customOptions = config['ember-cli-babel'] || {};
-
-    return customOptions.disableDecoratorTransforms !== true;
-  },
-
-  _addDecoratorPlugins(plugins, options, config) {
-    const { hasPlugin, addPlugin } = require('ember-cli-babel-plugin-helpers');
-
-    if (hasPlugin(plugins, '@babel/plugin-proposal-decorators')) {
-      if (this.parent === this.project) {
-        this.project.ui.writeWarnLine(`${
-          this._parentName()
-        } has added the decorators plugin to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms. Ember supports the stage 1 decorator spec and transforms, so if you were using stage 2, you'll need to ensure that your decorators are compatible, or convert them to stage 1.`);
-      }
-    } else {
-      addPlugin(
-        plugins,
-        [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-        this._buildClassFeaturePluginConstraints({
-          before: ['@babel/plugin-proposal-class-properties']
-        }, config)
-      );
-    }
-
-
-    if (hasPlugin(plugins, '@babel/plugin-proposal-class-properties')) {
-      if (this.parent === this.project) {
-        this.project.ui.writeWarnLine(`${
-          this._parentName()
-        } has added the class-properties plugin to its build, but ember-cli-babel provides these by default now! You can remove the transforms, or the addon that provided them, such as @ember-decorators/babel-transforms.`);
-      }
-    } else {
-      addPlugin(
-        plugins,
-        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: options.loose || false }],
-        this._buildClassFeaturePluginConstraints({
-          after: ['@babel/plugin-proposal-decorators']
-        }, config)
-      );
-    }
-
-    if (hasPlugin(plugins, 'babel-plugin-filter-imports')) {
-      let checker = new VersionChecker(this.parent).for('babel-plugin-filter-imports', 'npm');
-
-      if (checker.lt('3.0.0')) {
-        addPlugin(
-          plugins,
-          require.resolve('./lib/dedupe-internal-decorators-plugin'),
-          {
-            after: ['babel-plugin-filter-imports']
-          }
-        );
-      }
-    }
-
-    return plugins;
-  },
-
-  _getDebugMacroPlugins(config) {
-    let addonOptions = config['ember-cli-babel'] || {};
-
-    if (addonOptions.disableDebugTooling) {
-      return;
-    }
-
-    const isProduction = process.env.EMBER_ENV === 'production';
-    const isDebug = !isProduction;
-
-    return [
-      [
-        require.resolve('babel-plugin-debug-macros'),
-        {
-          flags: [
-            {
-              source: '@glimmer/env',
-              flags: { DEBUG: isDebug, CI: !!process.env.CI },
-            },
-          ],
-
-          externalizeHelpers: {
-            global: 'Ember',
-          },
-
-          debugTools: {
-            isDebug,
-            source: '@ember/debug',
-            assertPredicateIndex: 1,
-          },
-        },
-        '@ember/debug stripping',
-      ],
-      [
-        require.resolve('babel-plugin-debug-macros'),
-        {
-          // deprecated import path https://github.com/emberjs/ember.js/pull/17926#issuecomment-484987305
-          externalizeHelpers: {
-            global: 'Ember',
-          },
-
-          debugTools: {
-            isDebug,
-            source: '@ember/application/deprecations',
-            assertPredicateIndex: 1,
-          },
-        },
-        '@ember/application/deprecations stripping',
-      ],
-    ];
-  },
-
-  _getEmberModulesAPIPolyfill(config) {
-    let addonOptions = config['ember-cli-babel'] || {};
-
-    if (addonOptions.disableEmberModulesAPIPolyfill) { return; }
-
-    if (this._emberVersionRequiresModulesAPIPolyfill()) {
-      const ignore = this._getEmberModulesAPIIgnore();
-
-      return [[require.resolve('babel-plugin-ember-modules-api-polyfill'), { ignore }]];
-    }
-  },
-
-  _getEmberDataPackagesPolyfill(config) {
-    let addonOptions = config['ember-cli-babel'] || {};
-
-    if (addonOptions.disableEmberDataPackagesPolyfill) { return; }
-    // Don't convert ember-data itself or any @ember-data packages!
-    if (typeof this.parent.name === 'string' && (this.parent.name === 'ember-data' || this.parent.name.startsWith('@ember-data/'))) { return; }
-
-    if (this._emberDataVersionRequiresPackagesPolyfill()) {
-      return [[require.resolve('babel-plugin-ember-data-packages-polyfill')]];
-    }
-  },
-
-  _getPresetEnv(config) {
-    let options = config.options;
-
-    let targets = this.project && this.project.targets;
-    let presetOptions = Object.assign({}, options, {
-      modules: false,
-      targets
-    });
-
-    // delete any properties added to `options.babel` that
-    // are invalid for @babel/preset-env
-    delete presetOptions.sourceMaps;
-    delete presetOptions.plugins;
-    delete presetOptions.postTransformPlugins;
-
-    return [require.resolve('@babel/preset-env'), presetOptions];
   },
 
   _getTargets() {
@@ -553,15 +280,6 @@ module.exports = {
     } else {
       return targets;
     }
-  },
-
-  _getModulesPlugin() {
-    const resolvePath = require('./lib/relative-module-paths').resolveRelativeModulePath;
-
-    return [
-      [require.resolve('babel-plugin-module-resolver'), { resolvePath }],
-      [require.resolve('@babel/plugin-transform-modules-amd'), { noInterop: true }],
-    ];
   },
 
   /*
@@ -584,85 +302,6 @@ module.exports = {
     } else {
       return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
     }
-  },
-
-  _emberVersionRequiresModulesAPIPolyfill() {
-    // once a version of Ember ships with the
-    // emberjs/rfcs#176 modules natively this will
-    // be updated to detect that and return false
-    return true;
-  },
-
-  _emberDataVersionRequiresPackagesPolyfill() {
-    let checker = new VersionChecker(this.project);
-    let dep = checker.for('ember-data');
-    let hasEmberData = dep.exists();
-
-    if (hasEmberData) {
-      if (!dep.version) {
-        throw new Error('EmberData missing version');
-      }
-      return semver.lt(dep.version, '3.12.0-alpha.0');
-    }
-    return false;
-  },
-
-  _getEmberModulesAPIIgnore() {
-    const ignore = {
-      '@ember/debug': ['assert', 'deprecate', 'warn'],
-      '@ember/application/deprecations': ['deprecate'],
-    };
-
-    if (this._shouldIgnoreEmberString()) {
-      ignore['@ember/string'] = [
-        'fmt', 'loc', 'w',
-        'decamelize', 'dasherize', 'camelize',
-        'classify', 'underscore', 'capitalize',
-        'setStrings', 'getStrings', 'getString'
-      ];
-    }
-
-    if (this._shouldIgnoreJQuery()) {
-      ignore['jquery'] = ['default'];
-    }
-
-    return ignore;
-  },
-
-  _isProjectName(dependency) {
-    return this.project.name && this.project.name() === dependency;
-  },
-
-  _isTransitiveDependency(dependency) {
-    return (
-      !(dependency in this.parent.dependencies()) &&
-      !(dependency in this.project.dependencies())
-    )
-  },
-
-  _shouldIgnoreEmberString() {
-    let packageName = '@ember/string';
-    if (this._isProjectName(packageName)) { return true; }
-    if (this._isTransitiveDependency(packageName)) { return false; }
-
-    let checker = new VersionChecker(this.parent).for(packageName, 'npm');
-
-    return checker.exists();
-  },
-
-  _shouldIgnoreJQuery() {
-    let packageName = '@ember/jquery';
-    if (this._isProjectName(packageName)) { return true; }
-    if (this._isTransitiveDependency(packageName)) { return false; }
-
-    let checker = new VersionChecker(this.parent).for(packageName, 'npm');
-
-    return checker.gte('0.6.0');
-  },
-
-  _shouldHighlightCode() {
-    let checker = new VersionChecker(this.parent).for('broccoli-middleware', 'npm');
-    return checker.gte('2.1.0');
   },
 
   // detect if running babel would do nothing... and do nothing instead

@@ -838,87 +838,6 @@ describe('ember-cli-babel', function() {
     });
   });
 
-  describe('_addTypeScriptPlugin', function() {
-    it('should warn and not add the TypeScript plugin if already added', function() {
-      this.addon.project.ui = {
-        writeWarnLine(message) {
-          expect(message).to.match(/has added the TypeScript transform plugin to its build/);
-        }
-      };
-
-      expect(
-        this.addon._addTypeScriptPlugin([
-          ['@babel/plugin-transform-typescript']
-        ],
-        {}
-      ).length).to.equal(1, 'plugin was not added');
-    });
-  });
-
-  describe('_addDecoratorPlugins', function() {
-    it('should include babel transforms by default', function() {
-      expect(this.addon._addDecoratorPlugins([], {}, {}).length).to.equal(2, 'plugins added correctly');
-    });
-
-    it('should include only fields if it detects decorators plugin', function() {
-      this.addon.project.ui = {
-        writeWarnLine(message) {
-          expect(message).to.match(/has added the decorators plugin to its build/);
-        }
-      };
-
-      expect(
-        this.addon._addDecoratorPlugins([
-          ['@babel/plugin-proposal-decorators']
-        ],
-        {},
-        {}
-      ).length).to.equal(2, 'plugins were not added');
-    });
-
-    it('should include only decorators if it detects class fields plugin', function() {
-      this.addon.project.ui = {
-        writeWarnLine(message) {
-          expect(message).to.match(/has added the class-properties plugin to its build/);
-        }
-      };
-
-      expect(
-        this.addon._addDecoratorPlugins(
-          [
-            ['@babel/plugin-proposal-class-properties']
-          ],
-          {},
-          {}
-        ).length
-      ).to.equal(2, 'plugins were not added');
-    });
-
-    it('should use babel options loose mode for class properties', function() {
-      let strictPlugins = this.addon._addDecoratorPlugins([], {}, {});
-
-      expect(strictPlugins[1][1].loose).to.equal(false, 'loose is false if no option is provided');
-
-      let loosePlugins = this.addon._addDecoratorPlugins([], { loose: true }, {});
-
-      expect(loosePlugins[1][1].loose).to.equal(true, 'loose setting added correctly');
-    });
-
-    it('should include class fields and decorators after typescript if handling typescript', function() {
-      this.addon._shouldHandleTypeScript = function() { return true; }
-      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
-      expect(plugins[0]).to.equal('@babel/plugin-transform-typescript', 'typescript still first');
-      expect(plugins.length).to.equal(3, 'class fields and decorators added');
-    });
-
-    it('should include class fields and decorators before typescript if not handling typescript', function() {
-      this.addon._shouldHandleTypeScript = function() { return false; }
-      let plugins = this.addon._addDecoratorPlugins(['@babel/plugin-transform-typescript'], {}, {});
-      expect(plugins.length).to.equal(3, 'class fields and decorators added');
-      expect(plugins[2]).to.equal('@babel/plugin-transform-typescript', 'typescript is now last');
-    });
-  });
-
   describe('_shouldIncludeHelpers()', function() {
     beforeEach(function() {
       this.addon.app = {
@@ -1080,21 +999,6 @@ describe('ember-cli-babel', function() {
 
         expect(deprecationMessages).to.have.lengthOf(0);
       });
-    });
-  });
-
-  describe('_getAddonProvidedConfig', function() {
-    it('does not mutate addonOptions.babel', function() {
-      let babelOptions = { blah: true };
-      this.addon.parent = {
-        dependencies() { return {}; },
-        options: {
-          babel: babelOptions,
-        },
-      };
-
-      let result = this.addon._getAddonProvidedConfig(this.addon._getAddonOptions());
-      expect(result.options).to.not.equal(babelOptions);
     });
   });
 
