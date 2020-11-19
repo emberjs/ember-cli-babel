@@ -2,7 +2,11 @@ const expect = require("chai").expect;
 const MockUI = require("console-ui/mock");
 const CoreObject = require("core-object");
 const AddonMixin = require("../index");
-const babelOptionUtils = require("../lib/babel-options-util");
+let {
+  _addTypeScriptPlugin,
+  _getAddonProvidedConfig,
+  _addDecoratorPlugins,
+} = require("../lib/babel-options-util");
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -52,7 +56,7 @@ describe("get-babel-options", function () {
       };
 
       expect(
-        babelOptionUtils._addTypeScriptPlugin(
+        _addTypeScriptPlugin(
           [["@babel/plugin-transform-typescript"]],
           {},
           this.addon.parent,
@@ -65,13 +69,8 @@ describe("get-babel-options", function () {
   describe("_addDecoratorPlugins", function () {
     it("should include babel transforms by default", function () {
       expect(
-        babelOptionUtils._addDecoratorPlugins(
-          [],
-          {},
-          {},
-          this.addon.parent,
-          this.addon.project
-        ).length
+        _addDecoratorPlugins([], {}, {}, this.addon.parent, this.addon.project)
+          .length
       ).to.equal(2, "plugins added correctly");
     });
 
@@ -85,7 +84,7 @@ describe("get-babel-options", function () {
       };
 
       expect(
-        babelOptionUtils._addDecoratorPlugins(
+        _addDecoratorPlugins(
           [["@babel/plugin-proposal-decorators"]],
           {},
           {},
@@ -105,7 +104,7 @@ describe("get-babel-options", function () {
       };
 
       expect(
-        babelOptionUtils._addDecoratorPlugins(
+        _addDecoratorPlugins(
           [["@babel/plugin-proposal-class-properties"]],
           {},
           {},
@@ -116,7 +115,7 @@ describe("get-babel-options", function () {
     });
 
     it("should use babel options loose mode for class properties", function () {
-      let strictPlugins = babelOptionUtils._addDecoratorPlugins(
+      let strictPlugins = _addDecoratorPlugins(
         [],
         {},
         {},
@@ -129,7 +128,7 @@ describe("get-babel-options", function () {
         "loose is false if no option is provided"
       );
 
-      let loosePlugins = babelOptionUtils._addDecoratorPlugins(
+      let loosePlugins = _addDecoratorPlugins(
         [],
         { loose: true },
         {},
@@ -144,13 +143,13 @@ describe("get-babel-options", function () {
     });
 
     it("should include class fields and decorators after typescript if handling typescript", function () {
-      babelOptionUtils._shouldHandleTypeScript = function () {
-        return true;
+      const config = {
+        "ember-cli-babel": { enableTypeScriptTransform: true },
       };
-      let plugins = babelOptionUtils._addDecoratorPlugins(
+      let plugins = _addDecoratorPlugins(
         ["@babel/plugin-transform-typescript"],
         {},
-        {},
+        config,
         this.addon.parent,
         this.addon.project
       );
@@ -162,13 +161,13 @@ describe("get-babel-options", function () {
     });
 
     it("should include class fields and decorators before typescript if not handling typescript", function () {
-      babelOptionUtils._shouldHandleTypeScript = function () {
-        return false;
+      const config = {
+        "ember-cli-babel": { enableTypeScriptTransform: false },
       };
-      let plugins = babelOptionUtils._addDecoratorPlugins(
+      let plugins = _addDecoratorPlugins(
         ["@babel/plugin-transform-typescript"],
         {},
-        {},
+        config,
         this.addon.parent,
         this.addon.project
       );
@@ -193,9 +192,7 @@ describe("get-babel-options", function () {
         },
       };
 
-      let result = babelOptionUtils._getAddonProvidedConfig(
-        this.addon._getAddonOptions()
-      );
+      let result = _getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
     });
   });
