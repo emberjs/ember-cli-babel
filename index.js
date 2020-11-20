@@ -60,6 +60,14 @@ module.exports = {
         transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
       }
 
+      const babelConfigPath = path.resolve(this.project.root, '.babelrc.js');
+      if (babelConfigPath) {
+        delete options.plugins;
+        delete options.presets;
+        options = Object.assign({}, options,{
+          "presets":[ require.resolve(babelConfigPath) ],
+        })
+      }
       output = new BabelTranspiler(transpilationInput, options);
     }
 
