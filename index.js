@@ -12,7 +12,7 @@ const {
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const path = require('path');
-const semver = require('semver');
+const fs = require('fs'); 
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 
@@ -52,7 +52,7 @@ module.exports = {
    * Default babel options
    * @param {*} config 
    */
-  _getDefaultBabelOptions(config) {
+  _getDefaultBabelOptions(config = {}) {
      let emberCLIBabelConfig = config["ember-cli-babel"];
      let providedAnnotation;
      let throwUnlessParallelizable;
@@ -73,6 +73,8 @@ module.exports = {
        sourceMaps,
        throwUnlessParallelizable,
        filterExtensions: _getExtensions(config, this.parent),
+       plugins: [],
+       presets: []
      };
 
      if (shouldCompileModules) {
@@ -94,8 +96,17 @@ module.exports = {
     let options = this._getDefaultBabelOptions(config);
     let output;
     const babelConfigPath = path.resolve(this.parent.root, '.babelrc.js');
+    const isBabelConfigFilePresent = fs.existsSync(babelConfigPath)
     
-    if (!babelConfigPath && this._shouldDoNothing(options)) {
+    if (isBabelConfigFilePresent) {
+      options = Object.assign({}, options, {
+        "presets":[ require.resolve(babelConfigPath) ],
+      });
+    } else {
+      options = Object.assign({}, options, this.buildBabelOptions(config));
+    }
+
+    if (!isBabelConfigFilePresent && this._shouldDoNothing(options)) {
       output = postDebugTree;
     } else {
       let BabelTranspiler = require('broccoli-babel-transpiler');
@@ -105,14 +116,6 @@ module.exports = {
         let Funnel = require('broccoli-funnel');
         let inputWithoutDeclarations = new Funnel(transpilationInput, { exclude: ['**/*.d.ts'] });
         transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
-      }
-      
-      if (babelConfigPath) {
-        options = Object.assign({}, options, {
-          "presets":[ require.resolve(babelConfigPath) ],
-        });
-      } else {
-        options = Object.assign({}, options, this.buildBabelOptions(config));
       }
       output = new BabelTranspiler(transpilationInput, options);
     }
