@@ -1585,6 +1585,109 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
   });
 });
 
+describe('.babelrc config', function() {
+  this.timeout(0);
+
+  let input;
+  let output;
+  let subject;
+  let setupForVersion;
+  let project;
+  let unlink;
+
+  beforeEach(function() {
+    let self = this;
+    setupForVersion = co.wrap(function*(plugins) {
+      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+      
+      fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+      fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
+        return prepareAddon(addon);
+      });
+      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+      fixturifyProject.files['.babelrc.js'] = `module.exports = function (api) {
+        api.cache(true);
+        return {
+          plugins: [
+            ${plugins}
+          ],
+        };
+      };
+      `;
+      fixturifyProject.writeSync();
+
+      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
+      let addonPath = path.resolve(__dirname, '../');
+      rimraf.sync(linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
+      unlink = () => {
+        fs.unlinkSync(linkPath);
+      };
+
+      let cli = new MockCLI();
+      let root = path.join(fixturifyProject.root, 'whatever');
+      project = new EmberProject(root, pkg, cli.ui, cli);
+      project.initializeAddons();
+
+      self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+
+      input = yield createTempDir();
+    });
+  });
+
+  afterEach(co.wrap(function*() {
+    unlink();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
+    // shut down workers after the tests are run so that mocha doesn't hang
+    yield terminateWorkerPool();
+  }));
+
+  it("should transpile to amd modules based on babelrc config", co.wrap(function* () {
+    yield setupForVersion(`[
+      "@babel/plugin-transform-modules-amd",
+      { noInterop: true },
+    ]`);
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(output.read()).to.deep.equal({
+      "foo.js": `define(\"foo\", [\"exports\"], function (_exports) {\n  \"use strict\";\n\n  Object.defineProperty(_exports, \"__esModule\", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});`,
+    });
+  }));
+
+  it("should not transpile to amd modules based on babelrc config", co.wrap(function* () {
+    yield setupForVersion('');
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": "export default {};"
+    });
+  }));
+});
+
 function leftPad(str, num) {
   while (num-- > 0) {
     str = ` ${str}`;
