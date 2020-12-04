@@ -1585,7 +1585,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
   });
 });
 
-describe('.babelrc config', function() {
+describe('babel config file', function() {
   this.timeout(0);
 
   let input;
@@ -1605,7 +1605,7 @@ describe('.babelrc config', function() {
         return prepareAddon(addon);
       });
       let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.files['.babelrc.js'] = `module.exports = function (api) {
+      fixturifyProject.files['babel.config.js'] = `module.exports = function (api) {
         api.cache(true);
         return {
           plugins: [
@@ -1630,6 +1630,7 @@ describe('.babelrc config', function() {
       project.initializeAddons();
 
       self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+      self.addon.parent.options = { useBabelConfig: true };
 
       input = yield createTempDir();
     });
@@ -1650,7 +1651,7 @@ describe('.babelrc config', function() {
     yield terminateWorkerPool();
   }));
 
-  it("should transpile to amd modules based on babelrc config", co.wrap(function* () {
+  it("should transpile to amd modules based on babel config", co.wrap(function* () {
     yield setupForVersion(`[
       "@babel/plugin-transform-modules-amd",
       { noInterop: true },
@@ -1669,7 +1670,7 @@ describe('.babelrc config', function() {
     });
   }));
 
-  it("should not transpile to amd modules based on babelrc config", co.wrap(function* () {
+  it("should not transpile to amd modules based on babel config", co.wrap(function* () {
     yield setupForVersion('');
     input.write({
       "foo.js": `export default {};`,
@@ -1684,6 +1685,28 @@ describe('.babelrc config', function() {
       output.read()
     ).to.deep.equal({
       "foo.js": "export default {};"
+    });
+  }));
+
+  it("should not use babel config (even if present) if the 'useBabelConfig' option is set to false", co.wrap(function* () {
+    yield setupForVersion(`[
+      "@babel/plugin-transform-modules-amd",
+      { noInterop: true },
+    ]`);
+
+    this.addon.parent.options = { useBabelConfig: false };
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(output.read()).to.deep.equal({
+      "foo.js":
+        'define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});',
     });
   }));
 });

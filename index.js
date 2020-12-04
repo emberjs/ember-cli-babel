@@ -18,6 +18,15 @@ const findApp = require('./lib/find-app');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 
+// Ref: https://github.com/babel/babel/blob/c6aea4e85d2b8f3e82575642d30b01c8cbe112a9/packages/babel-core/src/config/files/configuration.js#L24
+// supported babel config root filenames.
+const ROOT_CONFIG_FILENAMES = [
+  "babel.config.js",
+  "babel.config.cjs",
+  "babel.config.mjs",
+  "babel.config.json",
+];
+
 let count = 0;
 
 module.exports = {
@@ -95,18 +104,21 @@ module.exports = {
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
     let options = this._getDefaultBabelOptions(config);
     let output;
-    const babelConfigPath = path.resolve(this.parent.root, '.babelrc.js');
-    const isBabelConfigFilePresent = fs.existsSync(babelConfigPath)
-    
-    if (isBabelConfigFilePresent) {
+
+    const babelConfigFile = ROOT_CONFIG_FILENAMES.find((fileName) =>
+      fs.existsSync(path.resolve(this.parent.root, fileName))
+    );
+    const shouldUseBabelConfigFile = config.useBabelConfig && babelConfigFile;
+
+    if (shouldUseBabelConfigFile) {
       options = Object.assign({}, options, {
-        "presets":[ require.resolve(babelConfigPath) ],
+        "presets":[ require.resolve(path.resolve(this.parent.root, babelConfigFile)) ],
       });
     } else {
       options = Object.assign({}, options, this.buildBabelOptions(config));
     }
 
-    if (!isBabelConfigFilePresent && this._shouldDoNothing(options)) {
+    if (!shouldUseBabelConfigFile && this._shouldDoNothing(options)) {
       output = postDebugTree;
     } else {
       let BabelTranspiler = require('broccoli-babel-transpiler');
