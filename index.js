@@ -15,6 +15,7 @@ const path = require('path');
 const fs = require('fs'); 
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
+const emberPlugins = require('./lib/ember-plugins');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 
@@ -32,6 +33,7 @@ let count = 0;
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
+  emberPlugins,
 
   init() {
     this._super.init && this._super.init.apply(this, arguments);
@@ -108,7 +110,9 @@ module.exports = {
     const babelConfigFile = ROOT_CONFIG_FILENAMES.find((fileName) =>
       fs.existsSync(path.resolve(this.parent.root, fileName))
     );
-    const shouldUseBabelConfigFile = config.useBabelConfig && babelConfigFile;
+
+    const customAddonConfig = config['ember-cli-babel'];
+    const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig && babelConfigFile;
 
     if (shouldUseBabelConfigFile) {
       options = Object.assign({}, options, {

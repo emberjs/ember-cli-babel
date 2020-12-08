@@ -1630,7 +1630,9 @@ describe('babel config file', function() {
       project.initializeAddons();
 
       self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
-      self.addon.parent.options = { useBabelConfig: true };
+      self.addon.parent.options = {
+        "ember-cli-babel": { useBabelConfig: true },
+      };
 
       input = yield createTempDir();
     });
@@ -1694,7 +1696,9 @@ describe('babel config file', function() {
       { noInterop: true },
     ]`);
 
-    this.addon.parent.options = { useBabelConfig: false };
+    this.addon.parent.options = {
+      "ember-cli-babel": { useBabelConfig: false },
+    };
     input.write({
       "foo.js": `export default {};`,
     });

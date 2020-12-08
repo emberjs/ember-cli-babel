@@ -294,7 +294,7 @@ module.exports = function(defaults) {
 ```
 ### Babel config usage
 
-If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` in your `ember-cli-build.js` file.
+If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` as a child property of `ember-cli-babel` in your `ember-cli-build.js` file.
 
 *Note: If you are using this option, then you have to make sure that you are adding all of the required plugins required for Ember to transpile correctly.*
 
@@ -304,8 +304,8 @@ Example usage:
 //ember-cli-build.js
 
 let app = new EmberAddon(defaults, {
-  useBabelConfig: true,
   "ember-cli-babel": {
+    useBabelConfig: true,
     // ember-cli-babel related options
   },
 });
