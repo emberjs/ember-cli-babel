@@ -338,11 +338,8 @@ module.exports = function (api) {
           useESModules: true,
         },
       ],
-      [require.resolve("@babel/plugin-proposal-decorators"), { legacy: true }],
-      [require.resolve("@babel/plugin-proposal-class-properties")],
-
       // this is where all the ember required plugins would reside
-      ...emberPlugins({ ...options }),
+      ...emberPlugins(__dirname, { ...options }),
     ],
   };
 };
@@ -351,15 +348,16 @@ module.exports = function (api) {
 #### Ember Plugins
 
 Ember Plugins is a helper function that returns a list of plugins that are required for transpiling Ember correctly. You can import this helper function and add it to your existing `babel.config` file.
-
+The first argument is **required** which is the path to the root of your project (generally `__dirname`).
 **Config options:**
 
-```json
+```js
 {
   disableModuleResolution: boolean, // determines if you want the module resolution enabled
   emberDataVersionRequiresPackagesPolyfill: boolean, // enable ember data's polyfill
   shouldIgnoreJQuery: boolean, // ignore jQuery
   shouldIgnoreEmberString: boolean, // ignore ember string
+  shouldIgnoreDecoratorAndClassPlugins: boolean, // disable decorator plugins
   disableEmberModulesAPIPolyfill: boolean, // disable ember modules API polyfill
 }
 ```

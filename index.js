@@ -33,7 +33,9 @@ let count = 0;
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
-  emberPlugins,
+  // Note: This is not used internally for this addon, this is added for users to import this function for getting the ember specific
+  // babel plugins. Eg: adding ember specific babel plugins in their babel.config.js.
+  buildEmberPlugins: emberPlugins,
 
   init() {
     this._super.init && this._super.init.apply(this, arguments);
@@ -84,8 +86,7 @@ module.exports = {
        sourceMaps,
        throwUnlessParallelizable,
        filterExtensions: _getExtensions(config, this.parent),
-       plugins: [],
-       presets: []
+       plugins: []
      };
 
      if (shouldCompileModules) {
