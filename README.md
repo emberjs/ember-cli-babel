@@ -314,7 +314,7 @@ let app = new EmberAddon(defaults, {
 ```js
 //babel.config.js
 
-const { emberPlugins } = require("ember-cli-babel");
+const { buildEmberPlugins } = require("ember-cli-babel");
 
 module.exports = function (api) {
   api.cache(true);
@@ -339,7 +339,7 @@ module.exports = function (api) {
         },
       ],
       // this is where all the ember required plugins would reside
-      ...emberPlugins(__dirname, { ...options }),
+      ...buildEmberPlugins(__dirname, { /*customOptions if you want to pass in */ }),
     ],
   };
 };

@@ -19,15 +19,6 @@ const emberPlugins = require('./lib/ember-plugins');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 
-// Ref: https://github.com/babel/babel/blob/c6aea4e85d2b8f3e82575642d30b01c8cbe112a9/packages/babel-core/src/config/files/configuration.js#L24
-// supported babel config root filenames.
-const ROOT_CONFIG_FILENAMES = [
-  "babel.config.js",
-  "babel.config.cjs",
-  "babel.config.mjs",
-  "babel.config.json",
-];
-
 let count = 0;
 
 module.exports = {
@@ -96,6 +87,7 @@ module.exports = {
 
      options.highlightCode = _shouldHighlightCode(this.parent);
      options.babelrc = false;
+     options.configFile = false;
 
      return options;
   },
@@ -108,16 +100,31 @@ module.exports = {
     let options = this._getDefaultBabelOptions(config);
     let output;
 
-    const babelConfigFile = ROOT_CONFIG_FILENAMES.find((fileName) =>
-      fs.existsSync(path.resolve(this.parent.root, fileName))
-    );
-
     const customAddonConfig = config['ember-cli-babel'];
-    const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig && babelConfigFile;
-
+    const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
+    
     if (shouldUseBabelConfigFile) {
+      // Ref: https://github.com/babel/babel/blob/c6aea4e85d2b8f3e82575642d30b01c8cbe112a9/packages/babel-core/src/config/files/configuration.js#L24
+      // supported babel config root filenames.
+      const ROOT_CONFIG_FILENAMES = [
+        "babel.config.js",
+        "babel.config.cjs",
+        "babel.config.mjs",
+        "babel.config.json",
+      ].map(fileName => path.resolve(this.parent.root, fileName));
+      
+      const babelConfigFile = ROOT_CONFIG_FILENAMES.find((fileName) =>
+        fs.existsSync(fileName)
+      );
+      if (!babelConfigFile) {
+        throw new Error(
+          "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
+        );
+      }
       options = Object.assign({}, options, {
-        "presets":[ require.resolve(path.resolve(this.parent.root, babelConfigFile)) ],
+        presets: [
+          require.resolve(babelConfigFile),
+        ],
       });
     } else {
       options = Object.assign({}, options, this.buildBabelOptions(config));
