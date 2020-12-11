@@ -12,8 +12,9 @@ const findApp = require('./lib/find-app');
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 
 let count = 0;
+let instanceCounter = 0;
 
-module.exports = {
+const emberCLIBabelProto = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
 
@@ -26,6 +27,8 @@ module.exports = {
     if (dep.lt('2.13.0')) {
       throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
     }
+
+    this.instanceId = instanceCounter++;
   },
 
   buildBabelOptions(_config) {
@@ -307,5 +310,78 @@ module.exports = {
   // detect if running babel would do nothing... and do nothing instead
   _shouldDoNothing(options) {
     return !options.sourceMaps && !options.plugins.length;
-  }
+  },
+
+  root: __dirname,
+  pkg: require('./package.json'),
 };
+
+let EmberCLIBabelClass;
+
+function getBabelClass(project) {
+  if (EmberCLIBabelClass) {
+    return EmberCLIBabelClass;
+  }
+
+  let internalAddonPath = project.addonPackages['broccoli-serve-files'].path;
+  let addonModelPath = path.join(internalAddonPath, '../../../../models/addon');
+  let Addon = require(addonModelPath);
+
+  EmberCLIBabelClass = Addon.extend(emberCLIBabelProto);
+
+  return EmberCLIBabelClass;
+}
+
+let INSTANCE_CACHE = new WeakMap();
+
+function getInstance(parent, project) {
+  let instance = INSTANCE_CACHE.get(project);
+  if (instance !== undefined) {
+    return instance;
+  }
+
+  let SubClass = getBabelClass(project);
+
+  instance = new SubClass(parent, project);
+  INSTANCE_CACHE.set(project, instance);
+
+  return instance;
+}
+
+module.exports = function(parent, project) {
+  let context = {};
+  let instance;
+
+  let proxy = new Proxy(context, {
+    get(target, key, receiver) {
+      switch (key) {
+        case 'setupPreprocessorRegistry':
+          // always register a processor, that will **lazily** use our instance
+
+          return (type, registry) => {
+            registry.add('js', {
+              name: 'ember-cli-babel',
+              // TODO: use new utility methods instead of hard coding
+              ext: ['js','ts'],
+              toTree: (tree) => instance.transpileTree(tree)
+            });
+          };
+        case 'included':
+          // determine if we can use a shared singleton, or not
+
+          break;
+        default:
+          return instance[key];
+      }
+    },
+
+    set(target, key, receiver) {
+      // TODO: this is almost certainly incorrect, but it at least gives us
+      // _some_ information about what is being set
+      throw new Error(`[ember-cli-babel] cannot set ${key}`);
+    }
+  });
+
+  return proxy;
+
+}
