@@ -1605,14 +1605,11 @@ describe('babel config file', function() {
         return prepareAddon(addon);
       });
       let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.files['babel.config.js'] = `module.exports = function (api) {
-        api.cache(true);
-        return {
+      fixturifyProject.files['babel.config.js'] = `module.exports = {
           plugins: [
             ${plugins}
           ],
         };
-      };
       `;
       fixturifyProject.writeSync();
 

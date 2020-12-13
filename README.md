@@ -316,33 +316,33 @@ let app = new EmberAddon(defaults, {
 
 const { buildEmberPlugins } = require("ember-cli-babel");
 
-module.exports = function (api) {
-  api.cache(true);
-
-  return {
+module.exports = {
     presets: [
       [
-        require.resolve("@babel/preset-env"),
+        "@babel/preset-env",
         {
           targets: require("./config/targets"),
+
+          // do we still need to disable this and manually add modules plugins in the plugins array below?
+          modules: false,
         },
       ],
     ],
     plugins: [
-      // if you want external helpers
+      // if they need/want external helpers
       [
-        require.resolve("@babel/plugin-transform-runtime"),
+        "@babel/plugin-transform-runtime",
         {
-          version: require("@babel/plugin-transform-runtime/package").version,
+          version: "7.12.5",
           regenerator: false,
           useESModules: true,
         },
       ],
-      // this is where all the ember required plugins would reside
-      ...buildEmberPlugins(__dirname, { /*customOptions if you want to pass in */ }),
+
+      // eslint-disable-next-line no-undef
+      ...buildEmberPlugins(__dirname, {}),
     ],
   };
-};
 ```
 
 #### Ember Plugins
