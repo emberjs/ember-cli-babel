@@ -11,6 +11,7 @@ const {
 
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
+const babel = require('@babel/core');
 const path = require('path');
 const fs = require('fs'); 
 const getBabelOptions = require('./lib/get-babel-options');
@@ -92,33 +93,6 @@ module.exports = {
      return options;
   },
 
-  /**
-   * Returns the JSON config of the babel config file.
-   * If its a json config, then return the parsed JSON back
-   * If its a JS config, then load it and return it based on whether its a function or an object.
-   * @param {string} fp babel config file path
-   */
-  _readConfig(fp) {
-    const fileExt = path.extname(fp);
-    switch (fileExt) {
-      case ".json":
-        return JSON.parse(fs.readFileSync(fp));
-      case ".js":
-        try {
-          // eslint-disable-next-line global-require,import/no-dynamic-require
-          const configModule = require(fp);
-          const configJS =
-            configModule && configModule.__esModule
-              ? configModule.default || undefined
-              : configModule;
-          // if the babel config is a function then invoke it, else return the json config.
-          return typeof configJS === "function" ? configJS() : configJS;
-        } catch (error) {
-          error.message = `${fp}: Error while loading config = ${error.message}`;
-          throw error;
-        }
-    }
-  },
   transpileTree(inputTree, _config) {
 
     let config = _config || this._getAddonOptions();
@@ -131,24 +105,24 @@ module.exports = {
     const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
     
     if (shouldUseBabelConfigFile) {
-      // Ref: https://github.com/babel/babel/blob/c6aea4e85d2b8f3e82575642d30b01c8cbe112a9/packages/babel-core/src/config/files/configuration.js#L24
-      // supported babel config root filenames.
-      const ROOT_CONFIG_FILENAMES = [
-        "babel.config.js",
-        "babel.config.cjs",
-        "babel.config.mjs",
-        "babel.config.json",
-      ].map(fileName => path.resolve(this.parent.root, fileName));
+      let babelConfig = babel.loadPartialConfig({
+        root: this.parent.root,
+        rootMode: 'root',
+        envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
+      });
       
-      const babelConfigFile = ROOT_CONFIG_FILENAMES.find((fileName) =>
-        fs.existsSync(fileName)
-      );
-      if (!babelConfigFile) {
+      if (babelConfig.config === undefined) {
+        // should contain the file that we used for the config, 
+        // if it is undefined then we didn't find any config and
+        // should error
+      
         throw new Error(
           "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
         );
       }
-      options = Object.assign({}, options, this._readConfig(babelConfigFile));
+      // If the babel config file is found, then pass the path into the options for the transpiler
+      // parse and leverage the same.
+      options = Object.assign({}, options, { configFile: babelConfig.config });
     } else {
       options = Object.assign({}, options, this.buildBabelOptions(config));
     }

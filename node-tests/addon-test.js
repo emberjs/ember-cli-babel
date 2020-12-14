@@ -8,6 +8,7 @@ const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
+const { ensureSymlinkSync } = require('fs-extra');
 const FixturifyProject = require('fixturify-project');
 const EmberProject = require('ember-cli/lib/models/project');
 const MockCLI = require('ember-cli/tests/helpers/mock-cli');
@@ -1605,13 +1606,45 @@ describe('babel config file', function() {
         return prepareAddon(addon);
       });
       let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.files['babel.config.js'] = `module.exports = {
+      fixturifyProject.files['babel.config.js'] = 
+      `module.exports = function (api) {
+        api.cache(true);
+        return {
           plugins: [
             ${plugins}
           ],
         };
+      };
       `;
-      fixturifyProject.writeSync();
+      const packageDir = path.dirname(require.resolve(path.join("@babel/plugin-transform-modules-amd", 'package.json')));
+      // symlink the "@babel/plugin-transform-modules-amd" dependency into the project
+      // TODO: Move this function out so that it can be used by other tests in the future.
+      const writeSync = function () {
+        let stack = [];
+        fixturifyProject.writeSync();
+        ensureSymlinkSync(
+          packageDir,
+          path.join(
+            fixturifyProject.root,
+            fixturifyProject.name,
+            "node_modules",
+            "@babel/plugin-transform-modules-amd"
+          ),
+          "dir"
+        );
+        for (let dep of fixturifyProject.dependencies()) {
+          stack.push({
+            project: dep,
+            root: path.join(
+              fixturifyProject.root,
+              fixturifyProject.name,
+              "node_modules"
+            ),
+          });
+        }
+      };
+
+      writeSync(fixturifyProject)
 
       let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
@@ -1652,7 +1685,7 @@ describe('babel config file', function() {
 
   it("should transpile to amd modules based on babel config", co.wrap(function* () {
     yield setupForVersion(`[
-      "@babel/plugin-transform-modules-amd",
+      require.resolve("@babel/plugin-transform-modules-amd"),
       { noInterop: true },
     ]`);
     input.write({
