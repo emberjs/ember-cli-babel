@@ -13,7 +13,6 @@ const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const babel = require('@babel/core');
 const path = require('path');
-const fs = require('fs'); 
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
