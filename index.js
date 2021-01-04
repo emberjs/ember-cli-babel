@@ -1,13 +1,21 @@
 'use strict';
 
+const {
+  _shouldCompileModules,
+  _shouldIncludeHelpers,
+  _shouldHandleTypeScript,
+  _getExtensions,
+  _parentName,
+  _shouldHighlightCode,
+} = require("./lib/babel-options-util");
+
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
+const babel = require('@babel/core');
 const path = require('path');
-const semver = require('semver');
-
-const defaultShouldIncludeHelpers = require('./lib/default-should-include-helpers');
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
+const emberPlugins = require('./lib/ember-plugins');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 
@@ -16,6 +24,9 @@ let count = 0;
 module.exports = {
   name: 'ember-cli-babel',
   configKey: 'ember-cli-babel',
+  // Note: This is not used internally for this addon, this is added for users to import this function for getting the ember specific
+  // babel plugins. Eg: adding ember specific babel plugins in their babel.config.js.
+  buildEmberPlugins: emberPlugins,
 
   init() {
     this._super.init && this._super.init.apply(this, arguments);
@@ -24,7 +35,7 @@ module.exports = {
     let dep = checker.for('ember-cli', 'npm');
 
     if (dep.lt('2.13.0')) {
-      throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+      throw new Error(`ember-cli-babel@7 (used by ${_parentName(this.parent)} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
     }
   },
 
@@ -35,31 +46,97 @@ module.exports = {
 
   _debugTree() {
     if (!this._cachedDebugTree) {
-      this._cachedDebugTree = require('broccoli-debug').buildDebugCallback(`ember-cli-babel:${this._parentName()}`);
+      this._cachedDebugTree = require('broccoli-debug').buildDebugCallback(`ember-cli-babel:${_parentName(this.parent)}`);
     }
 
     return this._cachedDebugTree.apply(null, arguments);
   },
 
+  /**
+   * Default babel options
+   * @param {*} config 
+   */
+  _getDefaultBabelOptions(config = {}) {
+     let emberCLIBabelConfig = config["ember-cli-babel"];
+     let providedAnnotation;
+     let throwUnlessParallelizable;
+     let sourceMaps = false;
+     let shouldCompileModules = _shouldCompileModules(config, this.project);
+
+     if (emberCLIBabelConfig) {
+       providedAnnotation = emberCLIBabelConfig.annotation;
+       throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
+     }
+ 
+     if (config.babel && "sourceMaps" in config.babel) {
+       sourceMaps = config.babel.sourceMaps;
+     }
+
+     let options = {
+       annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
+       sourceMaps,
+       throwUnlessParallelizable,
+       filterExtensions: _getExtensions(config, this.parent),
+       plugins: []
+     };
+
+     if (shouldCompileModules) {
+       options.moduleIds = true;
+       options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+     }
+
+     options.highlightCode = _shouldHighlightCode(this.parent);
+     options.babelrc = false;
+     options.configFile = false;
+
+     return options;
+  },
+
   transpileTree(inputTree, _config) {
+
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-
-    let options = this.buildBabelOptions(config);
+    let options = this._getDefaultBabelOptions(config);
     let output;
-    if (this._shouldDoNothing(options)) {
+
+    const customAddonConfig = config['ember-cli-babel'];
+    const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
+    
+    if (shouldUseBabelConfigFile) {
+      let babelConfig = babel.loadPartialConfig({
+        root: this.parent.root,
+        rootMode: 'root',
+        envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
+      });
+      
+      if (babelConfig.config === undefined) {
+        // should contain the file that we used for the config, 
+        // if it is undefined then we didn't find any config and
+        // should error
+      
+        throw new Error(
+          "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
+        );
+      }
+      // If the babel config file is found, then pass the path into the options for the transpiler
+      // parse and leverage the same.
+      options = Object.assign({}, options, { configFile: babelConfig.config });
+    } else {
+      options = Object.assign({}, options, this.buildBabelOptions(config));
+    }
+
+    if (!shouldUseBabelConfigFile && this._shouldDoNothing(options)) {
       output = postDebugTree;
     } else {
       let BabelTranspiler = require('broccoli-babel-transpiler');
       let transpilationInput = postDebugTree;
 
-      if (this._shouldHandleTypeScript(config)) {
+      if (_shouldHandleTypeScript(config, this.parent)) {
         let Funnel = require('broccoli-funnel');
         let inputWithoutDeclarations = new Funnel(transpilationInput, { exclude: ['**/*.d.ts'] });
         transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
       }
-
       output = new BabelTranspiler(transpilationInput, options);
     }
 
@@ -69,7 +146,7 @@ module.exports = {
   setupPreprocessorRegistry(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
-      ext: this._getExtensions(this._getAddonOptions()),
+      ext: _getExtensions(this._getAddonOptions(), this.parent),
       toTree: (tree) => this.transpileTree(tree)
     });
   },
@@ -98,36 +175,6 @@ module.exports = {
     }
   },
 
-  _shouldIncludeHelpers(options) {
-    let appOptions = this._getAppOptions();
-    let customOptions = appOptions['ember-cli-babel'];
-
-    let shouldIncludeHelpers = false;
-
-    if (!this._shouldCompileModules(options)) {
-      // we cannot use external helpers if we are not transpiling modules
-      return false;
-    } else if (customOptions && 'includeExternalHelpers' in customOptions) {
-      shouldIncludeHelpers = customOptions.includeExternalHelpers === true;
-    } else {
-      // Check the project to see if we should include helpers based on heuristics.
-      shouldIncludeHelpers = defaultShouldIncludeHelpers(this.project);
-    }
-
-    let appEmberCliBabelPackage = this.project.addons.find(a => a.name === 'ember-cli-babel').pkg;
-    let appEmberCliBabelVersion = appEmberCliBabelPackage && appEmberCliBabelPackage.version;
-
-    if (appEmberCliBabelVersion && semver.gte(appEmberCliBabelVersion, '7.3.0-beta.1')) {
-      return shouldIncludeHelpers;
-    } else if (shouldIncludeHelpers) {
-      this.project.ui.writeWarnLine(
-        `${this._parentName()} attempted to include external babel helpers to make your build size smaller, but your root app's ember-cli-babel version is not high enough. Please update ember-cli-babel to v7.3.0-beta.1 or later.`
-      );
-    }
-
-    return false;
-  },
-
   _getHelperVersion() {
     if (!APP_BABEL_RUNTIME_VERSION.has(this.project)) {
       let checker = new VersionChecker(this.project);
@@ -154,7 +201,7 @@ module.exports = {
     // Helpers are a global config, so only the root application should bother
     // generating and including the file.
     let isRootBabel = this.parent === this.project;
-    let shouldIncludeHelpers = isRootBabel && this._shouldIncludeHelpers(this._getAppOptions());
+    let shouldIncludeHelpers = isRootBabel && _shouldIncludeHelpers(this._getAppOptions(), this);
 
     if (!shouldIncludeHelpers) { return; }
 
@@ -233,37 +280,6 @@ module.exports = {
     return (app && app.options) || {};
   },
 
-  _parentName() {
-    let parentName;
-
-    if (this.parent) {
-      if (typeof this.parent.name === 'function') {
-        parentName = this.parent.name();
-      } else {
-        parentName = this.parent.name;
-      }
-    }
-
-    return parentName;
-  },
-
-  _getExtensions(config) {
-    let shouldHandleTypeScript = this._shouldHandleTypeScript(config);
-    let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-    return emberCLIBabelConfig.extensions || (shouldHandleTypeScript ? ['js', 'ts'] : ['js']);
-  },
-
-  _shouldHandleTypeScript(config) {
-      let emberCLIBabelConfig = config['ember-cli-babel'] || {};
-      if (typeof emberCLIBabelConfig.enableTypeScriptTransform === 'boolean') {
-        return emberCLIBabelConfig.enableTypeScriptTransform;
-      }
-      let typeScriptAddon = this.parent.addons
-        && this.parent.addons.find(a => a.name === 'ember-cli-typescript');
-      return typeof typeScriptAddon !== 'undefined'
-        && semver.gte(typeScriptAddon.pkg.version, '4.0.0-alpha.1');
-  },
-
   _getTargets() {
     let targets = this.project && this.project.targets;
 
@@ -290,18 +306,7 @@ module.exports = {
    * @method shouldCompileModules
    */
   shouldCompileModules() {
-    return this._shouldCompileModules(this._getAddonOptions());
-  },
-
-  // will use any provided configuration
-  _shouldCompileModules(options) {
-    let addonOptions = options['ember-cli-babel'];
-
-    if (addonOptions && 'compileModules' in addonOptions) {
-      return addonOptions.compileModules;
-    } else {
-      return semver.gt(this.project.emberCLIVersion(), '2.12.0-alpha.1');
-    }
+    return _shouldCompileModules(this._getAddonOptions(), this.project);
   },
 
   // detect if running babel would do nothing... and do nothing instead

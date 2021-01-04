@@ -8,6 +8,7 @@ const CoreObject = require('core-object');
 const AddonMixin = require('../index');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
+const { ensureSymlinkSync } = require('fs-extra');
 const FixturifyProject = require('fixturify-project');
 const EmberProject = require('ember-cli/lib/models/project');
 const MockCLI = require('ember-cli/tests/helpers/mock-cli');
@@ -19,6 +20,12 @@ const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
 const clone = require('clone');
+const {
+  _shouldHandleTypeScript,
+  _shouldIncludeHelpers,
+  _shouldCompileModules,
+  _getExtensions
+} = require("../lib/babel-options-util");
 
 function prepareAddon(addon) {
   addon.pkg.keywords.push('ember-addon');
@@ -801,7 +808,7 @@ describe('ember-cli-babel', function() {
 
   describe('_shouldHandleTypeScript', function() {
     it('should return false by default', function() {
-      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.false;
     });
     it('should return true when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
@@ -810,7 +817,7 @@ describe('ember-cli-babel', function() {
           version: '4.0.0-alpha.1',
         },
       });
-      expect(this.addon._shouldHandleTypeScript({})).to.be.true;
+      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.true;
     });
     it('should return false when ember-cli-typescript < 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
@@ -819,13 +826,13 @@ describe('ember-cli-babel', function() {
           version: '3.0.0',
         },
       });
-      expect(this.addon._shouldHandleTypeScript({})).to.be.false;
+      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.false;
     });
     it('should return true when the TypeScript transform is manually enabled', function() {
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } })).to.be.true;
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } }, this.addon.parent)).to.be.true;
     });
     it('should return false when the TypeScript transforms is manually disabled', function() {
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent)).to.be.false;
     });
     it('should return false when the TypeScript transform is manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
       this.addon.parent.addons.push({
@@ -834,7 +841,7 @@ describe('ember-cli-babel', function() {
           version: '4.0.0-alpha.1',
         },
       });
-      expect(this.addon._shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } })).to.be.false;
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent)).to.be.false;
     });
   });
 
@@ -846,13 +853,13 @@ describe('ember-cli-babel', function() {
     });
 
     it('should return false without any includeExternalHelpers option set', function() {
-      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
     });
 
     it('should throw an error with ember-cli-babel.includeExternalHelpers = true in parent', function() {
       this.addon.parent.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(() => this.addon._shouldIncludeHelpers({})).to.throw;
+      expect(() => _shouldIncludeHelpers({}, this.addon)).to.throw;
     });
 
     it('should return true with ember-cli-babel.includeExternalHelpers = true in app and ember-cli-version is high enough', function() {
@@ -860,7 +867,7 @@ describe('ember-cli-babel', function() {
 
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(this.addon._shouldIncludeHelpers({})).to.be.true;
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.true;
     });
 
     it('should return false when compileModules is false', function() {
@@ -869,9 +876,9 @@ describe('ember-cli-babel', function() {
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
       // precond
-      expect(this.addon._shouldIncludeHelpers({})).to.be.true;
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.true;
 
-      expect(this.addon._shouldIncludeHelpers({ 'ember-cli-babel': { compileModules: false } })).to.be.false;
+      expect(_shouldIncludeHelpers({ 'ember-cli-babel': { compileModules: false } }, this.addon)).to.be.false;
     });
 
     it('should return false with ember-cli-babel.includeExternalHelpers = true in app and write warn line if ember-cli-version is not high enough', function() {
@@ -884,13 +891,13 @@ describe('ember-cli-babel', function() {
 
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: true } };
 
-      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
     });
 
     it('should return false with ember-cli-babel.includeExternalHelpers = false in host', function() {
       this.addon.app.options = { 'ember-cli-babel': { includeExternalHelpers: false } };
 
-      expect(this.addon._shouldIncludeHelpers({})).to.be.false;
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
     });
 
     describe('autodetection', function() {
@@ -902,7 +909,7 @@ describe('ember-cli-babel', function() {
           }
         });
 
-        expect(this.addon._shouldIncludeHelpers({})).to.be.true;
+        expect(_shouldIncludeHelpers({}, this.addon)).to.be.true;
       });
 
       it('should return false if @ember-decorators/babel-transforms exists and write warn line if ember-cli-version is not high enough', function() {
@@ -919,7 +926,7 @@ describe('ember-cli-babel', function() {
           }
         });
 
-        expect(this.addon._shouldIncludeHelpers({})).to.be.false;
+        expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
       });
     })
   });
@@ -958,15 +965,15 @@ describe('ember-cli-babel', function() {
 
     describe('with ember-cli-babel.compileModules = true', function() {
       it('should return true', function() {
-        expect(this.addon._shouldCompileModules({
+        expect(_shouldCompileModules({
           'ember-cli-babel': { compileModules: true }
-        })).to.eql(true);
+        }, this.addon.project)).to.eql(true);
       });
 
       it('should not print deprecation messages', function() {
-        this.addon._shouldCompileModules({
+        _shouldCompileModules({
           'ember-cli-babel': { compileModules: true }
-        });
+        }, this.addon.project);
 
         let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
           return line.indexOf('Putting the "compileModules" option in "babel" is deprecated') !== -1;
@@ -1004,18 +1011,17 @@ describe('ember-cli-babel', function() {
 
   describe('_getExtensions', function() {
     it('defaults to js only', function() {
-      expect(this.addon._getExtensions({})).to.have.members(['js']);
+      expect(_getExtensions({}, this.addon.parent)).to.have.members(['js']);
     });
     it('adds ts automatically', function() {
       this.addon._shouldHandleTypeScript = function() { return true; }
-      expect(this.addon._getExtensions({})).to.have.members(['js', 'ts']);
+      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true }}, this.addon.parent)).to.have.members(['js', 'ts']);
     });
     it('respects user-configured extensions', function() {
-      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
+      expect(_getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } }, this.addon.parent)).to.have.members(['coffee']);
     });
     it('respects user-configured extensions even when adding TS plugin', function() {
-      this.addon._shouldHandleTypeScript = function() { return true; }
-      expect(this.addon._getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } })).to.have.members(['coffee']);
+      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true, extensions: ['coffee'] } }, this.addon.parent)).to.have.members(['coffee']);
     });
   });
 
@@ -1025,7 +1031,7 @@ describe('ember-cli-babel', function() {
     it('disables reading `.babelrc`', function() {
       let options = {};
 
-      let result = this.addon.buildBabelOptions(options);
+      let result = this.addon._getDefaultBabelOptions(options);
 
       expect(result.babelrc).to.be.false;
     });
@@ -1035,7 +1041,7 @@ describe('ember-cli-babel', function() {
         name: 'derpy-herpy',
         dependencies() { return {}; },
       });
-      let result = this.addon.buildBabelOptions();
+      let result = this.addon._getDefaultBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
@@ -1044,7 +1050,7 @@ describe('ember-cli-babel', function() {
         name: 'derpy-herpy',
         dependencies() { return {}; },
       });
-      let result = this.addon.buildBabelOptions();
+      let result = this.addon._getDefaultBabelOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
@@ -1055,7 +1061,7 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      let result = this.addon.buildBabelOptions(options);
+      let result = this.addon._getDefaultBabelOptions(options);
       expect(result.annotation).to.equal('Hello World!');
     });
 
@@ -1066,14 +1072,14 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      let result = this.addon.buildBabelOptions(options);
+      let result = this.addon._getDefaultBabelOptions(options);
       expect(result.sourceMaps).to.equal('inline');
     });
 
     it('disables reading `.babelrc`', function() {
       let options = {};
 
-      let result = this.addon.buildBabelOptions(options);
+      let result = this.addon._getDefaultBabelOptions(options);
 
       expect(result.babelrc).to.be.false;
     });
@@ -1171,22 +1177,28 @@ describe('ember-cli-babel', function() {
     });
 
     it('includes resolveModuleSource if compiling modules', function() {
-      this.addon._shouldCompileModules = () => true;
 
       let expectedPlugin = require.resolve('babel-plugin-module-resolver');
 
-      let result = this.addon.buildBabelOptions();
+      let result = this.addon.buildBabelOptions({
+        'ember-cli-babel': {
+          compileModules: true,
+        }
+      });
       let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
 
       expect(typeof found[1].resolvePath).to.equal('function');
     });
 
     it('does not include resolveModuleSource when not compiling modules', function() {
-      this.addon._shouldCompileModules = () => false;
 
       let expectedPlugin = require('babel-plugin-module-resolver').default;
 
-      let result = this.addon.buildBabelOptions();
+      let result = this.addon.buildBabelOptions({
+        'ember-cli-babel': {
+          compileModules: false,
+        }
+      });
       let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
 
       expect(found).to.equal(undefined);
@@ -1572,6 +1584,165 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       });
     }));
   });
+});
+
+describe('babel config file', function() {
+  this.timeout(0);
+
+  let input;
+  let output;
+  let subject;
+  let setupForVersion;
+  let project;
+  let unlink;
+
+  beforeEach(function() {
+    let self = this;
+    setupForVersion = co.wrap(function*(plugins) {
+      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+      
+      fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+      fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
+        return prepareAddon(addon);
+      });
+      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+      fixturifyProject.files['babel.config.js'] = 
+      `module.exports = function (api) {
+        api.cache(true);
+        return {
+          plugins: [
+            ${plugins}
+          ],
+        };
+      };
+      `;
+      const packageDir = path.dirname(require.resolve(path.join("@babel/plugin-transform-modules-amd", 'package.json')));
+      // symlink the "@babel/plugin-transform-modules-amd" dependency into the project
+      // TODO: Move this function out so that it can be used by other tests in the future.
+      const writeSync = function () {
+        let stack = [];
+        fixturifyProject.writeSync();
+        ensureSymlinkSync(
+          packageDir,
+          path.join(
+            fixturifyProject.root,
+            fixturifyProject.name,
+            "node_modules",
+            "@babel/plugin-transform-modules-amd"
+          ),
+          "dir"
+        );
+        for (let dep of fixturifyProject.dependencies()) {
+          stack.push({
+            project: dep,
+            root: path.join(
+              fixturifyProject.root,
+              fixturifyProject.name,
+              "node_modules"
+            ),
+          });
+        }
+      };
+
+      writeSync(fixturifyProject)
+
+      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
+      let addonPath = path.resolve(__dirname, '../');
+      rimraf.sync(linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
+      unlink = () => {
+        fs.unlinkSync(linkPath);
+      };
+
+      let cli = new MockCLI();
+      let root = path.join(fixturifyProject.root, 'whatever');
+      project = new EmberProject(root, pkg, cli.ui, cli);
+      project.initializeAddons();
+
+      self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+      self.addon.parent.options = {
+        "ember-cli-babel": { useBabelConfig: true },
+      };
+
+      input = yield createTempDir();
+    });
+  });
+
+  afterEach(co.wrap(function*() {
+    unlink();
+
+    if (input) {
+      yield input.dispose();
+    }
+
+    if (output) {
+      yield output.dispose();
+    }
+
+    // shut down workers after the tests are run so that mocha doesn't hang
+    yield terminateWorkerPool();
+  }));
+
+  it("should transpile to amd modules based on babel config", co.wrap(function* () {
+    yield setupForVersion(`[
+      require.resolve("@babel/plugin-transform-modules-amd"),
+      { noInterop: true },
+    ]`);
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(output.read()).to.deep.equal({
+      "foo.js": `define(\"foo\", [\"exports\"], function (_exports) {\n  \"use strict\";\n\n  Object.defineProperty(_exports, \"__esModule\", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});`,
+    });
+  }));
+
+  it("should not transpile to amd modules based on babel config", co.wrap(function* () {
+    yield setupForVersion('');
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "foo.js": "export default {};"
+    });
+  }));
+
+  it("should not use babel config (even if present) if the 'useBabelConfig' option is set to false", co.wrap(function* () {
+    yield setupForVersion(`[
+      "@babel/plugin-transform-modules-amd",
+      { noInterop: true },
+    ]`);
+
+    this.addon.parent.options = {
+      "ember-cli-babel": { useBabelConfig: false },
+    };
+    input.write({
+      "foo.js": `export default {};`,
+    });
+
+    subject = this.addon.transpileTree(input.path());
+    output = createBuilder(subject);
+
+    yield output.build();
+
+    expect(output.read()).to.deep.equal({
+      "foo.js":
+        'define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});',
+    });
+  }));
 });
 
 function leftPad(str, num) {

@@ -18,6 +18,7 @@ allow you to use latest Javascript in your Ember CLI project.
     + [Modules](#modules)
     + [Disabling Debug Tooling Support](#disabling-debug-tooling-support)
     + [Enabling TypeScript Transpilation](#enabling-typescript-transpilation)
+  * [Babel config file usage](#babel-config-usage)  
   * [Addon usage](#addon-usage)
     + [Adding Custom Plugins](#adding-custom-plugins)
     + [Additional Trees](#additional-trees)
@@ -291,7 +292,75 @@ module.exports = function(defaults) {
   return app.toTree();
 }
 ```
+### Babel config usage
 
+If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` as a child property of `ember-cli-babel` in your `ember-cli-build.js` file.
+
+*Note: If you are using this option, then you have to make sure that you are adding all of the required plugins required for Ember to transpile correctly.*
+
+Example usage:
+
+```js
+//ember-cli-build.js
+
+let app = new EmberAddon(defaults, {
+  "ember-cli-babel": {
+    useBabelConfig: true,
+    // ember-cli-babel related options
+  },
+});
+```
+
+```js
+//babel.config.js
+
+const { buildEmberPlugins } = require("ember-cli-babel");
+
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [
+      [
+        require.resolve("@babel/preset-env"),
+        {
+          targets: require("./config/targets"),
+        },
+      ],
+    ],
+    plugins: [
+      // if you want external helpers
+      [
+        require.resolve("@babel/plugin-transform-runtime"),
+        {
+          version: require("@babel/plugin-transform-runtime/package").version,
+          regenerator: false,
+          useESModules: true,
+        },
+      ],
+      // this is where all the ember required plugins would reside
+      ...buildEmberPlugins(__dirname, { /*customOptions if you want to pass in */ }),
+    ],
+  };
+};
+```
+
+#### Ember Plugins
+
+Ember Plugins is a helper function that returns a list of plugins that are required for transpiling Ember correctly. You can import this helper function and add it to your existing `babel.config` file.
+The first argument is **required** which is the path to the root of your project (generally `__dirname`).
+**Config options:**
+
+```js
+{
+  disableModuleResolution: boolean, // determines if you want the module resolution enabled
+  emberDataVersionRequiresPackagesPolyfill: boolean, // enable ember data's polyfill
+  shouldIgnoreJQuery: boolean, // ignore jQuery
+  shouldIgnoreEmberString: boolean, // ignore ember string
+  shouldIgnoreDecoratorAndClassPlugins: boolean, // disable decorator plugins
+  disableEmberModulesAPIPolyfill: boolean, // disable ember modules API polyfill
+}
+```
 ### Addon usage
 
 #### Adding Custom Plugins
