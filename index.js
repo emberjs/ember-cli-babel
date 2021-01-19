@@ -330,6 +330,7 @@ module.exports = {
 
     options.highlightCode = this._shouldHighlightCode();
     options.babelrc = false;
+    options.configFile = false;
 
     return options;
   },
