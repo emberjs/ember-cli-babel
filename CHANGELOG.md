@@ -6,6 +6,16 @@
 #### Committers: 1
 - Suchita Doshi ([@suchitadoshi1987](https://github.com/suchitadoshi1987))
 
+## v7.23.1 (2021-01-19)
+
+#### :bug: Bug Fix
+* [#378](https://github.com/babel/ember-cli-babel/pull/378) Ensure decorators are transpiled properly when the decorator identifier is aliased within the decorated method ([@rwjblue](https://github.com/rwjblue))
+* [#377](https://github.com/babel/ember-cli-babel/pull/377) Avoid repeatedly checking the `ember-cli` version ([@rwjblue](https://github.com/rwjblue))
+* [#376](https://github.com/babel/ember-cli-babel/pull/376) Ensure `babel.config.js` is not used without `useBabelConfig` option ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.23.0 (2020-10-15)
 
 #### :rocket: Enhancement
