@@ -1,3 +1,11 @@
+## v7.24.0-beta.1 (2021-01-19)
+
+#### :rocket: Enhancement
+* [#371](https://github.com/babel/ember-cli-babel/pull/371) Adds support for babel config file ([@suchitadoshi1987](https://github.com/suchitadoshi1987))
+
+#### Committers: 1
+- Suchita Doshi ([@suchitadoshi1987](https://github.com/suchitadoshi1987))
+
 ## v7.23.0 (2020-10-15)
 
 #### :rocket: Enhancement
