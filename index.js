@@ -18,6 +18,7 @@ const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
+const PROJECTS_WITH_VALID_EMBER_CLI = new WeakSet();
 
 let count = 0;
 
@@ -31,11 +32,15 @@ module.exports = {
   init() {
     this._super.init && this._super.init.apply(this, arguments);
 
-    let checker = new VersionChecker(this);
-    let dep = checker.for('ember-cli', 'npm');
+    if (!PROJECTS_WITH_VALID_EMBER_CLI.has(this.project)) {
+      let checker = new VersionChecker(this);
+      let dep = checker.for('ember-cli', 'npm');
 
-    if (dep.lt('2.13.0')) {
-      throw new Error(`ember-cli-babel@7 (used by ${_parentName(this.parent)} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+      if (dep.lt('2.13.0')) {
+        throw new Error(`ember-cli-babel@7 (used by ${_parentName(this.parent)} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+      }
+
+      PROJECTS_WITH_VALID_EMBER_CLI.add(this.project);
     }
   },
 
@@ -54,7 +59,7 @@ module.exports = {
 
   /**
    * Default babel options
-   * @param {*} config 
+   * @param {*} config
    */
   _getDefaultBabelOptions(config = {}) {
      let emberCLIBabelConfig = config["ember-cli-babel"];
@@ -67,7 +72,7 @@ module.exports = {
        providedAnnotation = emberCLIBabelConfig.annotation;
        throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
      }
- 
+
      if (config.babel && "sourceMaps" in config.babel) {
        sourceMaps = config.babel.sourceMaps;
      }
@@ -102,19 +107,19 @@ module.exports = {
 
     const customAddonConfig = config['ember-cli-babel'];
     const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
-    
+
     if (shouldUseBabelConfigFile) {
       let babelConfig = babel.loadPartialConfig({
         root: this.parent.root,
         rootMode: 'root',
         envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
       });
-      
+
       if (babelConfig.config === undefined) {
-        // should contain the file that we used for the config, 
+        // should contain the file that we used for the config,
         // if it is undefined then we didn't find any config and
         // should error
-      
+
         throw new Error(
           "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
         );
