@@ -9,6 +9,7 @@ const defaultShouldIncludeHelpers = require('./lib/default-should-include-helper
 const findApp = require('./lib/find-app');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
+const PROJECTS_WITH_VALID_EMBER_CLI = new WeakSet();
 
 let count = 0;
 
@@ -19,11 +20,14 @@ module.exports = {
   init() {
     this._super.init && this._super.init.apply(this, arguments);
 
-    let checker = new VersionChecker(this);
-    let dep = checker.for('ember-cli', 'npm');
+    if (!PROJECTS_WITH_VALID_EMBER_CLI.has(this.project)) {
+      let checker = new VersionChecker(this);
+      let dep = checker.for('ember-cli', 'npm');
 
-    if (dep.lt('2.13.0')) {
-      throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+      if (dep.lt('2.13.0')) {
+        throw new Error(`ember-cli-babel@7 (used by ${this._parentName()} at ${this.parent.root}) cannot be used by ember-cli versions older than 2.13, you used ${dep.version}`);
+      }
+      PROJECTS_WITH_VALID_EMBER_CLI.add(this.project);
     }
   },
 
