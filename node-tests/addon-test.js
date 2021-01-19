@@ -900,6 +900,12 @@ describe('ember-cli-babel', function() {
       expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
     });
 
+    it('should work when the host app does not include ember-cli-babel', function() {
+      this.addon.project.addons = [];
+
+      expect(_shouldIncludeHelpers({}, this.addon)).to.be.false;
+    });
+
     describe('autodetection', function() {
       it('should return true if @ember-decorators/babel-transforms exists and ember-cli-babel version is high enough', function() {
         this.addon.pkg = { version: '7.3.0-beta.1' };
