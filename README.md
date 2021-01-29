@@ -508,6 +508,15 @@ let app = new EmberAddon(defaults, {
   }
 });
 ```
+or via environment variable via
+```sh
+THROW_UNLESS_PARALLELIZABLE=1 ember serve
+```
+
+The `ember-cli-build` option is only specifying that *your* `ember-cli-babel` is parallelizable, not that all of them are.
+
+The environment variable works by instructing **all** `ember-cli-babel` instances to put themselves in parallelize mode (or throw).
+
 *Note: Future versions will enable this flag by default.*
 
 Read more about [broccoli parallel transpilation].
