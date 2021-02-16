@@ -1,3 +1,15 @@
+## v7.24.0 (2021-02-16)
+
+#### :bug: Bug Fix
+* [#381](https://github.com/babel/ember-cli-babel/pull/381) Update babel configuration dependencies. ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#380](https://github.com/babel/ember-cli-babel/pull/380) (docs) Update description of throwUnlessParallelizable option ([@SergeAstapov](https://github.com/SergeAstapov))
+
+#### Committers: 2
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+- Sergey Astapov ([@SergeAstapov](https://github.com/SergeAstapov))
+
 ## v7.23.1 (2021-01-19)
 
 #### :bug: Bug Fix
