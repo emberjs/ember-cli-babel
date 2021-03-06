@@ -214,6 +214,98 @@ describe('ember-cli-babel', function() {
         expect(contents).to.include('inspect.call');
         expect(contents).to.not.include('assert');
       }));
+
+      describe('useEmberModule', function() {
+        let dependencies;
+
+        beforeEach(function() {
+          dependencies = {};
+          let project = {
+            root: input.path(),
+            emberCLIVersion: () => '2.16.2',
+            dependencies() { return dependencies; },
+            addons: [],
+            targets: {
+              browsers: ['ie 11'],
+            },
+          };
+
+          this.addon = new Addon({
+            project,
+            parent: project,
+            ui: this.ui,
+          });
+
+          project.addons.push(this.addon);
+        });
+
+        function buildEmberSourceFixture( version ) {
+          return {
+            node_modules: {
+              'ember-source': {
+                'package.json': JSON.stringify({ name: 'ember-source', version }),
+                'index.js': 'module.exports = {};',
+              },
+            }
+          };
+        }
+
+        it("should not replace imports using useEmberModule", co.wrap(function* () {
+          const PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION = '3.26.0';
+          dependencies['ember-source'] = PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          input.write(buildEmberSourceFixture(PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION));
+          input.write({
+            "foo.js": `import Component from '@ember/component'; Component.extend()`,
+            "app.js": `import Application from '@ember/application'; Application.extend()`
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.Component.extend();\n});`,
+            "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`,
+            "node_modules": {
+              "ember-source": {
+                "index.js": "define(\"node_modules/ember-source/index\", [], function () {\n  \"use strict\";\n\n  module.exports = {};\n});",
+                "package.json": "{\"name\":\"ember-source\",\"version\":\"3.26.0\"}"
+              }
+            }
+          });
+        }));
+
+        it("should replace imports using useEmberModule", co.wrap(function* () {
+          const POST_GLOBAL_RESOLVER_DEPRECATION_VERSION = '3.27.0';
+          dependencies['ember-source'] = POST_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          input.write(buildEmberSourceFixture(POST_GLOBAL_RESOLVER_DEPRECATION_VERSION));
+          input.write({
+            "foo.js": `import Component from '@ember/component'; Component.extend()`,
+            "app.js": `import Application from '@ember/application'; Application.extend()`
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `define("foo", ["ember"], function (_ember2) {\n  "use strict";\n\n  _ember2.default.Component.extend();\n});`,
+            "app.js": `define("app", ["ember"], function (_ember2) {\n  "use strict";\n\n  _ember2.default.Application.extend();\n});`,
+            "node_modules": {
+              "ember-source": {
+                "index.js": "define(\"node_modules/ember-source/index\", [], function () {\n  \"use strict\";\n\n  module.exports = {};\n});",
+                "package.json": "{\"name\":\"ember-source\",\"version\":\"3.27.0\"}"
+              }
+            }
+          });
+        }));
+      });
     });
 
     describe('debug macros', function() {
