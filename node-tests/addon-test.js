@@ -216,6 +216,112 @@ describe('ember-cli-babel', function() {
       }));
     });
 
+    describe("Opting out of the ember modules API polyfill", function () {
+      let dependencies;
+
+      beforeEach(function () {
+        dependencies = {};
+        let project = {
+          root: input.path(),
+          emberCLIVersion: () => "2.16.2",
+          dependencies() {
+            return dependencies;
+          },
+          addons: [],
+          targets: {
+            browsers: ["ie 11"],
+          },
+        };
+
+        this.addon = new Addon({
+          project,
+          parent: project,
+          ui: this.ui,
+        });
+
+        project.addons.push(this.addon);
+      });
+
+      function buildEmberSourceFixture(version) {
+        return {
+          node_modules: {
+            "ember-source": {
+              "package.json": JSON.stringify({ name: "ember-source", version }),
+              "index.js": "module.exports = {};",
+            },
+          },
+        };
+      }
+
+      it(
+        "should replace imports with Ember Globals",
+        co.wrap(function* () {
+          const PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION = "3.26.0";
+          dependencies[
+            "ember-source"
+          ] = PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          input.write(
+            buildEmberSourceFixture(PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION)
+          );
+          input.write({
+            "foo.js": `import Component from '@ember/component'; Component.extend()`,
+            "app.js": `import Application from '@ember/application'; Application.extend()`,
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(output.read()).to.deep.equal({
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.Component.extend();\n});`,
+            "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`,
+            node_modules: {
+              "ember-source": {
+                "index.js":
+                  'define("node_modules/ember-source/index", [], function () {\n  "use strict";\n\n  module.exports = {};\n});',
+                "package.json": '{"name":"ember-source","version":"3.26.0"}',
+              },
+            },
+          });
+        })
+      );
+
+      it(
+        "should not replace the imports with Ember Globals when using an ember-source version that supports it",
+        co.wrap(function* () {
+          const POST_GLOBAL_RESOLVER_DEPRECATION_VERSION = "3.27.0";
+          dependencies[
+            "ember-source"
+          ] = POST_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_GLOBAL_RESOLVER_DEPRECATION_VERSION)
+          );
+          input.write({
+            "foo.js": `import Component from '@ember/component'; Component.extend()`,
+            "app.js": `import Application from '@ember/application'; Application.extend()`,
+          });
+
+          subject = this.addon.transpileTree(input.path());
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(output.read()).to.deep.equal({
+            "foo.js": `define("foo", ["@ember/component"], function (_component) {\n  "use strict";\n\n  _component.default.extend();\n});`,
+            "app.js": `define("app", ["@ember/application"], function (_application) {\n  "use strict";\n\n  _application.default.extend();\n});`,
+            node_modules: {
+              "ember-source": {
+                "index.js":
+                  'define("node_modules/ember-source/index", [], function () {\n  "use strict";\n\n  module.exports = {};\n});',
+                "package.json": '{"name":"ember-source","version":"3.27.0"}',
+              },
+            },
+          });
+        })
+      );
+    });
+
     describe('debug macros', function() {
       it("can opt-out via ember-cli-babel.disableDebugTooling", co.wrap(function* () {
         process.env.EMBER_ENV = 'development';
