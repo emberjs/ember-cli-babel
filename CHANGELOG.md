@@ -1,3 +1,15 @@
+## v7.25.0 (2021-03-17)
+
+#### :rocket: Enhancement
+* [#387](https://github.com/babel/ember-cli-babel/pull/387) Do not transform imports to use the Ember global for ember-source@3.27 and higher ([@patocallaghan](https://github.com/patocallaghan))
+
+#### :bug: Bug Fix
+* [#385](https://github.com/babel/ember-cli-babel/pull/385) Update babel plugins and pin to @babel/runtime@7.12.8 ([@patocallaghan](https://github.com/patocallaghan))
+
+#### Committers: 1
+- Pat O'Callaghan ([@patocallaghan](https://github.com/patocallaghan))
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v7.24.0 (2021-02-16)
 
 #### :bug: Bug Fix
