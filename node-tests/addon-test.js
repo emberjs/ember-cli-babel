@@ -256,12 +256,12 @@ describe('ember-cli-babel', function() {
       it(
         "should replace imports with Ember Globals",
         co.wrap(function* () {
-          const PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION = "3.26.0";
+          const PRE_EMBER_MODULE_IMPORTS_VERSION = "3.26.0";
           dependencies[
             "ember-source"
-          ] = PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          ] = PRE_EMBER_MODULE_IMPORTS_VERSION;
           input.write(
-            buildEmberSourceFixture(PRE_GLOBAL_RESOLVER_DEPRECATION_VERSION)
+            buildEmberSourceFixture(PRE_EMBER_MODULE_IMPORTS_VERSION)
           );
           input.write({
             "foo.js": `import Component from '@ember/component'; Component.extend()`,
@@ -1712,13 +1712,13 @@ describe('babel config file', function() {
     let self = this;
     setupForVersion = co.wrap(function*(plugins) {
       let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
-      
+
       fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
       fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
         return prepareAddon(addon);
       });
       let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.files['babel.config.js'] = 
+      fixturifyProject.files['babel.config.js'] =
       `module.exports = function (api) {
         api.cache(true);
         return {
