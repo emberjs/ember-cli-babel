@@ -380,7 +380,7 @@ interface EmberCLIBabel {
   /**
     Used to generate the options that will ultimately be passed to babel itself.
   */
-  buildBabelOptions(config?: EmberCLIBabelConfig): Opaque;
+  buildBabelOptions(type: 'babel' | 'broccoli', config?: EmberCLIBabelConfig): Opaque;
 
   /**
     Supports easier transpilation of non-standard input paths (e.g. to transpile
@@ -407,7 +407,7 @@ interface EmberCLIBabel {
 let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
 
 // create the babel options to use elsewhere based on the config above
-let options = babelAddon.buildBabelOptions(config)
+let options = babelAddon.buildBabelOptions('babel', config)
 
 // now you can pass these options off to babel or broccoli-babel-transpiler
 require('babel-core').transform('something', options);
