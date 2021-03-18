@@ -83,6 +83,10 @@ module.exports = {
     return this._cachedDebugTree.apply(null, arguments);
   },
 
+  getSupportedExtensions(config) {
+    return _getExtensions(config, this.parent);
+  },
+
   _buildBroccoliBabelTranspilerOptions(config = {}) {
     let emberCLIBabelConfig = config["ember-cli-babel"];
 
@@ -104,7 +108,7 @@ module.exports = {
       annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
       sourceMaps,
       throwUnlessParallelizable,
-      filterExtensions: _getExtensions(config, this.parent),
+      filterExtensions: this.getSupportedExtensions(config),
       plugins: []
     };
 
