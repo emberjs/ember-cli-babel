@@ -83,7 +83,7 @@ module.exports = {
     return this._cachedDebugTree.apply(null, arguments);
   },
 
-  getSupportedExtensions(config) {
+  getSupportedExtensions(config = {}) {
     return _getExtensions(config, this.parent);
   },
 
