@@ -23,6 +23,7 @@ allow you to use latest Javascript in your Ember CLI project.
     + [Adding Custom Plugins](#adding-custom-plugins)
     + [Additional Trees](#additional-trees)
     + [`buildBabelOptions` usage](#buildbabeloptions-usage)
+    + [`getSupportedExtensions` usage](#getsupportedextensions-usage)
     + [`transpileTree` usage](#transpiletree-usage)
   * [Debug Tooling](#debug-tooling)
     + [Debug Macros](#debug-macros)
@@ -410,6 +411,16 @@ let options = babelAddon.buildBabelOptions(config)
 
 // now you can pass these options off to babel or broccoli-babel-transpiler
 require('babel-core').transform('something', options);
+```
+
+#### `getSupportedExtensions` usage
+
+```js
+// find your babel addon (can use `this.findAddonByName('ember-cli-babel')` in ember-cli@2.14 and newer)
+let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
+
+// create the babel options to use elsewhere based on the config above
+let extensions = babelAddon.getSupportedExtensions(config)
 ```
 
 #### `transpileTree` usage

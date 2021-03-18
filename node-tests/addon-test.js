@@ -1143,7 +1143,7 @@ describe('ember-cli-babel', function() {
     it('disables reading `.babelrc`', function() {
       let options = {};
 
-      let result = this.addon._getDefaultBabelOptions(options);
+      let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
 
       expect(result.babelrc).to.be.false;
     });
@@ -1153,7 +1153,7 @@ describe('ember-cli-babel', function() {
         name: 'derpy-herpy',
         dependencies() { return {}; },
       });
-      let result = this.addon._getDefaultBabelOptions();
+      let result = this.addon._buildBroccoliBabelTranspilerOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
@@ -1162,7 +1162,7 @@ describe('ember-cli-babel', function() {
         name: 'derpy-herpy',
         dependencies() { return {}; },
       });
-      let result = this.addon._getDefaultBabelOptions();
+      let result = this.addon._buildBroccoliBabelTranspilerOptions();
       expect(result.annotation).to.include('derpy-herpy');
     });
 
@@ -1173,7 +1173,7 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      let result = this.addon._getDefaultBabelOptions(options);
+      let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
       expect(result.annotation).to.equal('Hello World!');
     });
 
@@ -1184,14 +1184,14 @@ describe('ember-cli-babel', function() {
         }
       };
 
-      let result = this.addon._getDefaultBabelOptions(options);
+      let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
       expect(result.sourceMaps).to.equal('inline');
     });
 
     it('disables reading `.babelrc`', function() {
       let options = {};
 
-      let result = this.addon._getDefaultBabelOptions(options);
+      let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
 
       expect(result.babelrc).to.be.false;
     });
