@@ -2,6 +2,19 @@ Version 9 of Highlight.js has reached EOL and is no longer supported.
 Please upgrade or ask whatever dependency you are using to upgrade.
 https://github.com/highlightjs/highlight.js/issues/2877
 
+## v7.26.1 (2021-03-18)
+
+#### :bug: Bug Fix
+* [#392](https://github.com/babel/ember-cli-babel/pull/392) Fix compatibility with ember-auto-import. ([@rwjblue](https://github.com/rwjblue))
+* [#391](https://github.com/babel/ember-cli-babel/pull/391) Ensure `getSupportedExtensions` works when no config is provided. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+Version 9 of Highlight.js has reached EOL and is no longer supported.
+Please upgrade or ask whatever dependency you are using to upgrade.
+https://github.com/highlightjs/highlight.js/issues/2877
+
 ## v7.26.0 (2021-03-18)
 
 #### :rocket: Enhancement
