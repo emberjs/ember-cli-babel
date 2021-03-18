@@ -44,11 +44,24 @@ module.exports = {
     }
   },
 
-  buildBabelOptions(_config) {
+  buildBabelOptions(configOrType, _config) {
+    let resultType;
+
+    if (typeof configOrType !== 'string') {
+      _config = configOrType;
+      resultType = 'broccoli';
+    } else if (configOrType === 'broccoli') {
+      resultType = 'broccoli';
+    } else if (configOrType === 'babel') {
+      resultType = 'babel';
+    }
+
     let config = _config || this._getAddonOptions();
 
     const customAddonConfig = config['ember-cli-babel'];
     const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
+
+    let options;
 
     if (shouldUseBabelConfigFile) {
       let babelConfig = babel.loadPartialConfig({
@@ -69,9 +82,16 @@ module.exports = {
 
       // If the babel config file is found, then pass the path into the options for the transpiler
       // parse and leverage the same.
-      return { configFile: babelConfig.config };
+      options = { configFile: babelConfig.config };
     } else {
-      return getBabelOptions(config, this);
+      options = getBabelOptions(config, this);
+    }
+
+    if (resultType === 'babel') {
+      return options;
+    } else {
+      // legacy codepath
+      return Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), options);
     }
   },
 
@@ -128,7 +148,7 @@ module.exports = {
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-    let options = Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), this.buildBabelOptions(config));
+    let options = Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), this.buildBabelOptions('babel', config));
     let output;
 
     const customAddonConfig = config['ember-cli-babel'];

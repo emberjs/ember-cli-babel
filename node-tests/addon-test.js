@@ -1137,7 +1137,7 @@ describe('ember-cli-babel', function() {
     });
   });
 
-  describe('buildBabelOptions', function() {
+  describe('_buildBroccoliBabelTranspilerOptions', function() {
     this.timeout(0);
 
     it('disables reading `.babelrc`', function() {
@@ -1195,6 +1195,51 @@ describe('ember-cli-babel', function() {
 
       expect(result.babelrc).to.be.false;
     });
+  });
+
+  describe('buildBabelOptions', function() {
+    this.timeout(0);
+
+    it('returns broccoli-babel-transpiler options by default', function() {
+      let result = this.addon.buildBabelOptions();
+
+      expect(result.moduleIds).to.be.true;
+      expect(result.annotation).to.be;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
+    });
+
+    it('returns broccoli-babel-transpiler options when asked for', function() {
+      let result = this.addon.buildBabelOptions('broccoli');
+
+      expect(result.moduleIds).to.be.true;
+      expect(result.annotation).to.be;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
+    });
+
+    it('returns broccoli-babel-transpiler options with customizations when provided', function() {
+      let result = this.addon.buildBabelOptions('broccoli', {
+        'ember-cli-babel': {
+          annotation: 'hello!!!',
+        }
+      });
+
+      expect(result.annotation).to.equal('hello!!!');
+      expect(result.moduleIds).to.be.true;
+      expect(result.annotation).to.be;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
+    });
+
+    it('returns babel options when asked for', function() {
+      let result = this.addon.buildBabelOptions('babel');
+
+      expect('moduleIds' in result).to.be.false;
+      expect('annotation' in result).to.be.false;
+      expect('babelrc' in result).to.be.false;
+      expect('configFile' in result).to.be.false;
+    });
 
     it('does not include all provided options', function() {
       let babelOptions = { blah: true };
@@ -1202,7 +1247,7 @@ describe('ember-cli-babel', function() {
         babel: babelOptions
       };
 
-      let result = this.addon.buildBabelOptions(options);
+      let result = this.addon.buildBabelOptions('babel', options);
       expect(result.blah).to.be.undefined;
     });
 
