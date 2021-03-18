@@ -83,51 +83,48 @@ module.exports = {
     return this._cachedDebugTree.apply(null, arguments);
   },
 
-  /**
-   * Default babel options
-   * @param {*} config
-   */
-  _getDefaultBabelOptions(config = {}) {
-     let emberCLIBabelConfig = config["ember-cli-babel"];
-     let providedAnnotation;
-     let throwUnlessParallelizable;
-     let sourceMaps = false;
-     let shouldCompileModules = _shouldCompileModules(config, this.project);
+  _buildBroccoliBabelTranspilerOptions(config = {}) {
+    let emberCLIBabelConfig = config["ember-cli-babel"];
 
-     if (emberCLIBabelConfig) {
-       providedAnnotation = emberCLIBabelConfig.annotation;
-       throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
-     }
+    let providedAnnotation;
+    let throwUnlessParallelizable;
+    let sourceMaps = false;
+    let shouldCompileModules = _shouldCompileModules(config, this.project);
 
-     if (config.babel && "sourceMaps" in config.babel) {
-       sourceMaps = config.babel.sourceMaps;
-     }
+    if (emberCLIBabelConfig) {
+      providedAnnotation = emberCLIBabelConfig.annotation;
+      throwUnlessParallelizable = emberCLIBabelConfig.throwUnlessParallelizable;
+    }
 
-     let options = {
-       annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
-       sourceMaps,
-       throwUnlessParallelizable,
-       filterExtensions: _getExtensions(config, this.parent),
-       plugins: []
-     };
+    if (config.babel && "sourceMaps" in config.babel) {
+      sourceMaps = config.babel.sourceMaps;
+    }
 
-     if (shouldCompileModules) {
-       options.moduleIds = true;
-       options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
-     }
+    let options = {
+      annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
+      sourceMaps,
+      throwUnlessParallelizable,
+      filterExtensions: _getExtensions(config, this.parent),
+      plugins: []
+    };
 
-     options.highlightCode = _shouldHighlightCode(this.parent);
-     options.babelrc = false;
-     options.configFile = false;
+    if (shouldCompileModules) {
+      options.moduleIds = true;
+      options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+    }
 
-     return options;
+    options.highlightCode = _shouldHighlightCode(this.parent);
+    options.babelrc = false;
+    options.configFile = false;
+
+    return options;
   },
 
   transpileTree(inputTree, _config) {
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-    let options = Object.assign({}, this._getDefaultBabelOptions(config), this.buildBabelOptions(config));
+    let options = Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), this.buildBabelOptions(config));
     let output;
 
     const customAddonConfig = config['ember-cli-babel'];
