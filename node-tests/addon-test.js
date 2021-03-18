@@ -290,12 +290,12 @@ describe('ember-cli-babel', function() {
       it(
         "should not replace the imports with Ember Globals when using an ember-source version that supports it",
         co.wrap(function* () {
-          const POST_GLOBAL_RESOLVER_DEPRECATION_VERSION = "3.27.0";
+          const POST_EMBER_MODULE_IMPORTS_VERSION = "3.27.0";
           dependencies[
             "ember-source"
-          ] = POST_GLOBAL_RESOLVER_DEPRECATION_VERSION;
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
           input.write(
-            buildEmberSourceFixture(POST_GLOBAL_RESOLVER_DEPRECATION_VERSION)
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
           );
           input.write({
             "foo.js": `import Component from '@ember/component'; Component.extend()`,
