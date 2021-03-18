@@ -1,3 +1,19 @@
+Version 9 of Highlight.js has reached EOL and is no longer supported.
+Please upgrade or ask whatever dependency you are using to upgrade.
+https://github.com/highlightjs/highlight.js/issues/2877
+
+## v7.26.0 (2021-03-18)
+
+#### :rocket: Enhancement
+* [#390](https://github.com/babel/ember-cli-babel/pull/390) Refactor buildBabelOptions and introduce getSupportedExtensions. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#388](https://github.com/babel/ember-cli-babel/pull/388) Change name of variable to be more accurate ([@patocallaghan](https://github.com/patocallaghan))
+
+#### Committers: 2
+- Pat O'Callaghan ([@patocallaghan](https://github.com/patocallaghan))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.25.0 (2021-03-17)
 
 #### :rocket: Enhancement
