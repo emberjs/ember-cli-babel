@@ -46,7 +46,33 @@ module.exports = {
 
   buildBabelOptions(_config) {
     let config = _config || this._getAddonOptions();
-    return getBabelOptions(config, this);
+
+    const customAddonConfig = config['ember-cli-babel'];
+    const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
+
+    if (shouldUseBabelConfigFile) {
+      let babelConfig = babel.loadPartialConfig({
+        root: this.parent.root,
+        rootMode: 'root',
+        envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
+      });
+
+      if (babelConfig.config === undefined) {
+        // should contain the file that we used for the config,
+        // if it is undefined then we didn't find any config and
+        // should error
+
+        throw new Error(
+          "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
+        );
+      }
+
+      // If the babel config file is found, then pass the path into the options for the transpiler
+      // parse and leverage the same.
+      return { configFile: babelConfig.config };
+    } else {
+      return getBabelOptions(config, this);
+    }
   },
 
   _debugTree() {
@@ -98,38 +124,14 @@ module.exports = {
   },
 
   transpileTree(inputTree, _config) {
-
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-    let options = this._getDefaultBabelOptions(config);
+    let options = Object.assign({}, this._getDefaultBabelOptions(config), this.buildBabelOptions(config));
     let output;
 
     const customAddonConfig = config['ember-cli-babel'];
     const shouldUseBabelConfigFile = customAddonConfig && customAddonConfig.useBabelConfig;
-
-    if (shouldUseBabelConfigFile) {
-      let babelConfig = babel.loadPartialConfig({
-        root: this.parent.root,
-        rootMode: 'root',
-        envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
-      });
-
-      if (babelConfig.config === undefined) {
-        // should contain the file that we used for the config,
-        // if it is undefined then we didn't find any config and
-        // should error
-
-        throw new Error(
-          "Missing babel config file in the project root. Please double check if the babel config file exists or turn off the `useBabelConfig` option in your ember-cli-build.js file."
-        );
-      }
-      // If the babel config file is found, then pass the path into the options for the transpiler
-      // parse and leverage the same.
-      options = Object.assign({}, options, { configFile: babelConfig.config });
-    } else {
-      options = Object.assign({}, options, this.buildBabelOptions(config));
-    }
 
     if (!shouldUseBabelConfigFile && this._shouldDoNothing(options)) {
       output = postDebugTree;
@@ -142,6 +144,7 @@ module.exports = {
         let inputWithoutDeclarations = new Funnel(transpilationInput, { exclude: ['**/*.d.ts'] });
         transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
       }
+
       output = new BabelTranspiler(transpilationInput, options);
     }
 
