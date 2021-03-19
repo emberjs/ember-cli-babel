@@ -245,11 +245,15 @@ module.exports = {
       destDir: '@babel/runtime/helpers/esm'
     });
 
-    return this.transpileTree(babelHelpersTree, {
+    const transpiledHelpers = this.transpileTree(babelHelpersTree, {
       'ember-cli-babel': {
         // prevents the helpers from being double transpiled, and including themselves
         disablePresetEnv: true
       }
+    });
+
+    return new Funnel(transpiledHelpers, {
+      destDir: this.moduleName(),
     });
   },
 
