@@ -2,6 +2,18 @@ Version 9 of Highlight.js has reached EOL and is no longer supported.
 Please upgrade or ask whatever dependency you are using to upgrade.
 https://github.com/highlightjs/highlight.js/issues/2877
 
+## v7.26.2 (2021-03-19)
+
+#### :bug: Bug Fix
+* [#393](https://github.com/babel/ember-cli-babel/pull/393) Avoid global deprecation with @ember/debug on Ember 3.27+ ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+Version 9 of Highlight.js has reached EOL and is no longer supported.
+Please upgrade or ask whatever dependency you are using to upgrade.
+https://github.com/highlightjs/highlight.js/issues/2877
+
 ## v7.26.1 (2021-03-18)
 
 #### :bug: Bug Fix
