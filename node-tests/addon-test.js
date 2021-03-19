@@ -41,14 +41,34 @@ describe('ember-cli-babel', function() {
 
   const ORIGINAL_EMBER_ENV = process.env.EMBER_ENV;
 
-  beforeEach(function() {
+  const POST_EMBER_MODULE_IMPORTS_VERSION = "3.27.0";
+  const PRE_EMBER_MODULE_IMPORTS_VERSION = "3.26.0";
+
+
+  function buildEmberSourceFixture(version) {
+    return {
+      node_modules: {
+        "ember-source": {
+          "package.json": JSON.stringify({ name: "ember-source", version }),
+          "index.js": "module.exports = {};",
+        },
+      },
+    };
+  }
+
+  let input;
+  let dependencies;
+
+  beforeEach(co.wrap(function* () {
+    input = yield createTempDir();
+    dependencies = {};
     this.ui = new MockUI();
     let project = {
       isEmberCLIProject: () => true,
       _addonsInitialized: true,
-      root: __dirname,
+      root: input.path(),
       emberCLIVersion: () => '2.16.2',
-      dependencies() { return {}; },
+      dependencies() { return dependencies; },
       addons: [],
       targets: {
         browsers: ['ie 11'],
@@ -62,29 +82,27 @@ describe('ember-cli-babel', function() {
     });
 
     project.addons.push(this.addon);
-  });
+  }));
 
-  afterEach(function() {
+  afterEach(co.wrap(function*() {
     if (ORIGINAL_EMBER_ENV === undefined) {
       delete process.env.EMBER_ENV;
     } else {
       process.env.EMBER_ENV = ORIGINAL_EMBER_ENV;
     }
-  });
+
+    if (input) {
+      yield input.dispose();
+    }
+  }));
 
   describe('transpileTree', function() {
     this.timeout(0);
 
-    let input;
     let output;
     let subject;
 
-    beforeEach(co.wrap(function* () {
-      input = yield createTempDir();
-    }));
-
     afterEach(co.wrap(function* () {
-      yield input.dispose();
       yield output.dispose();
       // shut down workers after the tests are run so that mocha doesn't hang
       yield terminateWorkerPool();
@@ -217,46 +235,9 @@ describe('ember-cli-babel', function() {
     });
 
     describe("Opting out of the ember modules API polyfill", function () {
-      let dependencies;
-
-      beforeEach(function () {
-        dependencies = {};
-        let project = {
-          root: input.path(),
-          emberCLIVersion: () => "2.16.2",
-          dependencies() {
-            return dependencies;
-          },
-          addons: [],
-          targets: {
-            browsers: ["ie 11"],
-          },
-        };
-
-        this.addon = new Addon({
-          project,
-          parent: project,
-          ui: this.ui,
-        });
-
-        project.addons.push(this.addon);
-      });
-
-      function buildEmberSourceFixture(version) {
-        return {
-          node_modules: {
-            "ember-source": {
-              "package.json": JSON.stringify({ name: "ember-source", version }),
-              "index.js": "module.exports = {};",
-            },
-          },
-        };
-      }
-
       it(
         "should replace imports with Ember Globals",
         co.wrap(function* () {
-          const PRE_EMBER_MODULE_IMPORTS_VERSION = "3.26.0";
           dependencies[
             "ember-source"
           ] = PRE_EMBER_MODULE_IMPORTS_VERSION;
@@ -290,7 +271,6 @@ describe('ember-cli-babel', function() {
       it(
         "should not replace the imports with Ember Globals when using an ember-source version that supports it",
         co.wrap(function* () {
-          const POST_EMBER_MODULE_IMPORTS_VERSION = "3.27.0";
           dependencies[
             "ember-source"
           ] = POST_EMBER_MODULE_IMPORTS_VERSION;
@@ -420,6 +400,61 @@ describe('ember-cli-babel', function() {
             "bar.js": `define("bar", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
             "baz.js": `define("baz", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.deprecate('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
             "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  (true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));\n});`,
+          });
+        }));
+
+        it("should use modules for macros on Ember 3.27+", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import { assert } from '@ember/debug';
+                assert('stuff here', isNotBad());
+              `,
+              "bar.js": stripIndent`
+                import { deprecate } from '@ember/debug';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+              "baz.js": stripIndent`
+                import { deprecate } from '@ember/application/deprecations';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+            },
+          });
+
+          subject = this.addon.transpileTree(input.path('app'));
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "bar.js": `define("bar", ["@ember/debug"], function (_debug) {\n  "use strict";\n\n  (true && !(false) && (0, _debug.deprecate)('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "baz.js": `define("baz", ["@ember/application/deprecations"], function (_deprecations) {\n  "use strict";\n\n  (true && !(false) && (0, _deprecations.deprecate)('foo bar baz', false, {\n    id: 'some-id',\n    until: '1.0.0'\n  }));\n});`,
+            "foo.js": `define("foo", ["@ember/debug"], function (_debug) {\n  "use strict";\n\n  (true && !(isNotBad()) && (0, _debug.assert)('stuff here', isNotBad()));\n});`,
           });
         }));
       });
@@ -632,7 +667,6 @@ describe('ember-cli-babel', function() {
         };
       }
 
-      let dependencies;
       beforeEach(function() {
         dependencies = {};
         let project = {
