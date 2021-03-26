@@ -1,6 +1,10 @@
-Version 9 of Highlight.js has reached EOL and is no longer supported.
-Please upgrade or ask whatever dependency you are using to upgrade.
-https://github.com/highlightjs/highlight.js/issues/2877
+## v7.26.3 (2021-03-26)
+
+#### :bug: Bug Fix
+* [#396](https://github.com/babel/ember-cli-babel/pull/396) fix modules-api version checker ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
 
 ## v7.26.2 (2021-03-19)
 
@@ -10,10 +14,6 @@ https://github.com/highlightjs/highlight.js/issues/2877
 #### Committers: 1
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
 
-Version 9 of Highlight.js has reached EOL and is no longer supported.
-Please upgrade or ask whatever dependency you are using to upgrade.
-https://github.com/highlightjs/highlight.js/issues/2877
-
 ## v7.26.1 (2021-03-18)
 
 #### :bug: Bug Fix
@@ -22,10 +22,6 @@ https://github.com/highlightjs/highlight.js/issues/2877
 
 #### Committers: 1
 - Robert Jackson ([@rwjblue](https://github.com/rwjblue))
-
-Version 9 of Highlight.js has reached EOL and is no longer supported.
-Please upgrade or ask whatever dependency you are using to upgrade.
-https://github.com/highlightjs/highlight.js/issues/2877
 
 ## v7.26.0 (2021-03-18)
 
