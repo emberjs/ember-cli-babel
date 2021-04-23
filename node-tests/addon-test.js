@@ -800,14 +800,51 @@ describe('ember-cli-babel', function() {
     });
 
     describe('TypeScript transpilation', function() {
-      beforeEach(function() {
-        this.addon.parent.addons.push({
-          name: 'ember-cli-typescript',
-          pkg: {
-            version: '4.0.0-alpha.1'
-          }
+      let input;
+      let output;
+      let subject;
+      let project;
+      let unlink;
+
+      beforeEach(co.wrap(function*() {
+        let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+        fixturifyProject.addDependency('ember-cli-typescript', '4.0.0-alpha.1', addon => {
+          return prepareAddon(addon);
         });
-      });
+        fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+        let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+        fixturifyProject.writeSync();
+
+        let linkPath = path.join(fixturifyProject.root, 'whatever/node_modules/ember-cli-babel');
+        let addonPath = path.resolve(__dirname, '../');
+        rimraf.sync(linkPath);
+        fs.symlinkSync(addonPath, linkPath, 'junction');
+        unlink = () => {
+          fs.unlinkSync(linkPath);
+        };
+
+        let cli = new MockCLI();
+        let root = path.join(fixturifyProject.root, 'whatever');
+        project = new EmberProject(root, pkg, cli.ui, cli);
+        project.initializeAddons();
+        this.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+        input = yield createTempDir();
+      }));
+
+      afterEach(co.wrap(function*() {
+        unlink();
+
+        if (input) {
+          yield input.dispose();
+        }
+
+        if (output) {
+          yield output.dispose();
+        }
+
+        // shut down workers after the tests are run so that mocha doesn't hang
+        yield terminateWorkerPool();
+      }));
 
       it('should transpile .ts files', co.wrap(function*() {
         input.write({ 'foo.ts': `let foo: string = "hi";` });
@@ -967,41 +1004,67 @@ describe('ember-cli-babel', function() {
   });
 
   describe('_shouldHandleTypeScript', function() {
+    let project;
+    let unlink;
+
+    let setupTsAddon = function*(context, version = '4.0.0-alpha.1') {
+      let fixturifyProject = new FixturifyProject('whatever', '0.0.1');
+      fixturifyProject.addDependency('ember-cli-typescript', version, addon => {
+        return prepareAddon(addon);
+      });
+      fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
+      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
+      fixturifyProject.writeSync();
+
+      let linkPath = path.join(fixturifyProject.root, 'whatever/node_modules/ember-cli-babel');
+      let addonPath = path.resolve(__dirname, '../');
+      rimraf.sync(linkPath);
+      fs.symlinkSync(addonPath, linkPath, 'junction');
+      unlink = () => {
+        fs.unlinkSync(linkPath);
+      };
+
+      let cli = new MockCLI();
+      let root = path.join(fixturifyProject.root, 'whatever');
+      project = new EmberProject(root, pkg, cli.ui, cli);
+      project.initializeAddons();
+      context.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
+      input = yield createTempDir();
+    }
+
+    afterEach(co.wrap(function*() {
+      if (unlink) {
+        unlink();
+        unlink = undefined;
+      }
+
+      // shut down workers after the tests are run so that mocha doesn't hang
+      yield terminateWorkerPool();
+    }));
+
     it('should return false by default', function() {
-      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.false;
+      expect(_shouldHandleTypeScript({}, this.addon.parent, this.addon.project)).to.be.false;
     });
-    it('should return true when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
-      this.addon.parent.addons.push({
-        name: 'ember-cli-typescript',
-        pkg: {
-          version: '4.0.0-alpha.1',
-        },
-      });
-      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.true;
+    it('should return true when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function*() {
+      yield setupTsAddon(this);
+      expect(_shouldHandleTypeScript({}, this.addon.parent, this.addon.project)).to.be.true;
     });
-    it('should return false when ember-cli-typescript < 4.0.0-alpha.1 is installed', function() {
-      this.addon.parent.addons.push({
-        name: 'ember-cli-typescript',
-        pkg: {
-          version: '3.0.0',
-        },
-      });
-      expect(_shouldHandleTypeScript({}, this.addon.parent)).to.be.false;
+    it('should return false when ember-cli-typescript < 4.0.0-alpha.1 is installed', function*() {
+      yield setupTsAddon(this, '3.0.0');
+      expect(_shouldHandleTypeScript({}, this.addon.parent, this.addon.project)).to.be.false;
     });
-    it('should return true when the TypeScript transform is manually enabled', function() {
-      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } }, this.addon.parent)).to.be.true;
+    it('should return true when the TypeScript transform is manually enabled', function*() {
+      yield setupTsAddon(this, '3.0.0');
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: true } }, this.addon.parent, this.addon.project)).to.be.true;
     });
+
     it('should return false when the TypeScript transforms is manually disabled', function() {
-      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent)).to.be.false;
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent, this.addon.project)).to.be.false;
     });
-    it('should return false when the TypeScript transform is manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function() {
-      this.addon.parent.addons.push({
-        name: 'ember-cli-typescript',
-        pkg: {
-          version: '4.0.0-alpha.1',
-        },
-      });
-      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent)).to.be.false;
+
+    it('should return false when the TypeScript transform is manually disabled, even when ember-cli-typescript >= 4.0.0-alpha.1 is installed', function*() {
+      yield setupTsAddon(this, '4.1.0');
+      expect(_shouldHandleTypeScript({ 'ember-cli-babel': { enableTypeScriptTransform: false } }, this.addon.parent, this.addon.project)).to.be.false;
     });
   });
 
@@ -1177,17 +1240,17 @@ describe('ember-cli-babel', function() {
 
   describe('_getExtensions', function() {
     it('defaults to js only', function() {
-      expect(_getExtensions({}, this.addon.parent)).to.have.members(['js']);
+      expect(_getExtensions({}, this.addon.parent, this.addon.project)).to.have.members(['js']);
     });
     it('adds ts automatically', function() {
       this.addon._shouldHandleTypeScript = function() { return true; }
-      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true }}, this.addon.parent)).to.have.members(['js', 'ts']);
+      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true } }, this.addon.parent, this.addon.project)).to.have.members(['js', 'ts']);
     });
     it('respects user-configured extensions', function() {
-      expect(_getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } }, this.addon.parent)).to.have.members(['coffee']);
+      expect(_getExtensions({ 'ember-cli-babel': { extensions: ['coffee'] } }, this.addon.parent, this.addon.project)).to.have.members(['coffee']);
     });
     it('respects user-configured extensions even when adding TS plugin', function() {
-      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true, extensions: ['coffee'] } }, this.addon.parent)).to.have.members(['coffee']);
+      expect(_getExtensions({ 'ember-cli-babel': { enableTypeScriptTransform: true, extensions: ['coffee'] } }, this.addon.parent, this.addon.project)).to.have.members(['coffee']);
     });
   });
 

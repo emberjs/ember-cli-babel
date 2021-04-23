@@ -104,7 +104,7 @@ module.exports = {
   },
 
   getSupportedExtensions(config = {}) {
-    return _getExtensions(config, this.parent);
+    return _getExtensions(config, this.parent, this.project);
   },
 
   _buildBroccoliBabelTranspilerOptions(config = {}) {
@@ -160,7 +160,7 @@ module.exports = {
       let BabelTranspiler = require('broccoli-babel-transpiler');
       let transpilationInput = postDebugTree;
 
-      if (_shouldHandleTypeScript(config, this.parent)) {
+      if (_shouldHandleTypeScript(config, this.parent, this.project)) {
         let Funnel = require('broccoli-funnel');
         let inputWithoutDeclarations = new Funnel(transpilationInput, { exclude: ['**/*.d.ts'] });
         transpilationInput = this._debugTree(inputWithoutDeclarations, `${description}:filtered-input`);
@@ -175,7 +175,7 @@ module.exports = {
   setupPreprocessorRegistry(type, registry) {
     registry.add('js', {
       name: 'ember-cli-babel',
-      ext: _getExtensions(this._getAddonOptions(), this.parent),
+      ext: _getExtensions(this._getAddonOptions(), this.parent, this.project),
       toTree: (tree) => this.transpileTree(tree)
     });
   },
