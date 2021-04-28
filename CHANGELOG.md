@@ -1,3 +1,17 @@
+Version 9 of Highlight.js has reached EOL and is no longer supported.
+Please upgrade or ask whatever dependency you are using to upgrade.
+https://github.com/highlightjs/highlight.js/issues/2877
+
+## v7.26.4 (2021-04-28)
+
+#### :bug: Bug Fix
+* [#394](https://github.com/babel/ember-cli-babel/pull/394) Include addon name directory in 'treeForAddon' (mitigate issues with Embroider when using external helpers) ([@charlespierce](https://github.com/charlespierce))
+* [#400](https://github.com/babel/ember-cli-babel/pull/400) Update `_shouldHandleTypeScript` to read from `pkg.dependencies` instead of relying on `addons` ([@brendenpalmer](https://github.com/brendenpalmer))
+
+#### Committers: 2
+- Brenden Palmer ([@brendenpalmer](https://github.com/brendenpalmer))
+- Charles Pierce ([@charlespierce](https://github.com/charlespierce))
+
 ## v7.26.3 (2021-03-26)
 
 #### :bug: Bug Fix
