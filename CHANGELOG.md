@@ -1,3 +1,11 @@
+## v7.26.5 (2021-05-06)
+
+#### :bug: Bug Fix
+* [#402](https://github.com/babel/ember-cli-babel/pull/402) Fix compatibility with Ember 3.27+ when using compileModules: false. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.26.4 (2021-04-28)
 
 #### :bug: Bug Fix
