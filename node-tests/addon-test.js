@@ -457,6 +457,65 @@ describe('ember-cli-babel', function() {
             "foo.js": `define("foo", ["@ember/debug"], function (_debug) {\n  "use strict";\n\n  (true && !(isNotBad()) && (0, _debug.assert)('stuff here', isNotBad()));\n});`,
           });
         }));
+
+        it("when transpiling with compileModules: false, it should use Ember global even on Ember 3.27+", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import { assert } from '@ember/debug';
+                assert('stuff here', isNotBad());
+              `,
+              "bar.js": stripIndent`
+                import { deprecate } from '@ember/debug';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+              "baz.js": stripIndent`
+                import { deprecate } from '@ember/application/deprecations';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+            },
+          });
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "bar.js": `(true && !(false) && Ember.deprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n}));`,
+            "baz.js": `(true && !(false) && Ember.deprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n}));`,
+            "foo.js": `(true && !(isNotBad()) && Ember.assert('stuff here', isNotBad()));`,
+          });
+        }));
       });
 
       describe('in production', function() {
