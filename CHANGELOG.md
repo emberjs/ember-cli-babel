@@ -1,3 +1,11 @@
+## v7.26.6 (2021-05-18)
+
+#### :bug: Bug Fix
+* [#407](https://github.com/babel/ember-cli-babel/pull/407) Fix combination usages of `compileModules` along with other flags. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.26.5 (2021-05-06)
 
 #### :bug: Bug Fix
