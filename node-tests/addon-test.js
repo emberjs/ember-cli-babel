@@ -458,6 +458,289 @@ describe('ember-cli-babel', function() {
           });
         }));
 
+        it("when transpiling with compileModules: false it should use Ember global for previously 'fake' imports even on Ember 3.27+", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import Component from '@ember/component';
+
+                export default class extends Component {}
+              `,
+            },
+          });
+
+          this.addon.project.targets = {
+            browsers: ['last 2 chrome versions']
+          };
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `export default class extends Ember.Component {}`,
+          });
+        }));
+
+        it("when transpiling with compileModules: false, disableEmberModulesAPIPolyfill: true it should not use Ember global for previously 'fake' imports", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import Component from '@ember/component';
+
+                export default class extends Component {}
+              `,
+            },
+          });
+
+          this.addon.project.targets = {
+            browsers: ['last 2 chrome versions']
+          };
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+              disableEmberModulesAPIPolyfill: true,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `import Component from '@ember/component';\nexport default class extends Component {}`,
+          });
+        }));
+
+        it("when transpiling with compileModules: false, disableEmberModulesAPIPolyfill: false it should use global for Ember < 3.27", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = PRE_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(PRE_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import Component from '@ember/component';
+
+                export default class extends Component {}
+              `,
+            },
+          });
+
+          this.addon.project.targets = {
+            browsers: ['last 2 chrome versions']
+          };
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+              disableEmberModulesAPIPolyfill: false,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `export default class extends Ember.Component {}`,
+          });
+        }));
+
+        it("when transpiling with compileModules: false, disableEmberModulesAPIPolyfill: false it should use global for Ember > 3.27", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import Component from '@ember/component';
+
+                export default class extends Component {}
+              `,
+            },
+          });
+
+          this.addon.project.targets = {
+            browsers: ['last 2 chrome versions']
+          };
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+              disableEmberModulesAPIPolyfill: false,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "foo.js": `import Component from '@ember/component';\nexport default class extends Component {}`,
+          });
+        }));
+
+        it("when transpiling with compileModules: false, disableDebugTooling: false it should use modules for debug tooling", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import { assert } from '@ember/debug';
+                assert('stuff here', isNotBad());
+              `,
+              "bar.js": stripIndent`
+                import { deprecate } from '@ember/debug';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+              "baz.js": stripIndent`
+                import { deprecate } from '@ember/application/deprecations';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+            },
+          });
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+              disableDebugTooling: false,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "bar.js": `import { deprecate } from '@ember/debug';\n(true && !(false) && deprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n}));`,
+            "baz.js": `import { deprecate } from '@ember/application/deprecations';\n(true && !(false) && deprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n}));`,
+            "foo.js": `import { assert } from '@ember/debug';\n(true && !(isNotBad()) && assert('stuff here', isNotBad()));`,
+          });
+        }));
+
+        it("when transpiling with compileModules: false, disableDebugTooling: true it should not use Ember global for debug tooling", co.wrap(function* () {
+          process.env.EMBER_ENV = 'development';
+
+          dependencies[
+            "ember-source"
+          ] = POST_EMBER_MODULE_IMPORTS_VERSION;
+          input.write(
+            buildEmberSourceFixture(POST_EMBER_MODULE_IMPORTS_VERSION)
+          );
+
+          input.write({
+            app: {
+              "foo.js": stripIndent`
+                import { assert } from '@ember/debug';
+                assert('stuff here', isNotBad());
+              `,
+              "bar.js": stripIndent`
+                import { deprecate } from '@ember/debug';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+              "baz.js": stripIndent`
+                import { deprecate } from '@ember/application/deprecations';
+                deprecate(
+                  'foo bar baz',
+                  false,
+                  {
+                    id: 'some-id',
+                    until: '1.0.0',
+                  }
+                );
+              `,
+            },
+          });
+
+          subject = this.addon.transpileTree(input.path('app'), {
+            'ember-cli-babel': {
+              compileModules: false,
+              disableDebugTooling: true,
+            }
+          });
+          output = createBuilder(subject);
+
+          yield output.build();
+
+          expect(
+            output.read()
+          ).to.deep.equal({
+            "bar.js": `import { deprecate } from '@ember/debug';\ndeprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n});`,
+            "baz.js": `import { deprecate } from '@ember/application/deprecations';\ndeprecate('foo bar baz', false, {\n  id: 'some-id',\n  until: '1.0.0'\n});`,
+            "foo.js": `import { assert } from '@ember/debug';\nassert('stuff here', isNotBad());`,
+          });
+        }));
+
         it("when transpiling with compileModules: false, it should use Ember global even on Ember 3.27+", co.wrap(function* () {
           process.env.EMBER_ENV = 'development';
 
