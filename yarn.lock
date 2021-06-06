@@ -1381,7 +1381,7 @@ broccoli-amd-funnel@^2.0.1:
     broccoli-plugin "^1.3.0"
     symlink-or-copy "^1.2.0"
 
-broccoli-babel-transpiler@^6.1.2, broccoli-babel-transpiler@^6.5.0:
+broccoli-babel-transpiler@^6.1.2:
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-6.5.0.tgz#aa501a227b298a99742fdd0309b1eaad7124bba0"
   dependencies:
@@ -1413,6 +1413,21 @@ broccoli-babel-transpiler@^7.8.0:
     json-stable-stringify "^1.0.1"
     rsvp "^4.8.4"
     workerpool "^3.1.1"
+
+broccoli-babel-transpiler@mansona/broccoli-babel-transpiler#update-workerpool:
+  version "6.5.1"
+  resolved "https://codeload.github.com/mansona/broccoli-babel-transpiler/tar.gz/00ef73205fa7c29ef846d22005c80b695e65a2a2"
+  dependencies:
+    babel-core "^6.26.0"
+    broccoli-funnel "^2.0.1"
+    broccoli-merge-trees "^2.0.0"
+    broccoli-persistent-filter "^1.4.3"
+    clone "^2.0.0"
+    hash-for-dep "^1.2.3"
+    heimdalljs-logger "^0.1.7"
+    json-stable-stringify "^1.0.0"
+    rsvp "^4.8.2"
+    workerpool "^6.1.4"
 
 broccoli-builder@^0.18.14:
   version "0.18.14"
@@ -8549,7 +8564,7 @@ workerpool@^3.1.1:
     object-assign "4.1.1"
     rsvp "^4.8.4"
 
-workerpool@^6.0.3:
+workerpool@^6.0.3, workerpool@^6.1.4:
   version "6.1.4"
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.1.4.tgz#6a972b6df82e38d50248ee2820aa98e2d0ad3090"
   integrity sha512-jGWPzsUqzkow8HoAvqaPWTUPCrlPJaJ5tY8Iz7n1uCz3tTp6s3CDG0FF1NsX42WNlkRSW6Mr+CDZGnNoSsKa7g==
