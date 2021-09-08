@@ -63,7 +63,6 @@
     "ember-cli-babel-plugin-helpers": "^1.1.1",
     "ember-cli-version-checker": "^4.1.0",
     "ensure-posix-path": "^1.0.2",
-    "fixturify-project": "^1.10.0",
     "resolve-package-path": "^3.1.0",
     "rimraf": "^3.0.1",
     "semver": "^5.5.0"
@@ -90,6 +89,7 @@
     "ember-source-channel-url": "^1.1.0",
     "eslint-plugin-ember": "^5.2.0",
     "eslint-plugin-node": "^7.0.1",
+    "fixturify-project": "^1.10.0",
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^5.2.0",
