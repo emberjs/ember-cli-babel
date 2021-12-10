@@ -71,6 +71,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "broccoli-test-helper": "^1.4.0",
+    "calculate-cache-key-for-tree": "^2.0.0",
     "chai": "^4.1.2",
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
