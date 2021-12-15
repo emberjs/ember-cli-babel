@@ -59,6 +59,7 @@
     "broccoli-debug": "^0.6.4",
     "broccoli-funnel": "^2.0.2",
     "broccoli-source": "^2.1.2",
+    "calculate-cache-key-for-tree": "^2.0.0",
     "clone": "^2.1.2",
     "ember-cli-babel-plugin-helpers": "^1.1.1",
     "ember-cli-version-checker": "^4.1.0",

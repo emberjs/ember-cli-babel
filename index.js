@@ -16,6 +16,7 @@ const path = require('path');
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
+const cacheKeyForTree = require('calculate-cache-key-for-tree');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 const PROJECTS_WITH_VALID_EMBER_CLI = new WeakSet();
@@ -271,6 +272,17 @@ module.exports = {
     });
 
     return polyfillTree;
+  },
+
+  cacheKeyForTree(treeType) {
+    if (treeType === 'addon') {
+      let isRootBabel = this.parent === this.project;
+      let shouldIncludeHelpers = isRootBabel && _shouldIncludeHelpers(this._getAppOptions(), this);
+
+      return cacheKeyForTree('addon', this, [shouldIncludeHelpers]);
+    }
+
+    return cacheKeyForTree(treeType, this);
   },
 
   included: function(app) {
