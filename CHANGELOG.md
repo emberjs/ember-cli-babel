@@ -1,3 +1,13 @@
+## v7.26.7 (2021-12-15)
+
+#### :bug: Bug Fix
+* [#421](https://github.com/babel/ember-cli-babel/pull/421) introduce cacheKeyForTree to avoid running treeForX multiple times ([@RuslanZavacky](https://github.com/RuslanZavacky))
+* [#420](https://github.com/babel/ember-cli-babel/pull/420) Properly handle class properties proposal ([@chriskrycho](https://github.com/chriskrycho))
+
+#### Committers: 2
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+- Ruslan Zavacky ([@RuslanZavacky](https://github.com/RuslanZavacky))
+
 ## v7.26.6 (2021-05-18)
 
 #### :bug: Bug Fix
