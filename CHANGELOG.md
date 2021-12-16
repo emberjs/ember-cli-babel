@@ -1,3 +1,12 @@
+## v7.26.8 (2021-12-16)
+
+#### :bug: Bug Fix
+* [ea752c41](https://github.com/babel/ember-cli-babel/commit/ea752c41) Revert: Properly handle class properties proposal
+
+#### Committers: 2
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.26.7 (2021-12-15)
 
 #### :bug: Bug Fix
