@@ -1,3 +1,15 @@
+## v7.28.9 (2021-12-16)
+
+#### :bug: Bug Fix
+* [#426](https://github.com/babel/ember-cli-babel/pull/426) Fix decorators babel plugin issue ([@chriskrycho](https://github.com/chriskrycho))
+
+#### :house: Internal
+* [#427](https://github.com/babel/ember-cli-babel/pull/427) Only run acceptance tests against modern Node ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v7.26.8 (2021-12-16)
 
 #### :bug: Bug Fix
