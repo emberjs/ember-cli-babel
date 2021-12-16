@@ -127,6 +127,52 @@ describe('ember-cli-babel', function() {
       });
     }));
 
+    describe('decorators and class fields', function() {
+      it(
+        "can compile decorators",
+        co.wrap(function* () {
+          input.write({
+            "foo.js": `import Component from '@glimmer/component';\nimport { tracked } from '@glimmer/tracking';\nexport default class Foo extends Component { @tracked thisIsTracked = true; }`,
+          });
+  
+          this.addon.project.targets = {
+            browsers: ["last 2 chrome versions"],
+          };
+  
+          subject = this.addon.transpileTree(input.path(), {});
+  
+          output = createBuilder(subject);
+  
+          yield output.build();
+          expect(output.read()["foo.js"]).not.to.include(
+            "_initializerWarningHelper(_descriptor, this)"
+          );
+        })
+      );
+
+      it(
+        "can compile class fields",
+        co.wrap(function* () {
+          input.write({
+            "foo.js": `import Component from '@ember/component';\n\nexport default class Foo extends Component { thisIsAField = true; }`,
+          });
+
+          this.addon.project.targets = {
+            browsers: ["last 2 chrome versions"],
+          };
+
+          subject = this.addon.transpileTree(input.path(), {});
+
+          output = createBuilder(subject);
+
+          yield output.build();
+          expect(output.read()["foo.js"]).not.to.include(
+            "Decorating class property failed"
+          );
+        })
+      );
+    });
+
     describe('ember modules API polyfill', function() {
       it("does not transpile deprecate debug tooling import paths", co.wrap(function* () {
         input.write({
