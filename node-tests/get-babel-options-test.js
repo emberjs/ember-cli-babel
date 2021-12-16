@@ -69,14 +69,8 @@ describe("get-babel-options", function () {
   describe("_addDecoratorPlugins", function () {
     it("should include babel transforms by default", function () {
       expect(
-        _addDecoratorPlugins({
-          plugins: [],
-          options: {},
-          config: {},
-          parent: this.addon.parent,
-          project: this.addon.project,
-          isClassPropertiesRequired: true,
-        }).length
+        _addDecoratorPlugins([], {}, {}, this.addon.parent, this.addon.project)
+          .length
       ).to.equal(2, "plugins added correctly");
     });
 
@@ -90,14 +84,13 @@ describe("get-babel-options", function () {
       };
 
       expect(
-        _addDecoratorPlugins({
-          plugins: [["@babel/plugin-proposal-decorators"]],
-          options: {},
-          config: {},
-          parent: this.addon.parent,
-          project: this.addon.project,
-          isClassPropertiesRequired: true,
-        }).length
+        _addDecoratorPlugins(
+          [["@babel/plugin-proposal-decorators"]],
+          {},
+          {},
+          this.addon.parent,
+          this.addon.project
+        ).length
       ).to.equal(2, "plugins were not added");
     });
 
@@ -111,40 +104,37 @@ describe("get-babel-options", function () {
       };
 
       expect(
-        _addDecoratorPlugins({
-          plugins: [["@babel/plugin-proposal-class-properties"]],
-          options: {},
-          config: {},
-          parent: this.addon.parent,
-          project: this.addon.project,
-          isClassPropertiesRequired: true,
-        }).length
+        _addDecoratorPlugins(
+          [["@babel/plugin-proposal-class-properties"]],
+          {},
+          {},
+          this.addon.parent,
+          this.addon.project
+        ).length
       ).to.equal(2, "plugins were not added");
     });
 
     it("should use babel options loose mode for class properties", function () {
-      let strictPlugins = _addDecoratorPlugins({
-        plugins: [],
-        options: {},
-        config: {},
-        parent: this.addon.parent,
-        project: this.addon.project,
-        isClassPropertiesRequired: true,
-      });
+      let strictPlugins = _addDecoratorPlugins(
+        [],
+        {},
+        {},
+        this.addon.parent,
+        this.addon.project
+      );
 
       expect(strictPlugins[1][1].loose).to.equal(
         false,
         "loose is false if no option is provided"
       );
 
-      let loosePlugins = _addDecoratorPlugins({
-        plugins: [],
-        options: { loose: true },
-        config: {},
-        parent: this.addon.parent,
-        project: this.addon.project,
-        isClassPropertiesRequired: true,
-      });
+      let loosePlugins = _addDecoratorPlugins(
+        [],
+        { loose: true },
+        {},
+        this.addon.parent,
+        this.addon.project
+      );
 
       expect(loosePlugins[1][1].loose).to.equal(
         true,
@@ -156,14 +146,13 @@ describe("get-babel-options", function () {
       const config = {
         "ember-cli-babel": { enableTypeScriptTransform: true },
       };
-      let plugins = _addDecoratorPlugins({
-        plugins: ["@babel/plugin-transform-typescript"],
-        options: {},
+      let plugins = _addDecoratorPlugins(
+        ["@babel/plugin-transform-typescript"],
+        {},
         config,
-        parent: this.addon.parent,
-        project: this.addon.project,
-        isClassPropertiesRequired: true,
-      });
+        this.addon.parent,
+        this.addon.project
+      );
       expect(plugins[0]).to.equal(
         "@babel/plugin-transform-typescript",
         "typescript still first"
@@ -175,35 +164,18 @@ describe("get-babel-options", function () {
       const config = {
         "ember-cli-babel": { enableTypeScriptTransform: false },
       };
-      let plugins = _addDecoratorPlugins({
-        plugins: ["@babel/plugin-transform-typescript"],
-        options: {},
+      let plugins = _addDecoratorPlugins(
+        ["@babel/plugin-transform-typescript"],
+        {},
         config,
-        parent: this.addon.parent,
-        project: this.addon.project,
-        isClassPropertiesRequired: true,
-      });
+        this.addon.parent,
+        this.addon.project
+      );
 
       expect(plugins.length).to.equal(3, "class fields and decorators added");
       expect(plugins[2]).to.equal(
         "@babel/plugin-transform-typescript",
         "typescript is now last"
-      );
-    });
-
-    it("should not include class fields if they are not required", function () {
-      let plugins = _addDecoratorPlugins({
-        plugins: [],
-        options: {},
-        config: {},
-        parent: this.addon.parent,
-        project: this.addon.project,
-        isClassPropertiesRequired: false,
-      });
-      expect(plugins.length).to.equal(1, "only one plugin");
-      expect(plugins[0][0]).to.include(
-        require.resolve("@babel/plugin-proposal-decorators"),
-        "and the plugin is decorator"
       );
     });
   });
