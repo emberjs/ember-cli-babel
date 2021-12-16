@@ -71,7 +71,7 @@ describe("get-babel-options", function () {
       expect(
         _addDecoratorPlugins([], {}, {}, this.addon.parent, this.addon.project)
           .length
-      ).to.equal(2, "plugins added correctly");
+      ).to.equal(4, "plugins added correctly");
     });
 
     it("should include only fields if it detects decorators plugin", function () {
@@ -91,7 +91,7 @@ describe("get-babel-options", function () {
           this.addon.parent,
           this.addon.project
         ).length
-      ).to.equal(2, "plugins were not added");
+      ).to.equal(4, "plugins were not added");
     });
 
     it("should include only decorators if it detects class fields plugin", function () {
@@ -123,7 +123,7 @@ describe("get-babel-options", function () {
         this.addon.project
       );
 
-      expect(strictPlugins[1][1].loose).to.equal(
+      expect(strictPlugins[strictPlugins.length - 1][1].loose).to.equal(
         false,
         "loose is false if no option is provided"
       );
@@ -136,7 +136,7 @@ describe("get-babel-options", function () {
         this.addon.project
       );
 
-      expect(loosePlugins[1][1].loose).to.equal(
+      expect(loosePlugins[loosePlugins.length - 1][1].loose).to.equal(
         true,
         "loose setting added correctly"
       );
@@ -157,7 +157,7 @@ describe("get-babel-options", function () {
         "@babel/plugin-transform-typescript",
         "typescript still first"
       );
-      expect(plugins.length).to.equal(3, "class fields and decorators added");
+      expect(plugins.length).to.equal(5, "class fields and decorators added");
     });
 
     it("should include class fields and decorators before typescript if not handling typescript", function () {
@@ -172,8 +172,8 @@ describe("get-babel-options", function () {
         this.addon.project
       );
 
-      expect(plugins.length).to.equal(3, "class fields and decorators added");
-      expect(plugins[2]).to.equal(
+      expect(plugins.length).to.equal(5, "class fields and decorators added");
+      expect(plugins[4]).to.equal(
         "@babel/plugin-transform-typescript",
         "typescript is now last"
       );
