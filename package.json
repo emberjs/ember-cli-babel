@@ -31,7 +31,7 @@
   "scripts": {
     "build": "ember build",
     "changelog": "lerna-changelog",
-    "lint:js": "eslint ./*.js addon addon-test-support app blueprints config lib server test-support tests",
+    "lint:js": "eslint ./*.js addon addon-test-support app blueprints config lib server test-support",
     "release": "release-it",
     "start": "ember serve",
     "test": "mocha node-tests && ember test",
