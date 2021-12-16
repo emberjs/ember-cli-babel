@@ -27,8 +27,8 @@ jobs:
     - name: lint
       run: yarn lint:js
 
-  test:
-    name: "Node ${{ matrix.node }} - ${{ matrix.os }}"
+  node-tests:
+    name: "Node: Node ${{ matrix.node }} - ${{ matrix.os }}"
     runs-on: "${{matrix.os}}-latest"
 
     strategy:
@@ -56,7 +56,38 @@ jobs:
     - name: install dependencies
       run: yarn install --frozen-lockfile --ignore-engines
     - name: test
-      run: yarn test
+      run: yarn test:node
+
+  acceptance-tests:
+    name: "Acceptance: Node ${{ matrix.node }} - ${{ matrix.os }}"
+    runs-on: "${{matrix.os}}-latest"
+
+    strategy:
+      matrix:
+        os: ['ubuntu', 'windows']
+        node: ['12', '14']
+        exclude:
+          # excludes node 14 on macOS, this is because
+          # ember-cli (until ~ 3.12) calls
+          # `fs.writeFileSync('./tmp/.metadata_never_index)` on macOS platforms
+          # to instruct spotlight to avoid indexing the local tmp folder
+          # unfortunately, ember-cli does not pass a value for second arg (the
+          # content to write) and Node 14 added an assertion
+          #
+          # TODO: delete this when we have dropped Node 6 and can update
+          # ember-cli to a version that doesn't do this
+          - os: 'macOS'
+            node: '14'
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node }}
+    - name: install dependencies
+      run: yarn install --frozen-lockfile --ignore-engines
+    - name: test
+      run: yarn test:ember
 
   floating-test:
     name: Floating dependencies

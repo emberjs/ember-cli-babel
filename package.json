@@ -36,6 +36,7 @@
     "start": "ember serve",
     "test": "mocha node-tests && ember test",
     "test:all": "mocha node-tests && ember try:each",
+    "test:ember": "ember test",
     "test:node": "mocha node-tests",
     "test:node:debug": "mocha debug node-tests"
   },
