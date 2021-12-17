@@ -1,4 +1,12 @@
-## v7.28.9 (2021-12-16)
+## v7.26.10 (2021-12-17)
+
+#### :bug: Bug Fix
+* [#428](https://github.com/babel/ember-cli-babel/pull/428) Configure `loose` option for all class property plugins ([@chriskrycho](https://github.com/chriskrycho))
+
+#### Committers: 1
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+
+## v7.26.9 (2021-12-16)
 
 #### :bug: Bug Fix
 * [#426](https://github.com/babel/ember-cli-babel/pull/426) Fix decorators babel plugin issue ([@chriskrycho](https://github.com/chriskrycho))
