@@ -275,7 +275,9 @@ module.exports = {
   },
 
   cacheKeyForTree(treeType) {
-    if (treeType === 'addon') {
+    if (treeType === 'vendor') {
+      return cacheKeyForTree('vendor', this, [this._shouldIncludePolyfill()]);
+    } else if (treeType === 'addon') {
       let isRootBabel = this.parent === this.project;
       let shouldIncludeHelpers = isRootBabel && _shouldIncludeHelpers(this._getAppOptions(), this);
 
