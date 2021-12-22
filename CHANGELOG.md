@@ -1,3 +1,11 @@
+## v7.26.11 (2021-12-22)
+
+#### :bug: Bug Fix
+* [#430](https://github.com/babel/ember-cli-babel/pull/430) Fix missing babel polyfill in vendor tree ([@jaswilli](https://github.com/jaswilli))
+
+#### Committers: 1
+- Jason Williams ([@jaswilli](https://github.com/jaswilli))
+
 ## v7.26.10 (2021-12-17)
 
 #### :bug: Bug Fix
