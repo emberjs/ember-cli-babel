@@ -19,7 +19,6 @@ const terminateWorkerPool = require('./utils/terminate-workers');
 const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
-const clone = require('clone');
 const {
   _shouldHandleTypeScript,
   _shouldIncludeHelpers,
@@ -134,15 +133,15 @@ describe('ember-cli-babel', function() {
           input.write({
             "foo.js": `import Component from '@glimmer/component';\nimport { tracked } from '@glimmer/tracking';\nexport default class Foo extends Component { @tracked thisIsTracked = true; }`,
           });
-  
+
           this.addon.project.targets = {
             browsers: ["last 2 chrome versions"],
           };
-  
+
           subject = this.addon.transpileTree(input.path(), {});
-  
+
           output = createBuilder(subject);
-  
+
           yield output.build();
           expect(output.read()["foo.js"]).not.to.include(
             "_initializerWarningHelper(_descriptor, this)"
@@ -1931,16 +1930,6 @@ describe('ember-cli-babel', function() {
 
       let pluginRequired = this.addon.isPluginRequired('transform-regenerator');
       expect(pluginRequired).to.be.false;
-    });
-
-    it('defensively copies `targets` to prevent @babel/helper-compilation-functions mutating it', function() {
-      let targets = {
-        browsers: ['last 2 Chrome versions']
-      };
-      this.addon.project.targets = clone(targets);
-
-      this.addon.isPluginRequired('transform-regenerator');
-      expect(this.addon.project.targets).to.deep.equal(targets);
     });
   });
 });
