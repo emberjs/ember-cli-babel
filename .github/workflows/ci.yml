@@ -30,6 +30,7 @@ jobs:
   node-tests:
     name: "Node: Node ${{ matrix.node }} - ${{ matrix.os }}"
     runs-on: "${{matrix.os}}-latest"
+    timeout-minutes: 5
 
     strategy:
       matrix:
@@ -61,6 +62,7 @@ jobs:
   acceptance-tests:
     name: "Acceptance: Node ${{ matrix.node }} - ${{ matrix.os }}"
     runs-on: "${{matrix.os}}-latest"
+    timeout-minutes: 5
 
     strategy:
       matrix:
@@ -92,6 +94,7 @@ jobs:
   floating-test:
     name: Floating dependencies
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
     - uses: actions/checkout@v1
