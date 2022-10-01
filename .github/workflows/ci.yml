@@ -35,18 +35,6 @@ jobs:
       matrix:
         os: ['ubuntu', 'windows', 'macOS']
         node: ['14', '16', '18']
-        exclude:
-          # excludes node 14 on macOS, this is because
-          # ember-cli (until ~ 3.12) calls
-          # `fs.writeFileSync('./tmp/.metadata_never_index)` on macOS platforms
-          # to instruct spotlight to avoid indexing the local tmp folder
-          # unfortunately, ember-cli does not pass a value for second arg (the
-          # content to write) and Node 14 added an assertion
-          #
-          # TODO: delete this when we have dropped Node 6 and can update
-          # ember-cli to a version that doesn't do this
-          - os: 'macOS'
-            node: '14'
 
     steps:
     - uses: actions/checkout@v1
@@ -66,18 +54,6 @@ jobs:
       matrix:
         os: ['ubuntu', 'windows']
         node: ['14', '16', '18']
-        exclude:
-          # excludes node 14 on macOS, this is because
-          # ember-cli (until ~ 3.12) calls
-          # `fs.writeFileSync('./tmp/.metadata_never_index)` on macOS platforms
-          # to instruct spotlight to avoid indexing the local tmp folder
-          # unfortunately, ember-cli does not pass a value for second arg (the
-          # content to write) and Node 14 added an assertion
-          #
-          # TODO: delete this when we have dropped Node 6 and can update
-          # ember-cli to a version that doesn't do this
-          - os: 'macOS'
-            node: '14'
 
     steps:
     - uses: actions/checkout@v1
