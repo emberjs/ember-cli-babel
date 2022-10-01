@@ -12,7 +12,6 @@ const {
 const VersionChecker = require('ember-cli-version-checker');
 const clone = require('clone');
 const babel = require('@babel/core');
-const path = require('path');
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
@@ -181,30 +180,6 @@ module.exports = {
     });
   },
 
-  _shouldIncludePolyfill() {
-    let addonOptions = this._getAddonOptions();
-    let customOptions = addonOptions['ember-cli-babel'];
-
-    if (customOptions && 'includePolyfill' in customOptions) {
-      return customOptions.includePolyfill === true;
-    } else {
-      return false;
-    }
-  },
-
-  _importPolyfill(app) {
-    let polyfillPath = 'vendor/babel-polyfill/polyfill.js';
-
-    if (this.import) {  // support for ember-cli >= 2.7
-      this.import(polyfillPath, { prepend: true });
-    } else if (app.import) { // support ember-cli < 2.7
-      app.import(polyfillPath, { prepend: true });
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn('Please run: ember install ember-cli-import-polyfill');
-    }
-  },
-
   _getHelperVersion() {
     if (!APP_BABEL_RUNTIME_VERSION.has(this.project)) {
       let checker = new VersionChecker(this.project);
@@ -258,26 +233,8 @@ module.exports = {
     });
   },
 
-  treeForVendor() {
-    if (!this._shouldIncludePolyfill()) return;
-
-    const Funnel = require('broccoli-funnel');
-    const UnwatchedDir = require('broccoli-source').UnwatchedDir;
-
-    // Find babel-core's browser polyfill and use its directory as our vendor tree
-    let polyfillDir = path.dirname(require.resolve('@babel/polyfill/dist/polyfill'));
-
-    let polyfillTree = new Funnel(new UnwatchedDir(polyfillDir), {
-      destDir: 'babel-polyfill'
-    });
-
-    return polyfillTree;
-  },
-
   cacheKeyForTree(treeType) {
-    if (treeType === 'vendor') {
-      return cacheKeyForTree('vendor', this, [this._shouldIncludePolyfill()]);
-    } else if (treeType === 'addon') {
+    if (treeType === 'addon') {
       let isRootBabel = this.parent === this.project;
       let shouldIncludeHelpers = isRootBabel && _shouldIncludeHelpers(this._getAppOptions(), this);
 
@@ -285,15 +242,6 @@ module.exports = {
     }
 
     return cacheKeyForTree(treeType, this);
-  },
-
-  included: function(app) {
-    this._super.included.apply(this, arguments);
-    this.app = app;
-
-    if (this._shouldIncludePolyfill()) {
-      this._importPolyfill(app);
-    }
   },
 
   isPluginRequired(pluginName) {
