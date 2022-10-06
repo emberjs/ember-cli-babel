@@ -83,7 +83,9 @@
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
     "console-ui": "^2.2.2",
+    "core-js": "^3.25.5",
     "core-object": "^3.1.5",
+    "ember-auto-import": "^2.4.2",
     "ember-cli": "~3.5.0",
     "ember-cli-dependency-checker": "^3.0.0",
     "ember-cli-htmlbars": "^3.0.0",
@@ -101,9 +103,11 @@
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^5.2.0",
+    "regenerator-runtime": "^0.13.9",
     "release-it": "^12.2.1",
     "release-it-lerna-changelog": "^1.0.3",
-    "resolve": "^1.8.1"
+    "resolve": "^1.8.1",
+    "webpack": "^5.74.0"
   },
   "engines": {
     "node": "14.* || 16.* || >= 18"
