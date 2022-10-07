@@ -134,15 +134,15 @@ describe('ember-cli-babel', function() {
           input.write({
             "foo.js": `import Component from '@glimmer/component';\nimport { tracked } from '@glimmer/tracking';\nexport default class Foo extends Component { @tracked thisIsTracked = true; }`,
           });
-  
+
           this.addon.project.targets = {
             browsers: ["last 2 chrome versions"],
           };
-  
+
           subject = this.addon.transpileTree(input.path(), {});
-  
+
           output = createBuilder(subject);
-  
+
           yield output.build();
           expect(output.read()["foo.js"]).not.to.include(
             "_initializerWarningHelper(_descriptor, this)"
@@ -1330,64 +1330,6 @@ describe('ember-cli-babel', function() {
       this.addon.app = { options: mockAppOptions };
 
       expect(this.addon._getAddonOptions()).to.be.equal(mockParentOptions);
-    });
-  });
-
-  describe('_shouldIncludePolyfill()', function() {
-    describe('without any includePolyfill option set', function() {
-      it('should return false', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.false;
-      });
-
-      it('should not print deprecation messages', function() {
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(0);
-      });
-    });
-
-    describe('with ember-cli-babel.includePolyfill = true', function() {
-      beforeEach(function() {
-        this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: true } };
-      });
-
-      it('should return true', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.true;
-      });
-
-      it('should not print deprecation messages', function() {
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(0);
-      });
-    });
-
-    describe('with ember-cli-babel.includePolyfill = false', function() {
-      beforeEach(function() {
-        this.addon.parent.options = { 'ember-cli-babel': { includePolyfill: false } };
-      });
-
-      it('should return false', function() {
-        expect(this.addon._shouldIncludePolyfill()).to.be.false;
-      });
-
-      it('should not print deprecation messages', function() {
-        this.addon._shouldIncludePolyfill();
-
-        let deprecationMessages = this.ui.output.split('\n').filter(function(line) {
-          return line.indexOf('Putting the "includePolyfill" option in "babel" is deprecated') !== -1;
-        });
-
-        expect(deprecationMessages).to.have.lengthOf(0);
-      });
     });
   });
 

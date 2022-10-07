@@ -12,7 +12,6 @@ allow you to use latest Javascript in your Ember CLI project.
 - [Compatibility](#compatibility)
 - [Usage](#usage)
   * [Options](#options)
-    + [Polyfill](#polyfill)
     + [External Helpers](#external-helpers)
     + [Enabling Source Maps](#enabling-source-maps)
     + [Modules](#modules)
@@ -115,7 +114,6 @@ interface EmberCLIBabelConfig {
     Configuration options for ember-cli-babel itself.
   */
   'ember-cli-babel'?: {
-    includePolyfill?: boolean;
     includeExternalHelpers?: boolean;
     compileModules?: boolean;
     disableDebugTooling?: boolean;
@@ -163,26 +161,6 @@ module.exports = {
     }
   }
 };
-```
-
-#### Polyfill
-
-Babel comes with a polyfill that includes a custom [regenerator
-runtime](https://github.com/facebook/regenerator/blob/master/runtime.js) and
-[core-js](https://github.com/zloirock/core-js). Many transformations will work
-without it, but for full support you may need to include the polyfill in your
-app.
-
-To include it in your app, pass `includePolyfill: true` in your `ember-cli-babel` options.
-
-```js
-// ember-cli-build.js
-
-let app = new EmberApp(defaults, {
-  'ember-cli-babel': {
-    includePolyfill: true
-  }
-});
 ```
 
 #### External Helpers
