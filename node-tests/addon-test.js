@@ -399,7 +399,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (true /* DEBUG */) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
@@ -866,7 +866,7 @@ describe('ember-cli-babel', function() {
           expect(
             output.read()
           ).to.deep.equal({
-            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false\n  /* DEBUG */\n  ) {\n    console.log('debug mode!');\n  }\n});`
+            "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  if (false /* DEBUG */) {\n    console.log('debug mode!');\n  }\n});`
           });
         }));
 
