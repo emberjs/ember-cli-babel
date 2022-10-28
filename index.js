@@ -91,7 +91,15 @@ module.exports = {
       return options;
     } else {
       // legacy codepath
-      return Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), options);
+      let transpilerOptions = this._buildBroccoliBabelTranspilerOptions(config);
+
+      return {
+        ...transpilerOptions,
+        babel: {
+          ...transpilerOptions.babel,
+          ...options,
+        },
+      };
     }
   },
 
@@ -126,20 +134,19 @@ module.exports = {
 
     let options = {
       annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
-      sourceMaps,
       throwUnlessParallelizable,
       filterExtensions: this.getSupportedExtensions(config),
-      plugins: []
+      babel: { plugins: [], sourceMaps },
     };
 
     if (shouldCompileModules) {
-      options.moduleIds = true;
-      options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+      options.babel.moduleIds = true;
+      options.babel.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
     }
 
-    options.highlightCode = _shouldHighlightCode(this.parent);
-    options.babelrc = false;
-    options.configFile = false;
+    options.babel.highlightCode = _shouldHighlightCode(this.parent);
+    options.babel.babelrc = false;
+    options.babel.configFile = false;
 
     return options;
   },
@@ -148,7 +155,16 @@ module.exports = {
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-    let options = Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), this.buildBabelOptions('babel', config));
+    let transpilerOptions = this._buildBroccoliBabelTranspilerOptions(config);
+    let babelOptions = this.buildBabelOptions('babel', config);
+    let options = {
+      ...transpilerOptions,
+      babel: {
+        ...transpilerOptions.babel,
+        ...babelOptions,
+      },
+    };
+
     let output;
 
     const customAddonConfig = config['ember-cli-babel'];
@@ -306,6 +322,6 @@ module.exports = {
 
   // detect if running babel would do nothing... and do nothing instead
   _shouldDoNothing(options) {
-    return !options.sourceMaps && !options.plugins.length;
+    return !options.babel.sourceMaps && !options.babel.plugins.length;
   }
 };
