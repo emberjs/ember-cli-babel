@@ -23,7 +23,7 @@ const PROJECTS_WITH_VALID_EMBER_CLI = new WeakSet();
 let count = 0;
 
 module.exports = {
-  name: 'ember-cli-babel',
+  name: require('./package').name,
   configKey: 'ember-cli-babel',
   // Note: This is not used internally for this addon, this is added for users to import this function for getting the ember specific
   // babel plugins. Eg: adding ember specific babel plugins in their babel.config.js.

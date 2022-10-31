@@ -37,7 +37,9 @@ ember install ember-cli-babel
 
 ## Compatibility
 
-- ember-cli-babel 7.x requires ember-cli 2.13 or above
+* Ember.js v3.28 or above
+* Ember CLI v3.28 or above
+* Node.js v14 or above
 
 ## Usage
 
@@ -512,3 +514,12 @@ Read more about [broccoli parallel transpilation].
 
 [broccoli-babel-transpiler]: https://github.com/babel/broccoli-babel-transpiler
 [broccoli parallel transpilation]: https://github.com/babel/broccoli-babel-transpiler#parallel-transpilation
+
+## Contributing
+
+See the [Contributing](CONTRIBUTING.md) guide for details.
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.md).
