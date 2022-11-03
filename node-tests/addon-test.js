@@ -1592,7 +1592,7 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
 
-      expect(result.babel.babelrc).to.be.false;
+      expect(result.babelrc).to.be.false;
     });
 
     it('provides an annotation including parent name - addon', function() {
@@ -1632,7 +1632,7 @@ describe('ember-cli-babel', function() {
       };
 
       let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
-      expect(result.babel.sourceMaps).to.equal('inline');
+      expect(result.sourceMaps).to.equal('inline');
     });
 
     it('disables reading `.babelrc`', function() {
@@ -1640,7 +1640,7 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon._buildBroccoliBabelTranspilerOptions(options);
 
-      expect(result.babel.babelrc).to.be.false;
+      expect(result.babelrc).to.be.false;
     });
   });
 
@@ -1653,9 +1653,9 @@ describe('ember-cli-babel', function() {
       let result = this.addon.buildBabelOptions();
 
       expect(result.annotation).to.equal('Babel: foo');
-      expect(result.babel.moduleIds).to.be.true;
-      expect(result.babel.babelrc).to.be.false;
-      expect(result.babel.configFile).to.be.false;
+      expect(result.moduleIds).to.be.true;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
     });
 
     it('returns broccoli-babel-transpiler options when asked for', function() {
@@ -1664,9 +1664,9 @@ describe('ember-cli-babel', function() {
       let result = this.addon.buildBabelOptions('broccoli');
 
       expect(result.annotation).to.equal('Babel: foo');
-      expect(result.babel.moduleIds).to.be.true;
-      expect(result.babel.babelrc).to.be.false;
-      expect(result.babel.configFile).to.be.false;
+      expect(result.moduleIds).to.be.true;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
     });
 
     it('returns broccoli-babel-transpiler options with customizations when provided', function() {
@@ -1677,9 +1677,9 @@ describe('ember-cli-babel', function() {
       });
 
       expect(result.annotation).to.equal('hello!!!');
-      expect(result.babel.moduleIds).to.be.true;
-      expect(result.babel.babelrc).to.be.false;
-      expect(result.babel.configFile).to.be.false;
+      expect(result.moduleIds).to.be.true;
+      expect(result.babelrc).to.be.false;
+      expect(result.configFile).to.be.false;
     });
 
     it('returns babel options when asked for', function() {
@@ -1726,7 +1726,7 @@ describe('ember-cli-babel', function() {
       });
 
       let result = this.addon.buildBabelOptions();
-      expect(result.babel.plugins).to.deep.include(plugin);
+      expect(result.plugins).to.deep.include(plugin);
     });
 
     it('includes postTransformPlugins after preset-env plugins', function() {
@@ -1744,8 +1744,8 @@ describe('ember-cli-babel', function() {
 
       let result = this.addon.buildBabelOptions();
 
-      expect(result.babel.plugins).to.deep.include(plugin);
-      expect(result.babel.plugins.slice(-1)).to.deep.equal([pluginAfter]);
+      expect(result.plugins).to.deep.include(plugin);
+      expect(result.plugins.slice(-1)).to.deep.equal([pluginAfter]);
       expect(result.postTransformPlugins).to.be.undefined;
     });
 
@@ -1765,7 +1765,7 @@ describe('ember-cli-babel', function() {
       });
 
       let result = this.addon.buildBabelOptions(options);
-      expect(result.babel.presets).to.deep.equal([]);
+      expect(result.presets).to.deep.equal([]);
     });
 
     it('user plugins are before preset-env plugins', function() {
@@ -1780,7 +1780,7 @@ describe('ember-cli-babel', function() {
       });
 
       let result = this.addon.buildBabelOptions();
-      expect(result.babel.plugins[0]).to.equal(plugin);
+      expect(result.plugins[0]).to.equal(plugin);
     });
 
     it('includes resolveModuleSource if compiling modules', function() {
@@ -1792,7 +1792,7 @@ describe('ember-cli-babel', function() {
           compileModules: true,
         }
       });
-      let found = result.babel.plugins.find(plugin => plugin[0] === expectedPlugin);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
 
       expect(typeof found[1].resolvePath).to.equal('function');
     });
@@ -1806,7 +1806,7 @@ describe('ember-cli-babel', function() {
           compileModules: false,
         }
       });
-      let found = result.babel.plugins.find(plugin => plugin[0] === expectedPlugin);
+      let found = result.plugins.find(plugin => plugin[0] === expectedPlugin);
 
       expect(found).to.equal(undefined);
     });
@@ -1842,7 +1842,7 @@ describe('ember-cli-babel', function() {
 
       let options = this.addon.buildBabelOptions();
 
-      expect(options.babel.presets).to.deep.equal([
+      expect(options.presets).to.deep.equal([
         [require.resolve('@babel/preset-env'), {
           loose: true,
           modules: false,
