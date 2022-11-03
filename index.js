@@ -91,15 +91,7 @@ module.exports = {
       return options;
     } else {
       // legacy codepath
-      let transpilerOptions = this._buildBroccoliBabelTranspilerOptions(config);
-
-      return {
-        ...transpilerOptions,
-        babel: {
-          ...transpilerOptions.babel,
-          ...options,
-        },
-      };
+      return Object.assign({}, this._buildBroccoliBabelTranspilerOptions(config), options);
     }
   },
 
@@ -134,19 +126,20 @@ module.exports = {
 
     let options = {
       annotation: providedAnnotation || `Babel: ${_parentName(this.parent)}`,
+      sourceMaps,
       throwUnlessParallelizable,
       filterExtensions: this.getSupportedExtensions(config),
-      babel: { plugins: [], sourceMaps },
+      plugins: [],
     };
 
     if (shouldCompileModules) {
-      options.babel.moduleIds = true;
-      options.babel.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+      options.moduleIds = true;
+      options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
     }
 
-    options.babel.highlightCode = _shouldHighlightCode(this.parent);
-    options.babel.babelrc = false;
-    options.babel.configFile = false;
+    options.highlightCode = _shouldHighlightCode(this.parent);
+    options.babelrc = false;
+    options.configFile = false;
 
     return options;
   },
@@ -155,13 +148,30 @@ module.exports = {
     let config = _config || this._getAddonOptions();
     let description = `000${++count}`.slice(-3);
     let postDebugTree = this._debugTree(inputTree, `${description}:input`);
-    let transpilerOptions = this._buildBroccoliBabelTranspilerOptions(config);
-    let babelOptions = this.buildBabelOptions('babel', config);
+    let {
+      // Separate Babel options from `broccoli-babel-transpiler` options.
+      babelrc,
+      configFile,
+      getModuleId,
+      highlightCode,
+      moduleIds,
+      plugins,
+      sourceMaps,
+      ...transpilerOptions
+    } = this._buildBroccoliBabelTranspilerOptions(config);
     let options = {
       ...transpilerOptions,
+      // `broccoli-babel-transpiler` now expects all Babel options to be
+      // present under a `babel` key.
       babel: {
-        ...transpilerOptions.babel,
-        ...babelOptions,
+        babelrc,
+        configFile,
+        getModuleId,
+        highlightCode,
+        moduleIds,
+        plugins,
+        sourceMaps,
+        ...this.buildBabelOptions('babel', config),
       },
     };
 
