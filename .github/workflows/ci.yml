@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: '14.x'
     - name: install dependencies
@@ -37,8 +37,8 @@ jobs:
         node: ['14', '16', '18']
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
     - name: install dependencies
@@ -56,8 +56,8 @@ jobs:
         node: ['14', '16', '18']
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
     - name: install dependencies
@@ -70,8 +70,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: '14.x'
     - name: install dependencies
@@ -79,3 +79,27 @@ jobs:
     - name: test
       run: yarn test
 
+  publish:
+    name: Publish to npm
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: install dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+
+      - name: auto-dist-tag
+        run: npx auto-dist-tag --write
+
+      - name: publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
