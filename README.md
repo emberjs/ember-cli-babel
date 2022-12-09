@@ -351,11 +351,6 @@ NOTE: Setting `enableTypeScriptTransform` to `true` does *not* enable
 type-checking. For integrated type-checking, you will need
 [`ember-cli-typescript`](https://ember-cli-typescript.com).
 
-NOTE: Setting `enableTypeScriptTransform` to `true` is not compatible with
-`ember-cli-typescript < 4.0` because of conflicting Babel plugin ordering
-constraints. It is also unnecessary because `ember-cli-typescript < 4.0`
-adds the TypeScript-Babel transform.
-
 ### Babel config usage
 
 If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` as a child property of `ember-cli-babel` in your `ember-cli-build.js` file.
