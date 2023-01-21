@@ -75,6 +75,7 @@
     "@babel/core": "^7.12.0",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
+    "@release-it-plugins/lerna-changelog": "^5.0.0",
     "babel-eslint": "^10.1.0",
     "broccoli-test-helper": "^1.4.0",
     "chai": "^4.1.2",
@@ -103,8 +104,7 @@
     "loader.js": "^4.7.0",
     "mocha": "^5.2.0",
     "regenerator-runtime": "^0.13.9",
-    "release-it": "^12.2.1",
-    "release-it-lerna-changelog": "^1.0.3",
+    "release-it": "^15.6.0",
     "resolve": "^1.8.1",
     "rimraf": "^3.0.1",
     "webpack": "^5.74.0"
@@ -133,7 +133,7 @@
   },
   "release-it": {
     "plugins": {
-      "release-it-lerna-changelog": {
+      "@release-it-plugins/lerna-changelog": {
         "infile": "CHANGELOG.md"
       }
     },
@@ -142,6 +142,9 @@
     },
     "github": {
       "release": true
+    },
+    "npm": {
+      "publish": false
     }
   }
 }
