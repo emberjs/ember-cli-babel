@@ -1,3 +1,27 @@
+
+## v8.0.0-beta.0 (2023-01-24)
+
+#### :boom: Breaking Change
+* [#460](https://github.com/babel/ember-cli-babel/pull/460) Update `broccoli-babel-transpiler` to v8.0.0-beta.1 ([@bertdeblock](https://github.com/bertdeblock))
+* [#458](https://github.com/babel/ember-cli-babel/pull/458) Drop support for the `includePolyfill` option ([@bertdeblock](https://github.com/bertdeblock))
+* [#454](https://github.com/babel/ember-cli-babel/pull/454) Drop support for Node < v14 and add support for Node v16 and v18 ([@bertdeblock](https://github.com/bertdeblock))
+* [#452](https://github.com/babel/ember-cli-babel/pull/452) Move `@babel/core` to `peerDependencies` to resolve peer dependency warnings and errors ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :rocket: Enhancement
+* [#454](https://github.com/babel/ember-cli-babel/pull/454) Drop support for Node < v14 and add support for Node v16 and v18 ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :bug: Bug Fix
+* [#452](https://github.com/babel/ember-cli-babel/pull/452) Move `@babel/core` to `peerDependencies` to resolve peer dependency warnings and errors ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :memo: Documentation
+* [#464](https://github.com/babel/ember-cli-babel/pull/464) Add upgrading to v8 guide ([@bertdeblock](https://github.com/bertdeblock))
+
+#### Committers: 4
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+- Katie Gengler ([@kategengler](https://github.com/kategengler))
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+- [@colenso](https://github.com/colenso)
+
 ## v7.26.11 (2021-12-22)
 
 #### :bug: Bug Fix
