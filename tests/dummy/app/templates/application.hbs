@@ -1,12 +1,12 @@
 <h2 id="title">Welcome to Ember</h2>
 
-{{input id="test-input" value=value}}
+<Input @value={{this.value}} id="test-input" />
 
-<div id="first-value">{{values.firstObject}}</div>
-<div id="last-value">{{values.lastObject}}</div>
-<div id="animal-value">{{animalName}}</div>
-<div id="animal-type">{{animal.type}}</div>
-<div id="static-animal-type">{{staticAnimalType}}</div>
+<div id="first-value">{{this.values.firstObject}}</div>
+<div id="last-value">{{this.values.lastObject}}</div>
+<div id="animal-value">{{this.animalName}}</div>
+<div id="animal-type">{{this.animal.type}}</div>
+<div id="static-animal-type">{{this.staticAnimalType}}</div>
 
 <Basic />
 
