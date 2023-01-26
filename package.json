@@ -73,6 +73,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.0",
+    "@ember/optional-features": "^2.0.0",
+    "@ember/string": "^3.0.1",
+    "@ember/test-helpers": "^2.9.3",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "@release-it-plugins/lerna-changelog": "^5.0.0",
@@ -87,13 +90,11 @@
     "ember-auto-import": "^2.4.2",
     "ember-cli": "~3.5.0",
     "ember-cli-dependency-checker": "^3.0.0",
-    "ember-cli-htmlbars": "^3.0.0",
-    "ember-cli-htmlbars-inline-precompile": "^1.0.3",
+    "ember-cli-htmlbars": "^6.2.0",
     "ember-cli-inject-live-reload": "^1.8.2",
-    "ember-cli-shims": "^1.2.0",
     "ember-load-initializers": "^2.1.1",
-    "ember-qunit": "^4.6.0",
-    "ember-resolver": "^5.0.1",
+    "ember-qunit": "^6.1.1",
+    "ember-resolver": "^10.0.0",
     "ember-source": "~3.28.8",
     "ember-source-channel-url": "^1.1.0",
     "eslint": "^4.0.0",
@@ -103,6 +104,7 @@
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^5.2.0",
+    "qunit": "^2.19.4",
     "regenerator-runtime": "^0.13.9",
     "release-it": "^15.6.0",
     "resolve": "^1.8.1",
@@ -127,6 +129,9 @@
       "documentation": ":memo: Documentation",
       "internal": ":house: Internal"
     }
+  },
+  "ember": {
+    "edition": "octane"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
