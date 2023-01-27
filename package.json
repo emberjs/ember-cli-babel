@@ -114,9 +114,6 @@
   "engines": {
     "node": "14.* || 16.* || >= 18"
   },
-  "resolutions": {
-    "**/engine.io": "~3.3.0"
-  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
