@@ -84,7 +84,7 @@
     "chai": "^4.1.2",
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
-    "console-ui": "^2.2.2",
+    "console-ui": "^3.1.2",
     "core-js": "^3.25.5",
     "core-object": "^3.1.5",
     "ember-auto-import": "^2.4.2",
