@@ -81,7 +81,7 @@
     "@release-it-plugins/lerna-changelog": "^5.0.0",
     "babel-eslint": "^10.1.0",
     "broccoli-test-helper": "^2.0.0",
-    "chai": "^4.1.2",
+    "chai": "^4.3.7",
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
     "console-ui": "^3.1.2",
