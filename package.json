@@ -80,7 +80,7 @@
     "@glimmer/tracking": "^1.0.4",
     "@release-it-plugins/lerna-changelog": "^5.0.0",
     "babel-eslint": "^10.1.0",
-    "broccoli-test-helper": "^1.4.0",
+    "broccoli-test-helper": "^2.0.0",
     "chai": "^4.1.2",
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
