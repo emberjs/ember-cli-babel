@@ -103,7 +103,7 @@
     "fixturify-project": "^1.10.0",
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
-    "mocha": "^5.2.0",
+    "mocha": "^10.2.0",
     "qunit": "^2.19.4",
     "regenerator-runtime": "^0.13.9",
     "release-it": "^15.6.0",
