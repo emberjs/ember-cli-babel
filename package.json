@@ -100,7 +100,7 @@
     "eslint": "^4.0.0",
     "eslint-plugin-ember": "^5.2.0",
     "eslint-plugin-node": "^7.0.1",
-    "fixturify-project": "^1.10.0",
+    "fixturify-project": "^5.2.0",
     "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^10.2.0",
