@@ -85,9 +85,9 @@
     "co": "^4.6.0",
     "common-tags": "^1.8.0",
     "console-ui": "^3.1.2",
-    "core-js": "^3.25.5",
+    "core-js": "^3.27.2",
     "core-object": "^3.1.5",
-    "ember-auto-import": "^2.4.2",
+    "ember-auto-import": "^2.6.0",
     "ember-cli": "~3.5.0",
     "ember-cli-dependency-checker": "^3.0.0",
     "ember-cli-htmlbars": "^6.2.0",
@@ -105,11 +105,11 @@
     "loader.js": "^4.7.0",
     "mocha": "^10.2.0",
     "qunit": "^2.19.4",
-    "regenerator-runtime": "^0.13.9",
+    "regenerator-runtime": "^0.13.11",
     "release-it": "^15.6.0",
     "resolve": "^1.8.1",
     "rimraf": "^4.1.2",
-    "webpack": "^5.74.0"
+    "webpack": "^5.75.0"
   },
   "engines": {
     "node": "14.* || 16.* || >= 18"
