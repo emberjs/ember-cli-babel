@@ -9,7 +9,7 @@ const AddonMixin = require('../index');
 const CommonTags = require('common-tags');
 const stripIndent = CommonTags.stripIndent;
 const { ensureSymlinkSync } = require('fs-extra');
-const FixturifyProject = require('fixturify-project');
+const { Project: FixturifyProject } = require('fixturify-project');
 const EmberProject = require('ember-cli/lib/models/project');
 const MockCLI = require('ember-cli/tests/helpers/mock-cli');
 const BroccoliTestHelper = require('broccoli-test-helper');
@@ -1199,10 +1199,9 @@ describe('ember-cli-babel', function() {
           return prepareAddon(addon);
         });
         fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
-        let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-        fixturifyProject.writeSync();
+        yield fixturifyProject.write();
 
-        let linkPath = path.join(fixturifyProject.root, 'whatever/node_modules/ember-cli-babel');
+        let linkPath = path.join(fixturifyProject.baseDir, 'node_modules/ember-cli-babel');
         let addonPath = path.resolve(__dirname, '../');
         rimraf.sync(linkPath);
         fs.symlinkSync(addonPath, linkPath, 'junction');
@@ -1211,8 +1210,7 @@ describe('ember-cli-babel', function() {
         };
 
         let cli = new MockCLI();
-        let root = path.join(fixturifyProject.root, 'whatever');
-        project = new EmberProject(root, pkg, cli.ui, cli);
+        project = new EmberProject(fixturifyProject.baseDir, fixturifyProject.pkg, cli.ui, cli);
         project.initializeAddons();
         this.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
         input = yield createTempDir();
@@ -1342,10 +1340,9 @@ describe('ember-cli-babel', function() {
         return prepareAddon(addon);
       });
       fixturifyProject.addDependency('ember-cli-babel', 'babel/ember-cli-babel#master');
-      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.writeSync();
+      yield fixturifyProject.write();
 
-      let linkPath = path.join(fixturifyProject.root, 'whatever/node_modules/ember-cli-babel');
+      let linkPath = path.join(fixturifyProject.baseDir, 'node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath, 'junction');
@@ -1354,8 +1351,7 @@ describe('ember-cli-babel', function() {
       };
 
       let cli = new MockCLI();
-      let root = path.join(fixturifyProject.root, 'whatever');
-      project = new EmberProject(root, pkg, cli.ui, cli);
+      project = new EmberProject(fixturifyProject.baseDir, fixturifyProject.pkg, cli.ui, cli);
       project.initializeAddons();
       context.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
       input = yield createTempDir();
@@ -1900,10 +1896,9 @@ describe('EmberData Packages Polyfill', function() {
       fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
         return prepareAddon(addon);
       });
-      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.writeSync();
+      yield fixturifyProject.write();
 
-      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
+      let linkPath = path.join(fixturifyProject.baseDir, 'node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath, 'junction');
@@ -1912,8 +1907,7 @@ describe('EmberData Packages Polyfill', function() {
       };
 
       let cli = new MockCLI();
-      let root = path.join(fixturifyProject.root, 'whatever');
-      project = new EmberProject(root, pkg, cli.ui, cli);
+      project = new EmberProject(fixturifyProject.baseDir, fixturifyProject.pkg, cli.ui, cli);
       project.initializeAddons();
 
       self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
@@ -2111,10 +2105,9 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
         return prepareAddon(addon);
       });
-      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
-      fixturifyProject.writeSync();
+      yield fixturifyProject.write();
 
-      let linkPath = path.join(fixturifyProject.root, `/whatever/node_modules/${p}/node_modules/ember-cli-babel`);
+      let linkPath = path.join(fixturifyProject.baseDir, `node_modules/${p}/node_modules/ember-cli-babel`);
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath, 'junction');
@@ -2123,8 +2116,7 @@ describe('EmberData Packages Polyfill - ember-cli-babel for ember-data', functio
       };
 
       let cli = new MockCLI();
-      let root = path.join(fixturifyProject.root, 'whatever');
-      project = new EmberProject(root, pkg, cli.ui, cli);
+      project = new EmberProject(fixturifyProject.baseDir, fixturifyProject.pkg, cli.ui, cli);
       project.initializeAddons();
 
       self.emberDataAddon = project.addons.find(a => { return a.name === p; });
@@ -2201,7 +2193,6 @@ describe('babel config file', function() {
       fixturifyProject.addDependency('random-addon', '0.0.1', addon => {
         return prepareAddon(addon);
       });
-      let pkg = JSON.parse(fixturifyProject.toJSON('package.json'));
       fixturifyProject.files['babel.config.js'] =
       `module.exports = function (api) {
         api.cache(true);
@@ -2215,34 +2206,32 @@ describe('babel config file', function() {
       const packageDir = path.dirname(require.resolve(path.join("@babel/plugin-transform-modules-amd", 'package.json')));
       // symlink the "@babel/plugin-transform-modules-amd" dependency into the project
       // TODO: Move this function out so that it can be used by other tests in the future.
-      const writeSync = function () {
+      const writeSync = async function () {
         let stack = [];
-        fixturifyProject.writeSync();
+        await fixturifyProject.write();
         ensureSymlinkSync(
           packageDir,
           path.join(
-            fixturifyProject.root,
-            fixturifyProject.name,
+            fixturifyProject.baseDir,
             "node_modules",
             "@babel/plugin-transform-modules-amd"
           ),
           "dir"
         );
-        for (let dep of fixturifyProject.dependencies()) {
+        for (let dep of fixturifyProject.dependencyProjects()) {
           stack.push({
             project: dep,
             root: path.join(
-              fixturifyProject.root,
-              fixturifyProject.name,
+              fixturifyProject.baseDir,
               "node_modules"
             ),
           });
         }
       };
 
-      writeSync(fixturifyProject)
+      yield writeSync(fixturifyProject);
 
-      let linkPath = path.join(fixturifyProject.root, '/whatever/node_modules/ember-cli-babel');
+      let linkPath = path.join(fixturifyProject.baseDir, 'node_modules/ember-cli-babel');
       let addonPath = path.resolve(__dirname, '../');
       rimraf.sync(linkPath);
       fs.symlinkSync(addonPath, linkPath, 'junction');
@@ -2251,8 +2240,7 @@ describe('babel config file', function() {
       };
 
       let cli = new MockCLI();
-      let root = path.join(fixturifyProject.root, 'whatever');
-      project = new EmberProject(root, pkg, cli.ui, cli);
+      project = new EmberProject(fixturifyProject.baseDir, fixturifyProject.pkg, cli.ui, cli);
       project.initializeAddons();
 
       self.addon = project.addons.find(a => { return a.name === 'ember-cli-babel'; });
