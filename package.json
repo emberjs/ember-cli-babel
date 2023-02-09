@@ -68,7 +68,7 @@
     "ember-cli-babel-plugin-helpers": "^1.1.1",
     "ember-cli-version-checker": "^5.1.2",
     "ensure-posix-path": "^1.0.2",
-    "resolve-package-path": "^3.1.0",
+    "resolve-package-path": "^4.0.3",
     "semver": "^7.3.8"
   },
   "devDependencies": {
