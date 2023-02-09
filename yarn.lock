@@ -3396,7 +3396,7 @@ broccoli-source@^2.1.2:
   resolved "https://registry.yarnpkg.com/broccoli-source/-/broccoli-source-2.1.2.tgz#e9ae834f143b607e9ec114ade66731500c38b90b"
   integrity sha512-1lLayO4wfS0c0Sj50VfHJXNWf94FYY0WUhxj0R77thbs6uWI7USiOWFqQV5dRmhAJnoKaGN4WyLGQbgjgiYFwQ==
 
-broccoli-source@^3.0.0:
+broccoli-source@^3.0.0, broccoli-source@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/broccoli-source/-/broccoli-source-3.0.1.tgz#fd581b2f3877ca1338f724f6ef70acec8c7e1444"
   integrity sha512-ZbGVQjivWi0k220fEeIUioN6Y68xjMy0xiLAc0LdieHI99gw+tafU8w0CggBDYVNsJMKUr006AZaM7gNEwCxEg==
