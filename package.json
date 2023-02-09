@@ -66,7 +66,7 @@
     "calculate-cache-key-for-tree": "^2.0.0",
     "clone": "^2.1.2",
     "ember-cli-babel-plugin-helpers": "^1.1.1",
-    "ember-cli-version-checker": "^4.1.0",
+    "ember-cli-version-checker": "^5.1.2",
     "ensure-posix-path": "^1.0.2",
     "resolve-package-path": "^3.1.0",
     "semver": "^7.3.8"
