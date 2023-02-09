@@ -10,7 +10,6 @@ const {
 } = require("./lib/babel-options-util");
 
 const VersionChecker = require('ember-cli-version-checker');
-const babel = require('@babel/core');
 const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
@@ -63,6 +62,8 @@ module.exports = {
     let options;
 
     if (shouldUseBabelConfigFile) {
+      const babel = require('@babel/core');
+
       let babelConfig = babel.loadPartialConfig({
         root: this.parent.root,
         rootMode: 'root',
