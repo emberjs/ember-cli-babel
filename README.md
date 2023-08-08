@@ -271,6 +271,25 @@ module.exports = function(defaults) {
   return app.toTree();
 }
 ```
+
+Note that for addons, you should also set this in the addon's entry point (usually `index.js` in the root of the addon):
+
+```js
+'use strict';
+
+module.exports = {
+  name: require('./package').name,
+
+  options: {
+    'ember-cli-babel': {
+      enableTypeScriptTransform: true,
+    },
+  },
+};
+```
+
+Otherwise, no TypeScript modules will be included in your addon's build output, so you will see "Could not find module" errors for them.
+
 ### Babel config usage
 
 If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` as a child property of `ember-cli-babel` in your `ember-cli-build.js` file.
