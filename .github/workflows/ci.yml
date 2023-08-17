@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: 16
     - name: install dependencies
       run: yarn install --frozen-lockfile --ignore-engines
     - name: lint
@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu', 'windows', 'macOS']
-        node: ['14', '16', '18']
+        node: [16, 18, 20]
 
     steps:
     - uses: actions/checkout@v3
@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu', 'windows']
-        node: ['14', '16', '18']
+        node: [16, 18, 20]
 
     steps:
     - uses: actions/checkout@v3
@@ -73,7 +73,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: 16
     - name: install dependencies
       run: yarn install --no-lockfile --ignore-engines
     - name: test
@@ -90,7 +90,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
           registry-url: 'https://registry.npmjs.org'
 
       - name: install dependencies
