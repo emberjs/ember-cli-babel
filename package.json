@@ -30,7 +30,6 @@
   },
   "scripts": {
     "build": "ember build",
-    "changelog": "lerna-changelog",
     "lint:js": "eslint . --cache",
     "release": "release-it",
     "start": "ember serve",
@@ -101,7 +100,6 @@
     "eslint-plugin-ember": "^11.10.0",
     "eslint-plugin-node": "^11.1.0",
     "fixturify-project": "^6.0.0",
-    "lerna-changelog": "^0.8.0",
     "loader.js": "^4.7.0",
     "mocha": "^10.2.0",
     "qunit": "^2.19.4",
