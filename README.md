@@ -242,35 +242,115 @@ module.exports = function(defaults) {
 
 #### Enabling TypeScript Transpilation
 
-The transform plugin required for Babel to transpile TypeScript will
-automatically be enabled when `ember-cli-typescript` >= 4.0 is installed.
+Babel needs a transform plugin in order to transpile TypeScript. When you
+install `ember-cli-typescript >= 4.0`, this plugin is automatically enabled.
 
-You can enable the TypeScript Babel transform manually *without*
-`ember-cli-typescript` by setting the `enableTypeScriptTransform` to `true`.
+If you don't want to install `ember-cli-typescript`, you can still enable
+the TypeScript-Babel transform. You will need to set `enableTypeScriptTransform`
+to `true` in select file(s).
 
-NOTE: Setting this option to `true` is not compatible with
-`ember-cli-typescript` < 4.0 because of conflicting Babel plugin ordering
-constraints and is unnecessary because `ember-cli-typescript` < 4.0 adds the
-TypeScript Babel transform itself.
 
-NOTE: Setting this option to `true` does *not* enable type-checking. For
-integrated type-checking, you will need
-[`ember-cli-typescript`](https://ember-cli-typescript.com).
-
-In an app, manually enabling the TypeScript transform would look like:
+<details>
+<summary>Apps</summary>
 
 ```js
-// ember-cli-build.js
-module.exports = function(defaults) {
-  let app = new EmberApp(defaults, {
+/* ember-cli-build.js */
+
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+
+module.exports = function (defaults) {
+  const app = new EmberApp(defaults, {
+    // Add options here
     'ember-cli-babel': {
-      enableTypeScriptTransform: true
-    }
+      enableTypeScriptTransform: true,
+    },
   });
 
   return app.toTree();
-}
+};
 ```
+
+</details>
+
+
+<details>
+<summary>Addons</summary>
+
+```js
+/* ember-cli-build.js */
+
+const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
+
+module.exports = function (defaults) {
+  const app = new EmberAddon(defaults, {
+    // Add options here
+    'ember-cli-babel': {
+      enableTypeScriptTransform: true,
+    },
+  });
+
+  return app.toTree();
+};
+```
+
+```js
+/* index.js */
+
+module.exports = {
+  name: require('./package').name,
+
+  options: {
+    'ember-cli-babel': {
+      enableTypeScriptTransform: true,
+    },
+  },
+};
+```
+
+</details>
+
+
+<details>
+<summary>Engines</summary>
+
+```js
+/* ember-cli-build.js */
+
+const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
+
+module.exports = function (defaults) {
+  const app = new EmberAddon(defaults, {
+    // Add options here
+    'ember-cli-babel': {
+      enableTypeScriptTransform: true,
+    },
+  });
+
+  return app.toTree();
+};
+```
+
+```js
+/* index.js */
+
+const { buildEngine } = require('ember-engines/lib/engine-addon');
+
+module.exports = buildEngine({
+  name: require('./package').name,
+
+  'ember-cli-babel': {
+    enableTypeScriptTransform: true,
+  },
+});
+```
+
+</details>
+
+
+NOTE: Setting `enableTypeScriptTransform` to `true` does *not* enable
+type-checking. For integrated type-checking, you will need
+[`ember-cli-typescript`](https://ember-cli-typescript.com).
+
 ### Babel config usage
 
 If you want to use the existing babel config from your project instead of the auto-generated one from this addon, then you would need to *opt-in* by passing the config `useBabelConfig: true` as a child property of `ember-cli-babel` in your `ember-cli-build.js` file.
