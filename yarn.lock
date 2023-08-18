@@ -3063,10 +3063,10 @@ broccoli-babel-transpiler@^7.8.0:
     rsvp "^4.8.4"
     workerpool "^3.1.1"
 
-broccoli-babel-transpiler@^8.0.0-beta.1:
-  version "8.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-8.0.0-beta.1.tgz#9738675802fcbcf9d6c710b1a811c28b9ab8672a"
-  integrity sha512-acC6WPTjKZ+dBRj/sTQMIoBl+AnZkYBL0FUla8QJrL6V37Z7qioSqkwGEwgGDiKcNo4yflhJnImiywF8KOzSoQ==
+broccoli-babel-transpiler@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-8.0.0.tgz#07576728a95b840a99d5f0f9b07b71a737f69319"
+  integrity sha512-3HEp3flvasUKJGWERcrPgM1SWvHJ0O/fmbEtY9L4kDyMSnqjY6hTYvNvgWCIgbwXAYAUlZP0vjAQsmyLNGLwFw==
   dependencies:
     broccoli-persistent-filter "^3.0.0"
     clone "^2.1.2"
