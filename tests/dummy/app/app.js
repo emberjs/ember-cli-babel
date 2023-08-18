@@ -1,3 +1,5 @@
+/* eslint-disable ember/no-classic-classes */
+
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 

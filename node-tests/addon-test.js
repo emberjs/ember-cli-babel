@@ -18,7 +18,7 @@ const createTempDir = BroccoliTestHelper.createTempDir;
 const terminateWorkerPool = require('./utils/terminate-workers');
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf');
+const { rimraf } = require('rimraf');
 const {
   _shouldHandleTypeScript,
   _shouldIncludeHelpers,
@@ -1035,7 +1035,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          "foo.js": `define(\"foo\", [], function () {\n  \"use strict\";\n\n  Ember.String.camelize('stuff-here');\n});`
+          "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.String.camelize('stuff-here');\n});`
         });
       }));
     });
@@ -1242,7 +1242,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  var foo = "hi";\n});`
+          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  let foo = "hi";\n});`
         });
       }));
 
@@ -2048,7 +2048,7 @@ describe('EmberData Packages Polyfill', function() {
      assembleLines([
        `Object.defineProperty(_exports, "default", {`,
        `  enumerable: true,`,
-       `  get: function get() {`,
+       `  get: function () {`,
        `    return _emberData.default;`,
        `  }`,
        `});`
@@ -2282,7 +2282,7 @@ describe('babel config file', function() {
     yield output.build();
 
     expect(output.read()).to.deep.equal({
-      "foo.js": `define(\"foo\", [\"exports\"], function (_exports) {\n  \"use strict\";\n\n  Object.defineProperty(_exports, \"__esModule\", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});`,
+      "foo.js": `define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});`,
     });
   }));
 
