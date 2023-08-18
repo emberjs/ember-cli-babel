@@ -59,7 +59,7 @@
     "babel-plugin-ember-data-packages-polyfill": "^0.1.2",
     "babel-plugin-ember-modules-api-polyfill": "^3.5.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "broccoli-babel-transpiler": "^8.0.0-beta.1",
+    "broccoli-babel-transpiler": "^8.0.0",
     "broccoli-debug": "^0.6.4",
     "broccoli-funnel": "^3.0.8",
     "broccoli-source": "^3.0.1",
