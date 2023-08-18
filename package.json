@@ -95,7 +95,7 @@
     "ember-qunit": "^6.1.1",
     "ember-resolver": "^11.0.1",
     "ember-source": "~3.28.8",
-    "ember-source-channel-url": "^1.1.0",
+    "ember-source-channel-url": "^3.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-ember": "^11.10.0",
     "eslint-plugin-node": "^11.1.0",
