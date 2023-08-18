@@ -1242,7 +1242,7 @@ describe('ember-cli-babel', function() {
         expect(
           output.read()
         ).to.deep.equal({
-          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  var foo = "hi";\n});`
+          'foo.js': `define("foo", [], function () {\n  "use strict";\n\n  let foo = "hi";\n});`
         });
       }));
 
@@ -2048,7 +2048,7 @@ describe('EmberData Packages Polyfill', function() {
      assembleLines([
        `Object.defineProperty(_exports, "default", {`,
        `  enumerable: true,`,
-       `  get: function get() {`,
+       `  get: function () {`,
        `    return _emberData.default;`,
        `  }`,
        `});`
