@@ -18,7 +18,7 @@ const createTempDir = BroccoliTestHelper.createTempDir;
 const terminateWorkerPool = require('./utils/terminate-workers');
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf');
+const { rimraf } = require('rimraf');
 const {
   _shouldHandleTypeScript,
   _shouldIncludeHelpers,
