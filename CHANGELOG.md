@@ -1,4 +1,28 @@
 
+
+## v8.0.0 (2023-08-18)
+
+#### :boom: Breaking Change
+* [#494](https://github.com/babel/ember-cli-babel/pull/494) Update `broccoli-babel-transpiler` to v8 ([@bertdeblock](https://github.com/bertdeblock))
+* [#493](https://github.com/babel/ember-cli-babel/pull/493) Drop support for Node v14 and add support for Node v20 ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :rocket: Enhancement
+* [#492](https://github.com/babel/ember-cli-babel/pull/492) Update `babel-plugin-module-resolver` ([@bertdeblock](https://github.com/bertdeblock))
+* [#493](https://github.com/babel/ember-cli-babel/pull/493) Drop support for Node v14 and add support for Node v20 ([@bertdeblock](https://github.com/bertdeblock))
+* [#479](https://github.com/babel/ember-cli-babel/pull/479) Update normal dependencies ([@bertdeblock](https://github.com/bertdeblock))
+* [#480](https://github.com/babel/ember-cli-babel/pull/480) Only require `@babel/core` when necessary ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :memo: Documentation
+* [#467](https://github.com/babel/ember-cli-babel/pull/467) Clarify how to set `enableTypeScriptTransform` in Ember apps, addons and engines ([@ijlee2](https://github.com/ijlee2))
+
+#### :house: Internal
+* [#450](https://github.com/babel/ember-cli-babel/pull/450) Remove workaround for `@babel/helper-compilation-functions` bug that was fixed upstream ([@HeroicEric](https://github.com/HeroicEric))
+
+#### Committers: 3
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+- Eric Kelly ([@HeroicEric](https://github.com/HeroicEric))
+- Isaac Lee ([@ijlee2](https://github.com/ijlee2))
+
 ## v8.0.0-beta.0 (2023-01-24)
 
 #### :boom: Breaking Change
