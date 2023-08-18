@@ -74,7 +74,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@ember/optional-features": "^2.0.0",
-    "@ember/string": "^3.0.1",
+    "@ember/string": "^3.1.1",
     "@ember/test-helpers": "^2.9.3",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
@@ -94,7 +94,7 @@
     "ember-cli-inject-live-reload": "^2.1.0",
     "ember-load-initializers": "^2.1.1",
     "ember-qunit": "^6.1.1",
-    "ember-resolver": "^10.0.0",
+    "ember-resolver": "^11.0.1",
     "ember-source": "~3.28.8",
     "ember-source-channel-url": "^1.1.0",
     "eslint": "^4.0.0",
