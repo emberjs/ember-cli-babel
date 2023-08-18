@@ -1,3 +1,6 @@
+/* eslint-disable ember/no-computed-properties-in-native-classes */
+
+import { set } from '@ember/object';
 import Controller from '@ember/controller';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
@@ -7,10 +10,10 @@ export default class ApplicationController extends Controller {
   constructor() {
     super(...arguments);
 
-    this.animal = new Animal('dog');
+    set(this, 'animal', new Animal('dog'));
   }
 
-  @computed({
+  @computed('animal.name', {
     get() {
       return this.animal.name;
     },
