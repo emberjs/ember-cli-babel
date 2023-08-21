@@ -1753,7 +1753,7 @@ describe('ember-cli-babel', function() {
       this.addon.parent = Object.assign({}, this.addon.parent, {
         dependencies() { return {}; },
         options: {
-          babel6: {
+          babel: {
             plugins: [ {} ]
           },
         },
