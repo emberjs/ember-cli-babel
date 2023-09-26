@@ -1,6 +1,15 @@
 
 
 
+
+## v8.1.0 (2023-09-26)
+
+#### :rocket: Enhancement
+* [#502](https://github.com/babel/ember-cli-babel/pull/502) Ensure that plugin-transform-class-static-block is provided ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## v8.0.1 (2023-09-26)
 
 #### :bug: Bug Fix

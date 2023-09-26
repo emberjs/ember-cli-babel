@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-babel",
-  "version": "8.0.1",
+  "version": "8.1.0",
   "description": "Ember CLI addon for Babel",
   "keywords": [
     "babel",
