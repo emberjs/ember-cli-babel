@@ -1,5 +1,18 @@
 
 
+
+## v8.0.1 (2023-09-26)
+
+#### :bug: Bug Fix
+* [#500](https://github.com/babel/ember-cli-babel/pull/500) fix: filter undefined options ([@runspired](https://github.com/runspired))
+
+#### :house: Internal
+* [#498](https://github.com/babel/ember-cli-babel/pull/498) Remove `babel6` key in test ([@bertdeblock](https://github.com/bertdeblock))
+
+#### Committers: 2
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+- Chris Thoburn ([@runspired](https://github.com/runspired))
+
 ## v8.0.0 (2023-08-18)
 
 #### :boom: Breaking Change
