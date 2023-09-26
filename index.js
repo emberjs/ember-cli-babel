@@ -181,6 +181,14 @@ module.exports = {
       },
     };
 
+    // Remove any undefined options so that they don't override the default
+    // Or error when broccoli-babel-transpiler checks serializability
+    Object.keys(options.babel).forEach(key => {
+      if (options.babel[key] === undefined) {
+        delete options.babel[key];
+      }
+    });
+
     let output;
 
     const customAddonConfig = config['ember-cli-babel'];
