@@ -46,6 +46,7 @@
     "@babel/helper-compilation-targets": "^7.20.7",
     "@babel/plugin-proposal-class-properties": "^7.16.5",
     "@babel/plugin-proposal-decorators": "^7.20.13",
+    "@babel/plugin-transform-class-static-block": "^7.22.11",
     "@babel/plugin-proposal-private-methods": "^7.16.5",
     "@babel/plugin-proposal-private-property-in-object": "^7.20.5",
     "@babel/plugin-transform-modules-amd": "^7.20.11",
