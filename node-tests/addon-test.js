@@ -2039,8 +2039,7 @@ describe('EmberData Packages Polyfill', function() {
      'foo',
       assembleLines([
         `_exports.default = void 0;`,
-        `var _default = _emberData.default.Store;`,
-        `_exports.default = _default;`
+        `var _default = _exports.default = _emberData.default.Store;`,
       ])
     );
    let bemOutput = moduleOutput(
@@ -2060,10 +2059,8 @@ describe('EmberData Packages Polyfill', function() {
       `_exports.name = _exports.User = void 0;`,
       `var Model = _emberData.default.Model;`,
       `var attr = _emberData.default.attr;`,
-      `var User = Model;`,
-      `_exports.User = User;`,
-      `var name = attr;`,
-      `_exports.name = name;`
+      `var User = _exports.User = Model;`,
+      `var name = _exports.name = attr;`,
      ])
     );
    let bazOutput = moduleOutput(
@@ -2071,8 +2068,7 @@ describe('EmberData Packages Polyfill', function() {
      assembleLines([
        `_exports.User = void 0;`,
        `var EmberData = _emberData.default;`,
-       `var User = EmberData.Model;`,
-       `_exports.User = User;`
+       `var User = _exports.User = EmberData.Model;`,
      ])
    );
 
@@ -2282,7 +2278,7 @@ describe('babel config file', function() {
     yield output.build();
 
     expect(output.read()).to.deep.equal({
-      "foo.js": `define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});`,
+      "foo.js": `define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = _exports.default = {};\n});`,
     });
   }));
 
@@ -2324,7 +2320,7 @@ describe('babel config file', function() {
 
     expect(output.read()).to.deep.equal({
       "foo.js":
-        'define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = {};\n  _exports.default = _default;\n});',
+        'define("foo", ["exports"], function (_exports) {\n  "use strict";\n\n  Object.defineProperty(_exports, "__esModule", {\n    value: true\n  });\n  _exports.default = void 0;\n  var _default = _exports.default = {};\n});',
     });
   }));
 });
