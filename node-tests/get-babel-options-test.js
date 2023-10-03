@@ -172,7 +172,7 @@ describe("get-babel-options", function () {
         this.addon.project
       );
 
-      expect(plugins.length).to.equal(5, "class fields and decorators added");
+      expect(plugins.length).to.equal(6, "class fields and decorators added");
       expect(plugins[4]).to.equal(
         "@babel/plugin-transform-typescript",
         "typescript is now last"
