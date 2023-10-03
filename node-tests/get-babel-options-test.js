@@ -71,7 +71,7 @@ describe("get-babel-options", function () {
       expect(
         _addDecoratorPlugins([], {}, {}, this.addon.parent, this.addon.project)
           .length
-      ).to.equal(4, "plugins added correctly");
+      ).to.equal(5, "plugins added correctly");
     });
 
     it("should include only fields if it detects decorators plugin", function () {
@@ -91,7 +91,7 @@ describe("get-babel-options", function () {
           this.addon.parent,
           this.addon.project
         ).length
-      ).to.equal(4, "plugins were not added");
+      ).to.equal(5, "plugins were not added");
     });
 
     it("should include only decorators if it detects class fields plugin", function () {
@@ -111,7 +111,7 @@ describe("get-babel-options", function () {
           this.addon.parent,
           this.addon.project
         ).length
-      ).to.equal(2, "plugins were not added");
+      ).to.equal(3, "plugins were not added");
     });
 
     it("should use babel options loose mode for class properties", function () {
@@ -157,7 +157,7 @@ describe("get-babel-options", function () {
         "@babel/plugin-transform-typescript",
         "typescript still first"
       );
-      expect(plugins.length).to.equal(5, "class fields and decorators added");
+      expect(plugins.length).to.equal(6, "class fields and decorators added");
     });
 
     it("should include class fields and decorators before typescript if not handling typescript", function () {
