@@ -2,6 +2,15 @@
 
 
 
+
+## v8.2.0 (2023-10-10)
+
+#### :rocket: Enhancement
+* [#503](https://github.com/babel/ember-cli-babel/pull/503) Support static class blocks when _not_ using an explicit babel config file. ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## v8.1.0 (2023-09-26)
 
 #### :rocket: Enhancement
