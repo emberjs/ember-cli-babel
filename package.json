@@ -66,6 +66,7 @@
     "broccoli-source": "^3.0.1",
     "calculate-cache-key-for-tree": "^2.0.0",
     "clone": "^2.1.2",
+    "dotenv": "^16.3.1",
     "ember-cli-babel-plugin-helpers": "^1.1.1",
     "ember-cli-version-checker": "^5.1.2",
     "ensure-posix-path": "^1.0.2",

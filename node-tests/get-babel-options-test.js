@@ -4,6 +4,7 @@ const CoreObject = require("core-object");
 const AddonMixin = require("../index");
 let {
   _addTypeScriptPlugin,
+  _addImportMetaEnv,
   _getAddonProvidedConfig,
   _addDecoratorPlugins,
 } = require("../lib/babel-options-util");
@@ -58,6 +59,39 @@ describe("get-babel-options", function () {
       expect(
         _addTypeScriptPlugin(
           [["@babel/plugin-transform-typescript"]],
+          {},
+          this.addon.parent,
+          this.addon.project
+        ).length
+      ).to.equal(1, "plugin was not added");
+    });
+  });
+
+  describe("_getImportMetaEnv", function () {
+    it("it should preconfigure meta.env.DEV and meta.env.PROD based on the same state @ember/debug uses", function () {
+      let result = _addImportMetaEnv(
+        [],
+        {},
+        this.addon.parent,
+        this.addon.project
+      );
+
+      expect(result.length).to.equal(1, "plugin was added");
+      expect(result[0][0]).to.equal(require.resolve('@import-meta-env/babel'));
+      expect(result[0][1]).to.deep.equal({ env: { DEV: true, PROD: false }});
+    });
+
+    it("should warn and not add the plugin if already added", function () {
+      this.addon.project.ui = {
+        writeWarnLine(message) {
+          expect(message).to.match(
+            /has added the @import-meta-env/
+          );
+        },
+      };
+      expect(
+        _addImportMetaEnv(
+          [["@import-meta-env/babel"]],
           {},
           this.addon.parent,
           this.addon.project
