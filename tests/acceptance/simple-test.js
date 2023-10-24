@@ -5,6 +5,11 @@ import { setupApplicationTest } from 'ember-qunit';
 module('Acceptance | ES6 features work correctly', function(hooks) {
   setupApplicationTest(hooks);
 
+  test('import.meta.env', function (assert) {
+    assert.true(import.meta.env.DEV);
+    assert.false(import.meta.env.PROD);
+  });
+
   test('visit /', async function(assert) {
     await visit('/');
 
