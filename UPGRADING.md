@@ -2,6 +2,10 @@
 
 ## v8
 
+Note that unlike previous ember-cli-babel majors, 
+- v8 has _not_ changed which version of babel it uses (still uses v7)
+- v8 and v7 of ember-cli-babel can easily co-exist in a project's dependency graph
+
 The most notable breaking changes introduced in v8 are:
 
 1. The `includePolyfill` option is no longer supported ([458](https://github.com/babel/ember-cli-babel/pull/458))
