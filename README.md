@@ -420,16 +420,7 @@ The first argument is **required** which is the path to the root of your project
   disableEmberModulesAPIPolyfill: boolean, // disable ember modules API polyfill
 }
 ```
-### Addon usage (for V1 Addons)
-
-#### Note for V2 Addons (Embroider Compatibility)
-
-V2 Addons do not use `ember-cli-babel` and hence should remove `ember-cli-babel` from their dependencies entirely.
-
-You can read up on how each of the V1 features described below can be re-expressed within a V2 addon via the links below:
-
-- [V2 Addon Format RFC](https://rfcs.emberjs.com/id/0507-embroider-v2-package-format/)
-- [Migrating an Ember addon to the next-gen v2 format](https://www.kaliber5.de/en/blog/v2-addon_en)
+### Addon usage
 
 #### Adding Custom Plugins
 
