@@ -113,7 +113,7 @@ module.exports = {
     let providedAnnotation;
     let throwUnlessParallelizable;
     let sourceMaps = false;
-    let generatorOpts = {};
+    let generatorOpts = { compact: false };
     let shouldCompileModules = _shouldCompileModules(config, this.project);
 
     if (emberCLIBabelConfig) {
