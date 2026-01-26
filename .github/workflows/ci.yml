@@ -18,14 +18,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: 16
+        cache: pnpm
     - name: install dependencies
-      run: yarn install --frozen-lockfile --ignore-engines
+      run: pnpm install
     - name: lint
-      run: yarn lint:js
+      run: pnpm lint:js
 
   node-tests:
     name: "Node: Node ${{ matrix.node }} - ${{ matrix.os }}"
@@ -39,14 +41,16 @@ jobs:
         node: [16, 18, 20]
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node }}
+        cache: pnpm
     - name: install dependencies
-      run: yarn install --frozen-lockfile --ignore-engines
+      run: pnpm install
     - name: test
-      run: yarn test:node
+      run: pnpm test:node
 
   acceptance-tests:
     name: "Acceptance: Node ${{ matrix.node }} - ${{ matrix.os }}"
@@ -60,14 +64,16 @@ jobs:
         node: [16, 18, 20]
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node }}
+        cache: pnpm
     - name: install dependencies
-      run: yarn install --frozen-lockfile --ignore-engines
+      run: pnpm install
     - name: test
-      run: yarn test:ember
+      run: pnpm test:ember
 
   floating-test:
     name: Floating dependencies
@@ -75,14 +81,16 @@ jobs:
     timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: 16
+        cache: pnpm
     - name: install dependencies
-      run: yarn install --no-lockfile --ignore-engines
+      run: pnpm install --no-lockfile
     - name: test
-      run: yarn test
+      run: pnpm test
 
   publish:
     name: Publish to npm
@@ -90,19 +98,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
 
       - name: install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: pnpm install
 
       - name: auto-dist-tag
-        run: npx auto-dist-tag --write
+        run: pnpm auto-dist-tag --write
 
       - name: publish to npm
         run: npm publish
