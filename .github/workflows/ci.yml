@@ -33,6 +33,7 @@ jobs:
     timeout-minutes: 10
 
     strategy:
+      fail-fast: false
       matrix:
         os: ['ubuntu', 'windows', 'macOS']
         node: [16, 18, 20]
@@ -53,6 +54,7 @@ jobs:
     timeout-minutes: 10
 
     strategy:
+      fail-fast: false
       matrix:
         os: ['ubuntu', 'windows']
         node: [16, 18, 20]
