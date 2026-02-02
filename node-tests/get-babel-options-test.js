@@ -105,7 +105,7 @@ describe("get-babel-options", function () {
 
       expect(
         _addDecoratorPlugins(
-          [["@babel/plugin-proposal-class-properties"]],
+          [["@babel/plugin-transform-class-properties"]],
           {},
           {},
           this.addon.parent,
