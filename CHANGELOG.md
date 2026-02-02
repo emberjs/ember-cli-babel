@@ -1,5 +1,28 @@
 # Changelog
 
+## Release (2026-02-02)
+
+* ember-cli-babel 8.3.0 (minor)
+
+#### :rocket: Enhancement
+* `ember-cli-babel`
+  * [#525](https://github.com/emberjs/ember-cli-babel/pull/525) update @babel/plugin-proposal-* packages to transform packages ([@mansona](https://github.com/mansona))
+
+#### :memo: Documentation
+* `ember-cli-babel`
+  * [#509](https://github.com/emberjs/ember-cli-babel/pull/509) README: add note about V2 Addons ([@machty](https://github.com/machty))
+
+#### :house: Internal
+* `ember-cli-babel`
+  * [#526](https://github.com/emberjs/ember-cli-babel/pull/526) start using release-plan ([@mansona](https://github.com/mansona))
+  * [#522](https://github.com/emberjs/ember-cli-babel/pull/522) swap to pnpm ([@mansona](https://github.com/mansona))
+  * [#524](https://github.com/emberjs/ember-cli-babel/pull/524) reroll lock file and update test ([@mansona](https://github.com/mansona))
+  * [#523](https://github.com/emberjs/ember-cli-babel/pull/523) use code-equality-assertions for static block ([@mansona](https://github.com/mansona))
+
+#### Committers: 2
+- Alex Matchneer ([@machty](https://github.com/machty))
+- Chris Manson ([@mansona](https://github.com/mansona))
+
 
 
 
