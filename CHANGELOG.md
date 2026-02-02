@@ -2,6 +2,17 @@
 
 ## Release (2026-02-02)
 
+* ember-cli-babel 8.3.1 (patch)
+
+#### :bug: Bug Fix
+* `ember-cli-babel`
+  * [#528](https://github.com/emberjs/ember-cli-babel/pull/528) fix repo url in package.json ([@mansona](https://github.com/mansona))
+
+#### Committers: 1
+- Chris Manson ([@mansona](https://github.com/mansona))
+
+## Release (2026-02-02)
+
 * ember-cli-babel 8.3.0 (minor)
 
 #### :rocket: Enhancement
