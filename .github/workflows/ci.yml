@@ -91,28 +91,3 @@ jobs:
       run: pnpm install --no-lockfile
     - name: test
       run: pnpm test
-
-  publish:
-    name: Publish to npm
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 16
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: install dependencies
-        run: pnpm install
-
-      - name: auto-dist-tag
-        run: pnpm auto-dist-tag --write
-
-      - name: publish to npm
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

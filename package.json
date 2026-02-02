@@ -20,14 +20,14 @@
   },
   "license": "MIT",
   "author": "Gordon Kristan",
-  "files": [
-    "index.js",
-    "lib"
-  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
   },
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "scripts": {
     "build": "ember build",
     "lint:js": "eslint . --cache",
@@ -38,9 +38,6 @@
     "test:ember": "ember test",
     "test:node": "mocha node-tests",
     "test:node:debug": "mocha debug node-tests"
-  },
-  "peerDependencies": {
-    "@babel/core": "^7.12.0"
   },
   "dependencies": {
     "@babel/helper-compilation-targets": "^7.20.7",
@@ -78,7 +75,6 @@
     "@ember/test-helpers": "^3.2.0",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
-    "@release-it-plugins/lerna-changelog": "^6.0.0",
     "babel-eslint": "^10.1.0",
     "broccoli-test-helper": "^2.0.0",
     "chai": "^4.3.7",
@@ -106,48 +102,25 @@
     "mocha": "^10.2.0",
     "qunit": "^2.19.4",
     "regenerator-runtime": "^0.14.0",
-    "release-it": "^16.1.5",
+    "release-plan": "^0.17.4",
     "resolve": "^1.22.4",
     "rimraf": "^5.0.1",
     "webpack": "^5.88.2"
   },
+  "peerDependencies": {
+    "@babel/core": "^7.12.0"
+  },
+  "packageManager": "pnpm@8.15.9",
   "engines": {
     "node": "16.* || 18.* || >= 20"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
-  "changelog": {
-    "repo": "babel/ember-cli-babel",
-    "labels": {
-      "breaking": ":boom: Breaking Change",
-      "enhancement": ":rocket: Enhancement",
-      "bug": ":bug: Bug Fix",
-      "documentation": ":memo: Documentation",
-      "internal": ":house: Internal"
-    }
-  },
   "ember": {
     "edition": "octane"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
-  },
-  "release-it": {
-    "plugins": {
-      "@release-it-plugins/lerna-changelog": {
-        "infile": "CHANGELOG.md"
-      }
-    },
-    "git": {
-      "tagName": "v${version}"
-    },
-    "github": {
-      "release": true
-    },
-    "npm": {
-      "publish": false
-    }
-  },
-  "packageManager": "pnpm@8.15.9"
+  }
 }
