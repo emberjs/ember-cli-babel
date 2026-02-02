@@ -10,13 +10,13 @@
     "transpile",
     "transpiler"
   ],
-  "homepage": "https://github.com/babel/ember-cli-babel",
+  "homepage": "https://github.com/emberjs/ember-cli-babel",
   "bugs": {
-    "url": "https://github.com/babel/ember-cli-babel/issues"
+    "url": "https://github.com/emberjs/ember-cli-babel/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/babel/ember-cli-babel.git"
+    "url": "git://github.com/emberjs/ember-cli-babel.git"
   },
   "license": "MIT",
   "author": "Gordon Kristan",
