@@ -1,0 +1,26 @@
+{
+  "solution": {
+    "ember-cli-babel": {
+      "impact": "minor",
+      "oldVersion": "8.2.0",
+      "newVersion": "8.3.0",
+      "tagName": "latest",
+      "constraints": [
+        {
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :memo: Documentation"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2026-02-02)\n\n* ember-cli-babel 8.3.0 (minor)\n\n#### :rocket: Enhancement\n* `ember-cli-babel`\n  * [#525](https://github.com/emberjs/ember-cli-babel/pull/525) update @babel/plugin-proposal-* packages to transform packages ([@mansona](https://github.com/mansona))\n\n#### :memo: Documentation\n* `ember-cli-babel`\n  * [#509](https://github.com/emberjs/ember-cli-babel/pull/509) README: add note about V2 Addons ([@machty](https://github.com/machty))\n\n#### :house: Internal\n* `ember-cli-babel`\n  * [#526](https://github.com/emberjs/ember-cli-babel/pull/526) start using release-plan ([@mansona](https://github.com/mansona))\n  * [#522](https://github.com/emberjs/ember-cli-babel/pull/522) swap to pnpm ([@mansona](https://github.com/mansona))\n  * [#524](https://github.com/emberjs/ember-cli-babel/pull/524) reroll lock file and update test ([@mansona](https://github.com/mansona))\n  * [#523](https://github.com/emberjs/ember-cli-babel/pull/523) use code-equality-assertions for static block ([@mansona](https://github.com/mansona))\n\n#### Committers: 2\n- Alex Matchneer ([@machty](https://github.com/machty))\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
+}
