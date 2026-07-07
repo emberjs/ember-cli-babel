@@ -265,6 +265,12 @@ module.exports = {
       'ember-cli-babel': {
         // prevents the helpers from being double transpiled, and including themselves
         disablePresetEnv: true
+      },
+      babel: {
+        // the helpers import each other with explicit `.js` extensions, which
+        // the loader cannot resolve against the extensionless module names
+        // defined for this tree
+        plugins: [require.resolve('./lib/strip-relative-import-extensions')]
       }
     });
 
