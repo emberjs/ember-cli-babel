@@ -357,6 +357,22 @@ If you want to use the existing babel config from your project instead of the au
 
 *Note: If you are using this option, then you have to make sure that you are adding all of the required plugins required for Ember to transpile correctly.*
 
+*Note for Babel 8:* Babel 8 removed the root-level `moduleIds` and `getModuleId` options, which is how ember-cli-babel used to name your AMD modules. On Babel 8 they have to be passed to `@babel/plugin-transform-modules-amd` itself. `buildEmberPlugins` (below) already does this for you; if you configure the AMD transform by hand, name your modules like this:
+
+```js
+[
+  require.resolve("@babel/plugin-transform-modules-amd"),
+  {
+    noInterop: true,
+    moduleIds: true,
+    getModuleId: require("ember-cli-babel/lib/relative-module-paths")
+      .getRelativeModulePath,
+  },
+],
+```
+
+Without it your modules are emitted as anonymous `define([...])` calls and the Ember loader will not find them.
+
 Example usage:
 
 ```js
@@ -389,6 +405,8 @@ module.exports = function (api) {
     ],
     plugins: [
       // if you want external helpers
+      // On Babel 8, drop `regenerator` and `useESModules`: both options were
+      // removed, and @babel/runtime now resolves ESM helpers via its `exports`.
       [
         require.resolve("@babel/plugin-transform-runtime"),
         {

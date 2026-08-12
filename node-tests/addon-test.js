@@ -23,7 +23,8 @@ const {
   _shouldHandleTypeScript,
   _shouldIncludeHelpers,
   _shouldCompileModules,
-  _getExtensions
+  _getExtensions,
+  _babelCoreMajorVersion
 } = require("../lib/babel-options-util");
 
 const { codeEquality } = require("code-equality-assertions/chai");
@@ -153,6 +154,18 @@ describe('ember-cli-babel', function() {
         const result = output.read();
 
         expect(Object.keys(result)).to.deep.equal(['foo.js']);
+
+        // Babel 8 emits the same inline helpers in a different order, so the
+        // exact-output snapshot below only holds on Babel 7. What this test is
+        // really about is that the static block is compiled away, which is
+        // asserted for both.
+        expect(result['foo.js']).to.include('_Second.bar = 1');
+        expect(result['foo.js']).to.not.include('static {');
+
+        if (_babelCoreMajorVersion() >= 8) {
+          return;
+        }
+
         expect(result['foo.js']).to.equalCode(`function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 define("foo", [], function () {
   "use strict";
@@ -1698,13 +1711,32 @@ define("foo", [], function () {
   describe('buildBabelOptions', function() {
     this.timeout(0);
 
+    // Module ids always live on the AMD transform's own options. Babel 7 also
+    // honors them at the root, but Babel 8 rejects unknown root options, so we
+    // only emit them there on 7.
+    function expectModuleIdsConfigured(result) {
+      let amdPlugin = result.plugins.find(
+        plugin => Array.isArray(plugin) && /plugin-transform-modules-amd/.test(plugin[0])
+      );
+
+      expect(amdPlugin, 'AMD transform is present').to.exist;
+      expect(amdPlugin[1].moduleIds).to.be.true;
+      expect(amdPlugin[1].getModuleId).to.be.a('function');
+
+      if (_babelCoreMajorVersion() < 8) {
+        expect(result.moduleIds).to.be.true;
+      } else {
+        expect('moduleIds' in result).to.be.false;
+      }
+    }
+
     it('returns broccoli-babel-transpiler options by default', function() {
       this.addon.parent = { ...this.addon.parent, name: 'foo' };
 
       let result = this.addon.buildBabelOptions();
 
       expect(result.annotation).to.equal('Babel: foo');
-      expect(result.moduleIds).to.be.true;
+      expectModuleIdsConfigured(result);
       expect(result.babelrc).to.be.false;
       expect(result.configFile).to.be.false;
     });
@@ -1715,7 +1747,7 @@ define("foo", [], function () {
       let result = this.addon.buildBabelOptions('broccoli');
 
       expect(result.annotation).to.equal('Babel: foo');
-      expect(result.moduleIds).to.be.true;
+      expectModuleIdsConfigured(result);
       expect(result.babelrc).to.be.false;
       expect(result.configFile).to.be.false;
     });
@@ -1728,7 +1760,7 @@ define("foo", [], function () {
       });
 
       expect(result.annotation).to.equal('hello!!!');
-      expect(result.moduleIds).to.be.true;
+      expectModuleIdsConfigured(result);
       expect(result.babelrc).to.be.false;
       expect(result.configFile).to.be.false;
     });
@@ -2320,9 +2352,16 @@ describe('babel config file', function() {
   }));
 
   it("should transpile to amd modules based on babel config", co.wrap(function* () {
+    // On Babel 7 ember-cli-babel supplies `moduleIds`/`getModuleId` at the root
+    // of the Babel config. Babel 8 removed those root options, so a project
+    // bringing its own babel config has to pass them to the AMD transform.
+    let moduleIdOptions = _babelCoreMajorVersion() < 8 ? '' : `
+      moduleIds: true,
+      getModuleId: require("ember-cli-babel/lib/relative-module-paths").getRelativeModulePath,`;
+
     yield setupForVersion(`[
       require.resolve("@babel/plugin-transform-modules-amd"),
-      { noInterop: true },
+      { noInterop: true,${moduleIdOptions} },
     ]`);
     input.write({
       "foo.js": `export default {};`,

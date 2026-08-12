@@ -7,6 +7,8 @@ const {
   _getExtensions,
   _parentName,
   _shouldHighlightCode,
+  _getHelpersPlugin,
+  _babelCoreMajorVersion,
 } = require("./lib/babel-options-util");
 
 const VersionChecker = require('ember-cli-version-checker');
@@ -64,7 +66,9 @@ module.exports = {
     if (shouldUseBabelConfigFile) {
       const babel = require('@babel/core');
 
-      let babelConfig = babel.loadPartialConfig({
+      // Babel 8's `loadPartialConfig` is callback-based; the explicit sync
+      // variant has been available since Babel 7.8.
+      let babelConfig = babel.loadPartialConfigSync({
         root: this.parent.root,
         rootMode: 'root',
         envName: process.env.EMBER_ENV || process.env.BABEL_ENV || process.env.NODE_ENV || "development",
@@ -138,7 +142,11 @@ module.exports = {
       plugins: [],
     };
 
-    if (shouldCompileModules) {
+    // Babel 8 rejects these as unknown root options, so there the plugin-level
+    // values set by `_getModulesPlugin` are the only ones that apply. Babel 7
+    // still honors the root level, and `useBabelConfig` users depend on it
+    // because their own config supplies the module transform.
+    if (shouldCompileModules && _babelCoreMajorVersion() < 8) {
       options.moduleIds = true;
       options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
     }
@@ -230,16 +238,7 @@ module.exports = {
   },
 
   _getHelpersPlugin() {
-    return [
-      [
-        require.resolve('@babel/plugin-transform-runtime'),
-        {
-          version: this._getHelperVersion(),
-          regenerator: false,
-          useESModules: true
-        }
-      ]
-    ]
+    return _getHelpersPlugin(this.project);
   },
 
   treeForAddon() {

@@ -40,16 +40,16 @@
     "test:node:debug": "mocha debug node-tests"
   },
   "dependencies": {
-    "@babel/helper-compilation-targets": "^7.20.7",
-    "@babel/plugin-proposal-decorators": "^7.20.13",
-    "@babel/plugin-transform-class-properties": "^7.16.5",
-    "@babel/plugin-transform-class-static-block": "^7.22.11",
-    "@babel/plugin-transform-modules-amd": "^7.20.11",
-    "@babel/plugin-transform-private-methods": "^7.16.5",
-    "@babel/plugin-transform-private-property-in-object": "^7.20.5",
-    "@babel/plugin-transform-runtime": "^7.13.9",
-    "@babel/plugin-transform-typescript": "^7.20.13",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/helper-compilation-targets": "^7.20.7 || ^8.0.0",
+    "@babel/plugin-proposal-decorators": "^7.20.13 || ^8.0.0",
+    "@babel/plugin-transform-class-properties": "^7.16.5 || ^8.0.0",
+    "@babel/plugin-transform-class-static-block": "^7.22.11 || ^8.0.0",
+    "@babel/plugin-transform-modules-amd": "^7.20.11 || ^8.0.0",
+    "@babel/plugin-transform-private-methods": "^7.16.5 || ^8.0.0",
+    "@babel/plugin-transform-private-property-in-object": "^7.20.5 || ^8.0.0",
+    "@babel/plugin-transform-runtime": "^7.13.9 || ^8.0.0",
+    "@babel/plugin-transform-typescript": "^7.20.13 || ^8.0.0",
+    "@babel/preset-env": "^7.20.2 || ^8.0.0",
     "@babel/runtime": "7.12.18",
     "amd-name-resolver": "^1.3.1",
     "babel-plugin-debug-macros": "^0.3.4",
@@ -108,7 +108,7 @@
     "webpack": "^5.88.2"
   },
   "peerDependencies": {
-    "@babel/core": "^7.12.0"
+    "@babel/core": "^7.12.0 || ^8.0.0"
   },
   "packageManager": "pnpm@8.15.9",
   "engines": {

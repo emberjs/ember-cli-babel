@@ -52,6 +52,25 @@ jobs:
     - name: test
       run: pnpm test:node
 
+  node-tests-babel-8:
+    name: "Node: Babel 8"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 20
+        cache: pnpm
+    - name: pin dependencies to Babel 8
+      run: node scripts/use-babel-8.js
+    - name: install dependencies
+      run: pnpm install --no-frozen-lockfile
+    - name: test
+      run: pnpm test:node
+
   acceptance-tests:
     name: "Acceptance: Node ${{ matrix.node }} - ${{ matrix.os }}"
     runs-on: "${{matrix.os}}-latest"
