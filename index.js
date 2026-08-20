@@ -14,6 +14,7 @@ const getBabelOptions = require('./lib/get-babel-options');
 const findApp = require('./lib/find-app');
 const emberPlugins = require('./lib/ember-plugins');
 const cacheKeyForTree = require('calculate-cache-key-for-tree');
+const replace = require('broccoli-string-replace');
 
 const APP_BABEL_RUNTIME_VERSION = new WeakMap();
 const PROJECTS_WITH_VALID_EMBER_CLI = new WeakSet();
@@ -268,7 +269,18 @@ module.exports = {
       }
     });
 
-    return new Funnel(transpiledHelpers, {
+    return new Funnel(replace(
+      transpiledHelpers,
+      {
+        files: [
+          '@babel/runtime/helpers/esm/*.js',
+        ],
+        pattern: {
+          match: /"@babel\/runtime\/helpers\/esm\/([^."]+)\.js"/g,
+          replacement: '"@babel/runtime/helpers/esm/$1"'
+        }
+      }
+    ), {
       destDir: this.moduleName(),
     });
   },
