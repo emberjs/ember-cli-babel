@@ -36,7 +36,7 @@ dependencies:
     specifier: ^7.20.2
     version: 7.29.0(@babel/core@7.29.0)
   '@babel/runtime':
-    specifier: ^7.12.18
+    specifier: ^7.20.0
     version: 7.28.6
   amd-name-resolver:
     specifier: ^1.3.1
