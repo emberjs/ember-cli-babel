@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2026-08-21)
+
+* ember-cli-babel 8.3.2 (patch)
+
+#### :bug: Bug Fix
+* `ember-cli-babel`
+  * [#541](https://github.com/emberjs/ember-cli-babel/pull/541) bump minimium versions of all @babel/* packages ([@mansona](https://github.com/mansona))
+  * [#538](https://github.com/emberjs/ember-cli-babel/pull/538) update @babel/runtime to not be a pinned specific version ([@mansona](https://github.com/mansona))
+
+#### :house: Internal
+* `ember-cli-babel`
+  * [#539](https://github.com/emberjs/ember-cli-babel/pull/539) pin testem for ember tests in old node ([@mansona](https://github.com/mansona))
+
+#### Committers: 1
+- Chris Manson ([@mansona](https://github.com/mansona))
+
 ## Release (2026-02-02)
 
 * ember-cli-babel 8.3.1 (patch)

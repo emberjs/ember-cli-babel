@@ -2,17 +2,21 @@
   "solution": {
     "ember-cli-babel": {
       "impact": "patch",
-      "oldVersion": "8.3.0",
-      "newVersion": "8.3.1",
+      "oldVersion": "8.3.1",
+      "newVersion": "8.3.2",
       "tagName": "latest",
       "constraints": [
         {
           "impact": "patch",
           "reason": "Appears in changelog section :bug: Bug Fix"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2026-02-02)\n\n* ember-cli-babel 8.3.1 (patch)\n\n#### :bug: Bug Fix\n* `ember-cli-babel`\n  * [#528](https://github.com/emberjs/ember-cli-babel/pull/528) fix repo url in package.json ([@mansona](https://github.com/mansona))\n\n#### Committers: 1\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
+  "description": "## Release (2026-08-21)\n\n* ember-cli-babel 8.3.2 (patch)\n\n#### :bug: Bug Fix\n* `ember-cli-babel`\n  * [#541](https://github.com/emberjs/ember-cli-babel/pull/541) bump minimium versions of all @babel/* packages ([@mansona](https://github.com/mansona))\n  * [#538](https://github.com/emberjs/ember-cli-babel/pull/538) update @babel/runtime to not be a pinned specific version ([@mansona](https://github.com/mansona))\n\n#### :house: Internal\n* `ember-cli-babel`\n  * [#539](https://github.com/emberjs/ember-cli-babel/pull/539) pin testem for ember tests in old node ([@mansona](https://github.com/mansona))\n\n#### Committers: 1\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
 }
