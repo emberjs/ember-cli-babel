@@ -6,7 +6,11 @@ let {
   _addTypeScriptPlugin,
   _getAddonProvidedConfig,
   _addDecoratorPlugins,
+  _getHelpersPlugin,
+  _getPresetEnv,
+  _getModulesPlugin,
 } = require("../lib/babel-options-util");
+const { _overrideBabelMajorVersion } = require("../lib/babel-version");
 
 let Addon = CoreObject.extend(AddonMixin);
 
@@ -194,6 +198,146 @@ describe("get-babel-options", function () {
 
       let result = _getAddonProvidedConfig(this.addon._getAddonOptions());
       expect(result.options).to.not.equal(babelOptions);
+    });
+  });
+
+  describe("Babel 8 compatibility", function () {
+    afterEach(function () {
+      _overrideBabelMajorVersion(undefined);
+    });
+
+    describe("_addDecoratorPlugins (Babel 8)", function () {
+      it("should use version:'legacy' instead of legacy:true for decorators", function () {
+        _overrideBabelMajorVersion(8);
+
+        let plugins = _addDecoratorPlugins(
+          [],
+          {},
+          {},
+          this.addon.parent,
+          this.addon.project
+        );
+
+        let decoratorPlugin = plugins.find(
+          (p) => Array.isArray(p) && String(p[0]).includes("plugin-proposal-decorators")
+        );
+
+        expect(decoratorPlugin).to.exist;
+        expect(decoratorPlugin[1]).to.deep.equal({ version: "legacy" });
+        expect(decoratorPlugin[1]).to.not.have.property("legacy");
+      });
+
+      it("should not pass legacy:true to static-block plugin", function () {
+        _overrideBabelMajorVersion(8);
+
+        let plugins = _addDecoratorPlugins(
+          [],
+          {},
+          {},
+          this.addon.parent,
+          this.addon.project
+        );
+
+        let staticBlockPlugin = plugins.find(
+          (p) => Array.isArray(p) && String(p[0]).includes("plugin-transform-class-static-block")
+        );
+
+        expect(staticBlockPlugin).to.exist;
+        expect(staticBlockPlugin[1]).to.deep.equal({});
+      });
+    });
+
+    describe("_addTypeScriptPlugin (Babel 8)", function () {
+      it("should not pass allowDeclareFields option", function () {
+        _overrideBabelMajorVersion(8);
+
+        let plugins = _addTypeScriptPlugin(
+          [],
+          this.addon.parent,
+          this.addon.project
+        );
+
+        let tsPlugin = plugins.find(
+          (p) => Array.isArray(p) && String(p[0]).includes("plugin-transform-typescript")
+        );
+
+        expect(tsPlugin).to.exist;
+        expect(tsPlugin[1]).to.deep.equal({});
+        expect(tsPlugin[1]).to.not.have.property("allowDeclareFields");
+      });
+    });
+
+    describe("_getHelpersPlugin (Babel 8)", function () {
+      it("should not include useESModules option", function () {
+        _overrideBabelMajorVersion(8);
+
+        let project = this.addon.project;
+        let result = _getHelpersPlugin(project);
+
+        expect(result).to.have.lengthOf(1);
+        let pluginOptions = result[0][1];
+        expect(pluginOptions).to.not.have.property("useESModules");
+        expect(pluginOptions).to.have.property("regenerator", false);
+      });
+    });
+
+    describe("_getPresetEnv (Babel 8)", function () {
+      it("should strip loose and spec options", function () {
+        _overrideBabelMajorVersion(8);
+
+        let project = {
+          targets: { browsers: ["last 2 versions"] },
+        };
+        let config = {
+          options: {
+            loose: true,
+            spec: true,
+          },
+        };
+
+        let result = _getPresetEnv(config, project);
+
+        expect(result[1]).to.not.have.property("loose");
+        expect(result[1]).to.not.have.property("spec");
+        expect(result[1]).to.have.property("modules", false);
+      });
+    });
+
+    describe("_getModulesPlugin (Babel 8)", function () {
+      it("should include moduleIds and getModuleId in AMD plugin options", function () {
+        _overrideBabelMajorVersion(8);
+
+        let result = _getModulesPlugin();
+
+        expect(result).to.have.lengthOf(2);
+
+        let amdPlugin = result[1];
+        expect(amdPlugin[1]).to.have.property("noInterop", true);
+        expect(amdPlugin[1]).to.have.property("moduleIds", true);
+        expect(amdPlugin[1]).to.have.property("getModuleId");
+        expect(amdPlugin[1].getModuleId).to.be.a("function");
+      });
+    });
+
+    describe("_addDecoratorPlugins (Babel 7 still works)", function () {
+      it("should use legacy:true for decorators in Babel 7", function () {
+        _overrideBabelMajorVersion(7);
+
+        let plugins = _addDecoratorPlugins(
+          [],
+          {},
+          {},
+          this.addon.parent,
+          this.addon.project
+        );
+
+        let decoratorPlugin = plugins.find(
+          (p) => Array.isArray(p) && String(p[0]).includes("plugin-proposal-decorators")
+        );
+
+        expect(decoratorPlugin).to.exist;
+        expect(decoratorPlugin[1]).to.deep.equal({ legacy: true });
+      });
     });
   });
 });

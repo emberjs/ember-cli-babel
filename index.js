@@ -7,6 +7,7 @@ const {
   _getExtensions,
   _parentName,
   _shouldHighlightCode,
+  isBabel8,
 } = require("./lib/babel-options-util");
 
 const VersionChecker = require('ember-cli-version-checker');
@@ -140,8 +141,12 @@ module.exports = {
     };
 
     if (shouldCompileModules) {
-      options.moduleIds = true;
-      options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+      // In Babel 8, the root-level `moduleIds` and `getModuleId` options have
+      // been moved to plugin options (handled in _getModulesPlugin).
+      if (!isBabel8()) {
+        options.moduleIds = true;
+        options.getModuleId = require("./lib/relative-module-paths").getRelativeModulePath;
+      }
     }
 
     options.highlightCode = _shouldHighlightCode(this.parent);
@@ -231,14 +236,20 @@ module.exports = {
   },
 
   _getHelpersPlugin() {
+    const runtimeOptions = {
+      version: this._getHelperVersion(),
+      regenerator: false,
+    };
+
+    // In Babel 8, the `useESModules` option has been removed.
+    if (!isBabel8()) {
+      runtimeOptions.useESModules = true;
+    }
+
     return [
       [
         require.resolve('@babel/plugin-transform-runtime'),
-        {
-          version: this._getHelperVersion(),
-          regenerator: false,
-          useESModules: true
-        }
+        runtimeOptions,
       ]
     ]
   },
