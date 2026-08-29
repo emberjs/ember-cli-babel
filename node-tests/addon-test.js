@@ -279,7 +279,8 @@ define("foo", [], function () {
       it("should replace imports by default", co.wrap(function* () {
         input.write({
           "foo.js": `import Component from '@ember/component'; Component.extend()`,
-          "app.js": `import Application from '@ember/application'; Application.extend()`
+          "app.js": `import Application from '@ember/application'; Application.extend()`,
+          "assert.js": `import { assert as debugAssert } from '@ember/debug';\ndebugAssert('some message', false);`,
         });
 
         subject = this.addon.transpileTree(input.path());
@@ -291,7 +292,8 @@ define("foo", [], function () {
           output.read()
         ).to.deep.equal({
           "foo.js": `define("foo", [], function () {\n  "use strict";\n\n  Ember.Component.extend();\n});`,
-          "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`
+          "app.js": `define("app", [], function () {\n  "use strict";\n\n  Ember.Application.extend();\n});`,
+          "assert.js": `define("assert", [], function () {\n  "use strict";\n\n  (true && !(false) && Ember.assert('some message', false));\n});`
         });
       }));
 
